@@ -26,18 +26,15 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
 	private static final String TAG = "MainActivity";
+	private static final boolean useStickyHeadersLayoutManager = true;
+	private static final boolean useDebugColoration = false;
 
 	RecyclerView recyclerView;
-
-	boolean useStickyHeadersLayoutManager = true;
-	boolean useDebugColoration = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-		DemoAdapter adapter = new DemoAdapter(this);
 
 		recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
@@ -59,9 +56,9 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch( item.getItemId()) {
+		switch (item.getItemId()) {
 			case R.id.reloadMenuItem:
-				((SectioningAdapter)recyclerView.getAdapter()).notifyAllSectionsDataSetChanged();
+				((SectioningAdapter) recyclerView.getAdapter()).notifyAllSectionsDataSetChanged();
 				return true;
 
 			default:
@@ -174,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
 		public DemoAdapter(Context context) {
 			this.context = context;
 
-			for (int i = 0; i < 5; i++ ){
+			for (int i = 0; i < 5; i++) {
 				appendSection(i);
 			}
 		}
@@ -219,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
 			Log.d(TAG, "onCloneItem() called with: " + "section = [" + section + "], item = [" + item + "]");
 			Section s = sections.get(section);
 			s.duplicateItem(item);
-			notifySectionItemInserted(section,item+1);
+			notifySectionItemInserted(section, item + 1);
 		}
 
 		@Override

@@ -16,7 +16,12 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Created by shamyl on 2/10/16.
+ * StickyHeaderLayoutManager
+ * Provides equivalent behavior to a simple LinearLayoutManager, but where section header items
+ * are positioned in a "sticky" manner like the section headers in iOS's UITableView.
+ * StickyHeaderLayoutManager MUST be used in conjunction with SectioningAdapter.
+ *
+ * @see SectioningAdapter
  */
 public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
@@ -64,8 +69,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	HashMap<View, Integer> adapterPositionsByView = new HashMap<>();
 	HashSet<View> headerViews = new HashSet<>();
 
-	// adapter position of first (lowest-y-value) visible item. note, this may not include the sticky-positioned header
-	// for a section. imagine that the first item is the third in a section with a header - the header would have firstAdapterPosition - 3 adapter position!
+	// adapter position of first (lowest-y-value) visible item.
 	int firstAdapterPosition;
 
 
@@ -104,8 +108,6 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		int left = getPaddingLeft();
 		int right = getWidth() - getPaddingRight();
 		int parentBottom = getHeight() - getPaddingBottom();
-
-		Log.i(TAG, "onLayoutChildren: firstAdapterPosition: " + firstAdapterPosition + " top: " + top);
 
 		// walk through adapter starting at firstAdapterPosition stacking each vended item
 		for (int adapterPosition = firstAdapterPosition; adapterPosition < state.getItemCount(); adapterPosition++) {
@@ -521,7 +523,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 				if (section.ghostHeader != null) {
 					int ghostHeaderTop = getDecoratedTop(section.ghostHeader);
 					if (ghostHeaderTop > top) {
-						top =  ghostHeaderTop;
+						top = ghostHeaderTop;
 						headerPosition = SectioningAdapter.HeaderPosition.NATURAL;
 					}
 				}

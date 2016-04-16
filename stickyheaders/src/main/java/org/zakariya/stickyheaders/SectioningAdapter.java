@@ -12,6 +12,17 @@ import java.util.HashMap;
 /**
  * SectioningAdapter
  * Represents a list of sections, each containing a list of items and optionally a header and or footer item.
+ * SectioningAdapter may be used with a normal RecyclerView.LinearLayoutManager but is meant for use with
+ * StickyHeaderLayoutManager to allow for sticky positioning of header items.
+ * <p/>
+ * When invalidating the adapter's contents NEVER use RecyclerView.Adapter.notify* methods. These methods
+ * aren't aware of the section information and internal state of SectioningAdapter. As such, please
+ * use the SectioningAdapter.notify* methods.
+ * <p/>
+ * SectioningAdapter manages four types of items: TYPE_HEADER, TYPE_ITEM, TYPE_FOOTER and TYPE_GHOST_HEADER.
+ * Headers are the optional first item in a section. A section then has some number of items in it,
+ * and an optional footer. The ghost header is a special item used for layout mechanics. It can
+ * be ignored by SectioningAdapter subclasses - but it is made externally accessible just in case.
  */
 @SuppressWarnings("unused")
 public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.ViewHolder> {
