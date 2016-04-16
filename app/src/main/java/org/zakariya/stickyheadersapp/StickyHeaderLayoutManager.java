@@ -1,4 +1,4 @@
-package org.zakariya.stickyheaders;
+package org.zakariya.stickyheadersapp;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

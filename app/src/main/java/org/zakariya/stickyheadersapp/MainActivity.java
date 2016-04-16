@@ -1,4 +1,4 @@
-package org.zakariya.stickyheaders;
+package org.zakariya.stickyheadersapp;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
