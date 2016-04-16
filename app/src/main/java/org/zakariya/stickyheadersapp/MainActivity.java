@@ -18,6 +18,9 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import org.zakariya.stickyheaders.SectioningAdapter;
+import org.zakariya.stickyheaders.StickyHeaderLayoutManager;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
