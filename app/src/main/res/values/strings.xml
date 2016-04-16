@@ -1,0 +1,13 @@
+<resources>
+	<string name="app_name">StickyHeaders</string>
+	<string name="action">Action</string>
+
+	<string name="section_action">Delete or clone this section?</string>
+	<string name="item_action">Delete or clone this item?</string>
+	<string name="action_delete">Delete</string>
+	<string name="action_clone">Clone</string>
+	<string name="action_cancel">Cancel</string>
+
+	<string name="menu_item_reload">Reload</string>
+
+</resources>
