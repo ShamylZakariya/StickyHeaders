@@ -411,6 +411,10 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 					section.header = null;
 					section.headerAdapterPosition = -1;
 
+					// notify adapter that this header was recycled so it can clean
+					// up its internal state tracking header positions
+					adapter.onHeaderRecycled(sectionIndex);
+
 					// if the actual header is offscreen, that means this section is entirely offscreen
 					// and we need to clean it up
 					sectionIndicesToRemove.add(sectionIndex);

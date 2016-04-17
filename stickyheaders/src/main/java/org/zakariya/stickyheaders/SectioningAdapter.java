@@ -1,7 +1,6 @@
 package org.zakariya.stickyheaders;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -555,13 +554,14 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			}
 			this.sections.add(section);
 
-			Log.i(TAG, "buildSectionIndex: s:" + s + " adapterPosition: " + section.adapterPosition + " header: " + section.hasHeader + " footer: " + section.hasFooter + " numberOfItems: " + section.numberOfItems + " length: " + section.length);
-
 			i += section.length;
 		}
 
 		totalNumberOfItems = i;
-		Log.i(TAG, "buildSectionIndex: totalNumberOfItems:" + totalNumberOfItems);
+	}
+
+	void onHeaderRecycled(int sectionIndex) {
+		headerPositionsBySection.remove(sectionIndex);
 	}
 
 	void setHeaderPosition(int sectionIndex, View headerView, HeaderPosition newHeaderPosition) {
