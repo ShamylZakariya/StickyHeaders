@@ -2,7 +2,6 @@ package org.zakariya.stickyheadersapp;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -171,52 +170,52 @@ public class MainActivity extends AppCompatActivity {
 		public DemoAdapter(Context context) {
 			this.context = context;
 
-			for (int i = 0; i < 5; i++) {
-				appendSection(i);
+			for (int i = 0; i < 25; i++) {
+				appendSection(i, 25);
 			}
 		}
 
-		void appendSection(int index) {
+		void appendSection(int index, int itemCount) {
 			Section section = new Section();
 			section.index = index;
 			section.copyCount = 0;
 			section.header = Integer.toString(index);
 			section.footer = "End of section " + index;
 
-			for (int j = 0; j < 5; j++) {
+			for (int j = 0; j < itemCount; j++) {
 				section.items.add(index + "/" + j);
 			}
 
 			sections.add(section);
 		}
 
-		void onDeleteSection(int section) {
-			Log.d(TAG, "onDeleteSection() called with: " + "section = [" + section + "]");
-			sections.remove(section);
-			notifySectionRemoved(section);
+		void onDeleteSection(int sectionIndex) {
+			Log.d(TAG, "onDeleteSection() called with: " + "sectionIndex = [" + sectionIndex + "]");
+			sections.remove(sectionIndex);
+			notifySectionRemoved(sectionIndex);
 		}
 
-		void onCloneSection(int section) {
-			Log.d(TAG, "onCloneSection() called with: " + "section = [" + section + "]");
+		void onCloneSection(int sectionIndex) {
+			Log.d(TAG, "onCloneSection() called with: " + "sectionIndex = [" + sectionIndex + "]");
 
-			Section s = sections.get(section);
+			Section s = sections.get(sectionIndex);
 			Section d = s.duplicate();
-			sections.add(section + 1, d);
-			notifySectionInserted(section + 1);
+			sections.add(sectionIndex + 1, d);
+			notifySectionInserted(sectionIndex + 1);
 		}
 
-		void onDeleteItem(int section, int item) {
-			Log.d(TAG, "onDeleteItem() called with: " + "section = [" + section + "], item = [" + item + "]");
-			Section s = sections.get(section);
-			s.items.remove(item);
-			notifySectionItemRemoved(section, item);
+		void onDeleteItem(int sectionIndex, int itemIndex) {
+			Log.d(TAG, "onDeleteItem() called with: " + "sectionIndex = [" + sectionIndex + "], itemIndex = [" + itemIndex + "]");
+			Section s = sections.get(sectionIndex);
+			s.items.remove(itemIndex);
+			notifySectionItemRemoved(sectionIndex, itemIndex);
 		}
 
-		void onCloneItem(int section, int item) {
-			Log.d(TAG, "onCloneItem() called with: " + "section = [" + section + "], item = [" + item + "]");
-			Section s = sections.get(section);
-			s.duplicateItem(item);
-			notifySectionItemInserted(section, item + 1);
+		void onCloneItem(int sectionIndex, int itemIndex) {
+			Log.d(TAG, "onCloneItem() called with: " + "sectionIndex = [" + sectionIndex + "], itemIndex = [" + itemIndex + "]");
+			Section s = sections.get(sectionIndex);
+			s.duplicateItem(itemIndex);
+			notifySectionItemInserted(sectionIndex, itemIndex + 1);
 		}
 
 		@Override
@@ -301,10 +300,10 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		public void onHeaderPositionChanged(int sectionIndex, View header, HeaderPosition oldPosition, HeaderPosition newPosition) {
 			//Log.i(TAG, "onHeaderPositionChanged: section: " + sectionIndex + " -> old: " + oldPosition.name() + " new: " + newPosition.name());
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				boolean elevated = newPosition == HeaderPosition.STICKY;
-				header.setElevation(elevated ? 4 : 0);
-			}
+//			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//				boolean elevated = newPosition == HeaderPosition.STICKY;
+//				header.setElevation(elevated ? 64 : 0);
+//			}
 		}
 	}
 }

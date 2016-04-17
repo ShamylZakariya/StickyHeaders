@@ -17,8 +17,8 @@ LayoutManager::getChildCount() returns number of views attached to RV, not numbe
 #StickyHeaderLayoutManager
 
 #BUGS
-	- header is marked sticky for section 0 when scrolled to top of screen
 	- trouble when no footer is assigned
+	- headers aren't animated when recycler view runs addition/removal animations
 
 
 TESTING:
