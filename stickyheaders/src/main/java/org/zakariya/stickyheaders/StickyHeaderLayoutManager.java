@@ -501,6 +501,30 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		return getPaddingTop();
 	}
 
+	View getFirstViewAfterSection(Section section) {
+
+		int sectionIndex = section.sectionIndex + 1;
+		Section nextSection = sections.get(sectionIndex);
+		while( nextSection != null) {
+
+			if (nextSection.ghostHeader != null) {
+				return nextSection.ghostHeader;
+			}
+
+			if (!nextSection.items.isEmpty()) {
+				return nextSection.items.get(0).view;
+			}
+
+			if (nextSection.footer != null) {
+				return nextSection.footer;
+			}
+
+			sectionIndex++;
+			nextSection = sections.get(sectionIndex);
+		}
+
+		return null;
+	}
 
 	void updateHeaderPositions(RecyclerView.Recycler recycler) {
 		for (int i = 0, n = sections.size(); i < n; i++) {
@@ -522,25 +546,17 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
 				if (section.ghostHeader != null) {
 					int ghostHeaderTop = getDecoratedTop(section.ghostHeader);
-					if (ghostHeaderTop > top) {
+					if (ghostHeaderTop >= top) {
 						top = ghostHeaderTop;
 						headerPosition = SectioningAdapter.HeaderPosition.NATURAL;
 					}
 				}
 
-				if (section.footer != null) {
-					int footerTop = getDecoratedTop(section.footer);
-					if (footerTop - height < top) {
-						top = footerTop - height;
-						headerPosition = SectioningAdapter.HeaderPosition.TRAILING;
-					}
-				}
-
-				if (!section.items.isEmpty()) {
-					View lastItem = section.items.get(section.items.size() - 1).view;
-					int lastItemBottom = getDecoratedBottom(lastItem);
-					if (lastItemBottom < top) {
-						top = lastItemBottom;
+				View nextView = getFirstViewAfterSection(section);
+				if (nextView != null) {
+					int nextViewTop = getDecoratedTop(nextView);
+					if (nextViewTop - height < top) {
+						top = nextViewTop - height;
 						headerPosition = SectioningAdapter.HeaderPosition.TRAILING;
 					}
 				}

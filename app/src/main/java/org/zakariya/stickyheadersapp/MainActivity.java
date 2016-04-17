@@ -287,10 +287,6 @@ public class MainActivity extends AppCompatActivity {
 			if (useDebugColoration) {
 				viewHolder.itemView.setBackgroundColor(0xFF9999FF);
 			}
-
-			if (!useStickyHeadersLayoutManager) {
-				viewHolder.itemView.setMinimumHeight(80);
-			}
 		}
 
 		@SuppressLint("SetTextI18n")

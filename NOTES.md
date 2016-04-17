@@ -15,22 +15,11 @@ firstPosition seems to be the position in the logical list of the first item on 
 LayoutManager::getChildCount() returns number of views attached to RV, not number of hypothetical views in list
 	
 #StickyHeaderLayoutManager
- 
-I can't just 'new' a GhostHeader and call addView(), it has to be vended from RecyclerView or else the app terminates
-I might need to take a new tack on the adapterPositioning and how the SectioningAdapter works
-	---
-	0: ActualHeader
-	1: GhostHeader
-	2: Item0
-	3: Item1
-	4: Footer
-	---
-	5: ActualHeader
-	6: GhostHeader
-	7: Item0
-	8: Footer
 
-SectioningAdapter would make the binding of GhostHeader automatic so users don't need to worry about it
+#BUGS
+	- header is marked sticky for section 0 when scrolled to top of screen
+	- trouble when no footer is assigned
+
 
 TESTING:
 	- need to ensure this works fine for adapters which don't have footer views and which don't have header views (!!!)
