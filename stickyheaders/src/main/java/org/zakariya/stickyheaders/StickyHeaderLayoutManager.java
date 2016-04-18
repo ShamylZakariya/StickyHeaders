@@ -25,6 +25,30 @@ import java.util.List;
  */
 public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
+	public enum HeaderPosition {
+		NONE,
+		NATURAL,
+		STICKY,
+		TRAILING
+	}
+
+	/**
+	 * Callback interface for monitoring when header positions change between members of HeaderPosition enum values.
+	 * This can be useful if client code wants to change appearance for headers in HeaderPosition.STICKY vs normal positioning.
+	 * @see HeaderPosition
+	 */
+	public interface HeaderPositionChangedCallback {
+		/**
+		 * Called when a sections header positioning approach changes. The position can be HeaderPosition.NONE, HeaderPosition.NATURAL, HeaderPosition.STICKY or HeaderPosition.TRAILING
+		 *
+		 * @param sectionIndex the sections [0...n)
+		 * @param header       the header view
+		 * @param oldPosition  the previous positioning of the header (NONE, NATURAL, STICKY or TRAILING)
+		 * @param newPosition  the new positioning of the header (NATURAL, STICKY or TRAILING)
+		 */
+		void onHeaderPositionChanged(int sectionIndex, View header, HeaderPosition oldPosition, HeaderPosition newPosition);
+	}
+
 	private static final String TAG = StickyHeaderLayoutManager.class.getSimpleName();
 
 	private static class SectionItem {
@@ -68,13 +92,24 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	// holds the adapter position of each visible view
 	HashMap<View, Integer> adapterPositionsByView = new HashMap<>();
 	HashSet<View> headerViews = new HashSet<>();
+	HashMap<Integer, HeaderPosition> headerPositionsBySection = new HashMap<>();
 
 	// adapter position of first (lowest-y-value) visible item.
 	int firstAdapterPosition;
 
+	HeaderPositionChangedCallback headerPositionChangedCallback;
+
 
 	public StickyHeaderLayoutManager(Context context) {
 		this.context = context;
+	}
+
+	public HeaderPositionChangedCallback getHeaderPositionChangedCallback() {
+		return headerPositionChangedCallback;
+	}
+
+	public void setHeaderPositionChangedCallback(HeaderPositionChangedCallback headerPositionChangedCallback) {
+		this.headerPositionChangedCallback = headerPositionChangedCallback;
 	}
 
 	@Override
@@ -411,9 +446,8 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 					section.header = null;
 					section.headerAdapterPosition = -1;
 
-					// notify adapter that this header was recycled so it can clean
-					// up its internal state tracking header positions
-					adapter.onHeaderRecycled(sectionIndex);
+					// reset the header position state
+					headerPositionsBySection.remove(sectionIndex);
 
 					// if the actual header is offscreen, that means this section is entirely offscreen
 					// and we need to clean it up
@@ -546,13 +580,13 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 				int top = getPaddingTop();
 				layoutDecorated(section.header, left, top, right, top + height);
 
-				SectioningAdapter.HeaderPosition headerPosition = SectioningAdapter.HeaderPosition.STICKY;
+				HeaderPosition headerPosition = HeaderPosition.STICKY;
 
 				if (section.ghostHeader != null) {
 					int ghostHeaderTop = getDecoratedTop(section.ghostHeader);
 					if (ghostHeaderTop >= top) {
 						top = ghostHeaderTop;
-						headerPosition = SectioningAdapter.HeaderPosition.NATURAL;
+						headerPosition = HeaderPosition.NATURAL;
 					}
 				}
 
@@ -561,7 +595,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 					int nextViewTop = getDecoratedTop(nextView);
 					if (nextViewTop - height < top) {
 						top = nextViewTop - height;
-						headerPosition = SectioningAdapter.HeaderPosition.TRAILING;
+						headerPosition = HeaderPosition.TRAILING;
 					}
 				}
 
@@ -570,8 +604,27 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 				section.header.setTranslationY(top);
 
 				// notify adapter of positioning for this header
-				adapter.setHeaderPosition(section.sectionIndex, section.header, headerPosition);
+				setHeaderPosition(section.sectionIndex, section.header, headerPosition);
 			}
 		}
 	}
+
+	void setHeaderPosition(int sectionIndex, View headerView, HeaderPosition newHeaderPosition) {
+		if (headerPositionsBySection.containsKey(sectionIndex)) {
+			HeaderPosition currentHeaderPosition = headerPositionsBySection.get(sectionIndex);
+			if (currentHeaderPosition != newHeaderPosition) {
+				headerPositionsBySection.put(sectionIndex, newHeaderPosition);
+				if (headerPositionChangedCallback != null) {
+					headerPositionChangedCallback.onHeaderPositionChanged(sectionIndex, headerView, currentHeaderPosition, newHeaderPosition);
+				}
+
+			}
+		} else {
+			headerPositionsBySection.put(sectionIndex, newHeaderPosition);
+			if (headerPositionChangedCallback != null) {
+				headerPositionChangedCallback.onHeaderPositionChanged(sectionIndex, headerView, HeaderPosition.NONE, newHeaderPosition);
+			}
+		}
+	}
+
 }

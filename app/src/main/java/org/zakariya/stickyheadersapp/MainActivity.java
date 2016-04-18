@@ -2,6 +2,7 @@ package org.zakariya.stickyheadersapp;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,7 +39,21 @@ public class MainActivity extends AppCompatActivity {
 		recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
 		if (useStickyHeadersLayoutManager) {
-			recyclerView.setLayoutManager(new StickyHeaderLayoutManager(this));
+			StickyHeaderLayoutManager stickyHeaderLayoutManager = new StickyHeaderLayoutManager(this);
+			recyclerView.setLayoutManager(stickyHeaderLayoutManager);
+
+			// set a header position callback to set elevation on sticky headers, because why not
+			stickyHeaderLayoutManager.setHeaderPositionChangedCallback(new StickyHeaderLayoutManager.HeaderPositionChangedCallback() {
+				@Override
+				public void onHeaderPositionChanged(int sectionIndex, View header, StickyHeaderLayoutManager.HeaderPosition oldPosition, StickyHeaderLayoutManager.HeaderPosition newPosition) {
+					Log.i(TAG, "onHeaderPositionChanged: section: " + sectionIndex + " -> old: " + oldPosition.name() + " new: " + newPosition.name());
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+						boolean elevated = newPosition == StickyHeaderLayoutManager.HeaderPosition.STICKY;
+						header.setElevation(elevated ? 8 : 0);
+					}
+				}
+			});
+
 		} else {
 			recyclerView.setLayoutManager(new LinearLayoutManager(this));
 		}
@@ -297,13 +312,5 @@ public class MainActivity extends AppCompatActivity {
 			fvh.adapterPositionTextView.setText(Integer.toString(getAdapterPositionForSectionFooter(sectionIndex)));
 		}
 
-		@Override
-		public void onHeaderPositionChanged(int sectionIndex, View header, HeaderPosition oldPosition, HeaderPosition newPosition) {
-			//Log.i(TAG, "onHeaderPositionChanged: section: " + sectionIndex + " -> old: " + oldPosition.name() + " new: " + newPosition.name());
-//			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//				boolean elevated = newPosition == HeaderPosition.STICKY;
-//				header.setElevation(elevated ? 64 : 0);
-//			}
-		}
 	}
 }

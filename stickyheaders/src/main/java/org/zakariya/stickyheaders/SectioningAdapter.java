@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * SectioningAdapter
@@ -33,13 +32,6 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	public static final int TYPE_FOOTER = 2;
 	static final int TYPE_GHOST_HEADER = 3; // not necessary to be visible externally
 
-	public enum HeaderPosition {
-		NONE,
-		NATURAL,
-		STICKY,
-		TRAILING
-	}
-
 	private class Section {
 		int adapterPosition;    // adapterPosition of first item (the header) of this sections
 		int numberOfItems;      // number of items (not including header or footer)
@@ -51,7 +43,6 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	private ArrayList<Section> sections;
 	private int totalNumberOfItems;
 
-	private HashMap<Integer, HeaderPosition> headerPositionsBySection = new HashMap<>();
 
 	public class ViewHolder extends RecyclerView.ViewHolder {
 		private int section;
@@ -251,17 +242,6 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * @param sectionIndex the index of the section containing the footer to update
 	 */
 	public void onBindFooterViewHolder(FooterViewHolder viewHolder, int sectionIndex) {
-	}
-
-	/**
-	 * Called when a sections header positioning approach changes. The position can be NATURAL, STICKY or TRAILING
-	 *
-	 * @param sectionIndex the sections [0...n)
-	 * @param header       the header view
-	 * @param oldPosition  the previous positioning of the header (NONE, NATURAL, STICKY or TRAILING)
-	 * @param newPosition  the new positioning of the header (NATURAL, STICKY or TRAILING)
-	 */
-	public void onHeaderPositionChanged(int sectionIndex, View header, HeaderPosition oldPosition, HeaderPosition newPosition) {
 	}
 
 	/**
@@ -558,23 +538,6 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		}
 
 		totalNumberOfItems = i;
-	}
-
-	void onHeaderRecycled(int sectionIndex) {
-		headerPositionsBySection.remove(sectionIndex);
-	}
-
-	void setHeaderPosition(int sectionIndex, View headerView, HeaderPosition newHeaderPosition) {
-		if (headerPositionsBySection.containsKey(sectionIndex)) {
-			HeaderPosition currentHeaderPosition = headerPositionsBySection.get(sectionIndex);
-			if (currentHeaderPosition != newHeaderPosition) {
-				headerPositionsBySection.put(sectionIndex, newHeaderPosition);
-				onHeaderPositionChanged(sectionIndex, headerView, currentHeaderPosition, newHeaderPosition);
-			}
-		} else {
-			headerPositionsBySection.put(sectionIndex, newHeaderPosition);
-			onHeaderPositionChanged(sectionIndex, headerView, HeaderPosition.NONE, newHeaderPosition);
-		}
 	}
 
 	@Override
