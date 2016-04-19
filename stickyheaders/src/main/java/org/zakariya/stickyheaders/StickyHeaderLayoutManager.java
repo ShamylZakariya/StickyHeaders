@@ -1,6 +1,5 @@
 package org.zakariya.stickyheaders;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseArray;
@@ -106,6 +105,11 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		return headerPositionChangedCallback;
 	}
 
+	/**
+	 * Assign callback object to be notified when a header view position changes between states of the HeaderPosition enum
+	 * @see HeaderPosition
+	 * @param headerPositionChangedCallback the callback
+	 */
 	public void setHeaderPositionChangedCallback(HeaderPositionChangedCallback headerPositionChangedCallback) {
 		this.headerPositionChangedCallback = headerPositionChangedCallback;
 	}
