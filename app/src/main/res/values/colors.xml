@@ -8,6 +8,9 @@
 	<color name="textLight">#dddddd</color>
 	<color name="divider">#dddddd</color>
 
+	<color name="tabTextDefault">#afff</color>
+	<color name="tabTextSelected">#fff</color>
+
 	<color name="headerBackground">#eeeeee</color>
 
 </resources>
