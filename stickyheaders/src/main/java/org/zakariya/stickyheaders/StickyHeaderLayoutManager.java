@@ -84,7 +84,6 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
 	}
 
-	Context context;
 	SectioningAdapter adapter;
 	SparseArray<Section> sections = new SparseArray<>();
 	SectionItemSortComparator sectionItemSortComparator = new SectionItemSortComparator();
@@ -100,8 +99,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	HeaderPositionChangedCallback headerPositionChangedCallback;
 
 
-	public StickyHeaderLayoutManager(Context context) {
-		this.context = context;
+	public StickyHeaderLayoutManager() {
 	}
 
 	public HeaderPositionChangedCallback getHeaderPositionChangedCallback() {

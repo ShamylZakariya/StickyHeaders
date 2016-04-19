@@ -10,10 +10,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f0a2a4be-d56e-45d7-896c-e8581b8ef8d2" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/app.iml" afterPath="$PROJECT_DIR$/app/app.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/org/zakariya/stickyheadersapp/MainActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/org/zakariya/stickyheadersapp/MainActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/stickyheaders/src/main/java/org/zakariya/stickyheaders/SectioningAdapter.java" afterPath="$PROJECT_DIR$/stickyheaders/src/main/java/org/zakariya/stickyheaders/SectioningAdapter.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/stickyheaders/src/main/java/org/zakariya/stickyheaders/StickyHeaderLayoutManager.java" afterPath="$PROJECT_DIR$/stickyheaders/src/main/java/org/zakariya/stickyheaders/StickyHeaderLayoutManager.java" />
     </list>
     <ignored path="StickyHeaders.iws" />
@@ -38,7 +35,7 @@
       <file leaf-file-name="NOTES.md" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/NOTES.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
+            <state vertical-scroll-proportion="-11.586206">
               <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
               <folding />
             </state>
@@ -62,7 +59,7 @@
         <entry file="file://$PROJECT_DIR$/stickyheaders/src/main/java/org/zakariya/stickyheaders/StickyHeaderLayoutManager.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="42" column="0" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
+              <caret line="85" column="0" selection-start-line="85" selection-start-column="0" selection-end-line="85" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -73,11 +70,11 @@
       <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/org/zakariya/stickyheadersapp/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.3862069">
-              <caret line="22" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.6068966">
+              <caret line="53" column="17" selection-start-line="53" selection-start-column="17" selection-end-line="53" selection-end-column="17" />
               <folding>
-                <element signature="e#1584#2197#0" expanded="true" />
-                <element signature="e#2196#2197#0" expanded="true" />
+                <element signature="imports" expanded="true" />
+                <element signature="e#1580#2193#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -3234,8 +3231,8 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="163" column="9" selection-start-line="163" selection-start-column="9" selection-end-line="163" selection-end-column="9" />
           <folding>
-            <element signature="e#1584#2197#0" expanded="true" />
-            <element signature="e#2196#2197#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#1580#2193#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -3304,8 +3301,8 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="163" column="9" selection-start-line="163" selection-start-column="9" selection-end-line="163" selection-end-column="9" />
           <folding>
-            <element signature="e#1584#2197#0" expanded="true" />
-            <element signature="e#2196#2197#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#1580#2193#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -3462,7 +3459,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/NOTES.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
+        <state vertical-scroll-proportion="-11.586206">
           <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
           <folding />
         </state>
@@ -3512,20 +3509,31 @@
     <entry file="file://$PROJECT_DIR$/stickyheaders/src/main/java/org/zakariya/stickyheaders/StickyHeaderLayoutManager.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="42" column="0" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
+          <caret line="85" column="0" selection-start-line="85" selection-start-column="0" selection-end-line="85" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="jar://$USER_HOME$/Library/Android/sdk/extras/android/m2repository/com/android/support/recyclerview-v7/23.3.0/recyclerview-v7-23.3.0-sources.jar!/android/support/v7/widget/LinearLayoutManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33275864">
+          <caret line="143" column="11" selection-start-line="143" selection-start-column="11" selection-end-line="143" selection-end-column="11" />
+          <folding>
+            <element signature="e#5057#5058#0" expanded="true" />
+            <element signature="e#5103#5104#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/org/zakariya/stickyheadersapp/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3862069">
-          <caret line="22" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.6068966">
+          <caret line="53" column="17" selection-start-line="53" selection-start-column="17" selection-end-line="53" selection-end-column="17" />
           <folding>
-            <element signature="e#1584#2197#0" expanded="true" />
-            <element signature="e#2196#2197#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#1580#2193#0" expanded="true" />
           </folding>
         </state>
       </provider>

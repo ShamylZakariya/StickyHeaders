@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 		recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
 		if (useStickyHeadersLayoutManager) {
-			StickyHeaderLayoutManager stickyHeaderLayoutManager = new StickyHeaderLayoutManager(this);
+			StickyHeaderLayoutManager stickyHeaderLayoutManager = new StickyHeaderLayoutManager();
 			recyclerView.setLayoutManager(stickyHeaderLayoutManager);
 
 			// set a header position callback to set elevation on sticky headers, because why not
