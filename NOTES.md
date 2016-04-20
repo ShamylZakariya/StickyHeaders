@@ -1,3 +1,12 @@
+#BUGS
+	- headers aren't animated when recycler view runs addition/removal animations
+
+
+TESTING:
+	- need to ensure this works fine for adapters which don't have footer views and which don't have header views (!!!)
+	- need to test against different top/bottom padding scenarios
+
+
 #RecyclerView.LayoutManager
 
 Here's my understanding of how a linear layout manager works
@@ -13,14 +22,3 @@ firstPosition seems to be the position in the logical list of the first item on 
 	- firstPosition is updated on scroll and in recyling offscreen views
 
 LayoutManager::getChildCount() returns number of views attached to RV, not number of hypothetical views in list
-	
-#StickyHeaderLayoutManager
-
-#BUGS
-	- trouble when no footer is assigned
-	- headers aren't animated when recycler view runs addition/removal animations
-
-
-TESTING:
-	- need to ensure this works fine for adapters which don't have footer views and which don't have header views (!!!)
-	- need to test against different top/bottom padding scenarios
