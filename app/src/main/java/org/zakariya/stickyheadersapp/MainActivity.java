@@ -22,10 +22,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import org.zakariya.stickyheaders.SectioningAdapter;
 import org.zakariya.stickyheaders.StickyHeaderLayoutManager;
 import org.zakariya.stickyheadersapp.adapters.AddressBookAdapter;
 import org.zakariya.stickyheadersapp.adapters.SimpleDemoAdapter;
-import org.zakariya.stickyheadersapp.api.RandomUsers;
+import org.zakariya.stickyheadersapp.api.RandomUserLoader;
 import org.zakariya.stickyheadersapp.model.Person;
 
 import java.util.List;
@@ -49,18 +50,6 @@ public class MainActivity extends AppCompatActivity {
 		viewPager = (ViewPager) findViewById(R.id.viewPager);
 		viewPager.setAdapter(new RecyclerViewsPager(getSupportFragmentManager()));
 		tabs.setupWithViewPager(viewPager);
-
-		RandomUsers.getInstance().load(new RandomUsers.OnLoadCallback() {
-			@Override
-			public void onRandomUsersDidLoad(List<Person> randomUsers) {
-				Log.i(TAG, "onRandomUsersDidLoad: got random users from API");
-			}
-
-			@Override
-			public void onFailure(Throwable t) {
-				Snackbar.make(viewPager, "Unable to load fake people", Snackbar.LENGTH_LONG).show();
-			}
-		});
 	}
 
 	@Override
@@ -115,7 +104,27 @@ public class MainActivity extends AppCompatActivity {
 		RecyclerView recyclerView;
 		ProgressBar progressBar;
 
-		public RecyclerViewFragment() {}
+		public RecyclerViewFragment() {
+			setHasOptionsMenu(true);
+		}
+
+		@Override
+		public boolean onOptionsItemSelected(MenuItem item) {
+			switch(item.getItemId()) {
+				case R.id.reloadMenuItem:
+					Log.i(TAG, "onOptionsItemSelected: RELOAD");
+					RecyclerView.Adapter adapter = recyclerView.getAdapter();
+					if (adapter instanceof SectioningAdapter) {
+						((SectioningAdapter)adapter).notifyAllSectionsDataSetChanged();
+					} else {
+						adapter.notifyDataSetChanged();
+					}
+					return true;
+
+				default:
+					return super.onOptionsItemSelected(item);
+			}
+		}
 
 		@Nullable
 		@Override
@@ -184,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
 
 	public static class AddressBookDemo extends RecyclerViewFragment {
 
+
 		public AddressBookDemo() {
 		}
 
@@ -194,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
 		@Nullable
 		@Override
 		public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-			View v = super.onCreateView(inflater, container, savedInstanceState);
+			final View v = super.onCreateView(inflater, container, savedInstanceState);
 
 			StickyHeaderLayoutManager stickyHeaderLayoutManager = new StickyHeaderLayoutManager();
 			recyclerView.setLayoutManager(stickyHeaderLayoutManager);
@@ -205,7 +215,9 @@ public class MainActivity extends AppCompatActivity {
 
 			progressBar.setVisibility(View.VISIBLE);
 			recyclerView.setVisibility(View.GONE);
-			RandomUsers.getInstance().load(new RandomUsers.OnLoadCallback() {
+
+			RandomUserLoader randomUserLoader = ((StickyHeadersDemoApp) getContext().getApplicationContext()).getRandomUserLoader();
+			randomUserLoader.load(new RandomUserLoader.OnLoadCallback() {
 				@Override
 				public void onRandomUsersDidLoad(List<Person> randomUsers) {
 					progressBar.setVisibility(View.GONE);
@@ -217,6 +229,7 @@ public class MainActivity extends AppCompatActivity {
 				public void onFailure(Throwable t) {
 					progressBar.setVisibility(View.GONE);
 					recyclerView.setVisibility(View.GONE);
+					Snackbar.make(v, "Unable to load fake people", Snackbar.LENGTH_LONG).show();
 				}
 			});
 

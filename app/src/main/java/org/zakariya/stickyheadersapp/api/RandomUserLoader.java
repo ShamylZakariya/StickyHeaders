@@ -22,11 +22,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Singleton for accessing the http://api.randomuser.me API
  * Only performs the fetch once. Vends cached data subsequently.
  */
-public class RandomUsers {
+public class RandomUserLoader {
 
-	private static final String TAG = RandomUsers.class.getSimpleName();
-
-	private static RandomUsers _instance = new RandomUsers();
+	private static final String TAG = RandomUserLoader.class.getSimpleName();
 
 	private RandomUsersService service;
 	private List<Person> randomUsers = new ArrayList<>();
@@ -38,11 +36,7 @@ public class RandomUsers {
 		void onFailure(Throwable t);
 	}
 
-	public static RandomUsers getInstance() {
-		return _instance;
-	}
-
-	private RandomUsers() {
+	public RandomUserLoader() {
 		Retrofit retrofit = new Retrofit.Builder()
 				.baseUrl("http://api.randomuser.me")
 				.addConverterFactory(GsonConverterFactory.create())

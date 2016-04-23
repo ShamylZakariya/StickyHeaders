@@ -618,6 +618,9 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		holder.setSection(section);
 		holder.setNumberOfItemsInSection(getNumberOfItemsInSection(section));
 
+		// tag the viewHolder's item so as to make it possible to track in layout manager
+		tagViewHolderItemView(holder, section, adapterPosition);
+
 		switch (holder.getItemViewType()) {
 			case TYPE_HEADER:
 				onBindHeaderViewHolder((HeaderViewHolder) holder, section);
@@ -639,7 +642,61 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 				break;
 
 			default:
-				throw new IndexOutOfBoundsException("unrecognized viewType: " + holder.getItemViewType() + " does not correspond to TYPE_ITEM, TYPE_HEADER or TYPE_FOOTER");
+				throw new IllegalArgumentException("unrecognized viewType: " + holder.getItemViewType() + " does not correspond to TYPE_ITEM, TYPE_HEADER, TYPE_GHOST_HEADER or TYPE_FOOTER");
 		}
 	}
+
+	/**
+	 * Tag the itemView of the view holder with information needed for the layout to do its sticky positioning.
+	 * Specifically, it tags R.id.sectioning_adapter_tag_key_view_type to the item type, R.id.sectioning_adapter_tag_key_view_section
+	 * to the item's section, R.id.sectioning_adapter_tag_key_view_length_of_section to the absolute number of items in the section including
+	 * header, ghost header and footer; and finally R.id.sectioning_adapter_tag_key_view_position_in_section where the header is item 0,
+	 * ghost header is item 1, the first item is item 2, and the footer is item sectioning_adapter_tag_key_view_length_of_section - 1.
+	 * @param holder the view holder containing the itemView to tag
+	 * @param section the section index
+	 * @param adapterPosition the adapter position of the view holder
+	 */
+	void tagViewHolderItemView(ViewHolder holder, int section, int adapterPosition){
+		View view = holder.itemView;
+		view.setTag(R.id.sectioning_adapter_tag_key_view_type, holder.getItemViewType());
+		view.setTag(R.id.sectioning_adapter_tag_key_view_section, section);
+
+		int lengthOfSection = holder.numberOfItemsInSection;
+		boolean hasHeader = doesSectionHaveHeader(section);
+		boolean hasFooter = doesSectionHaveFooter(section);
+		if (hasHeader) {
+			lengthOfSection += 2;
+		}
+		if (hasFooter) {
+			lengthOfSection += 1;
+		}
+
+		view.setTag(R.id.sectioning_adapter_tag_key_view_length_of_section, lengthOfSection);
+
+		switch(holder.getItemViewType()) {
+			case TYPE_HEADER:
+				view.setTag(R.id.sectioning_adapter_tag_key_view_position_in_section, 0);
+				break;
+
+			case TYPE_GHOST_HEADER:
+				view.setTag(R.id.sectioning_adapter_tag_key_view_position_in_section, 0);
+				break;
+
+			case TYPE_ITEM:
+				int position = getPositionOfItemInSection(section, adapterPosition);
+				if (doesSectionHaveHeader(section)) {
+					position += 2;
+				}
+				view.setTag(R.id.sectioning_adapter_tag_key_view_position_in_section, position);
+				break;
+
+			case TYPE_FOOTER:
+				view.setTag(R.id.sectioning_adapter_tag_key_view_position_in_section, lengthOfSection - 1);
+				break;
+
+			default:
+				throw new IllegalArgumentException("unrecognized viewType: " + holder.getItemViewType() + " does not correspond to TYPE_ITEM, TYPE_HEADER, TYPE_GHOST_HEADER or TYPE_FOOTER");
+		}
+	}
+
 }

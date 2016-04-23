@@ -74,6 +74,13 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		int footerAdapterPosition;
 	}
 
+	private static class ViewTagInfo {
+		int type;
+		int section;
+		int positionInSection;
+		int lengthOfSection;
+	}
+
 	private static class SectionItemSortComparator implements Comparator<SectionItem> {
 
 		@Override
@@ -627,6 +634,22 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 				headerPositionChangedCallback.onHeaderPositionChanged(sectionIndex, headerView, HeaderPosition.NONE, newHeaderPosition);
 			}
 		}
+	}
+
+	ViewTagInfo getViewTagInfoForView(View view) {
+		return getViewTagInfoForView(view, null);
+	}
+
+	ViewTagInfo getViewTagInfoForView(View view, ViewTagInfo viewTagInfo) {
+		if (viewTagInfo == null) {
+			viewTagInfo = new ViewTagInfo();
+		}
+
+		viewTagInfo.type = (int) view.getTag(R.id.sectioning_adapter_tag_key_view_type);
+		viewTagInfo.section = (int) view.getTag(R.id.sectioning_adapter_tag_key_view_section);
+		viewTagInfo.lengthOfSection = (int) view.getTag(R.id.sectioning_adapter_tag_key_view_length_of_section);
+		viewTagInfo.positionInSection = (int) view.getTag(R.id.sectioning_adapter_tag_key_view_position_in_section);
+		return viewTagInfo;
 	}
 
 }
