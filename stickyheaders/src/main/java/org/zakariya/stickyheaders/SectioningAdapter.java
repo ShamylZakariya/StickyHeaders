@@ -660,6 +660,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		View view = holder.itemView;
 		view.setTag(R.id.sectioning_adapter_tag_key_view_type, holder.getItemViewType());
 		view.setTag(R.id.sectioning_adapter_tag_key_view_section, section);
+		view.setTag(R.id.sectioning_adapter_tag_key_view_adapter_position, adapterPosition);
 
 		int lengthOfSection = holder.numberOfItemsInSection;
 		boolean hasHeader = doesSectionHaveHeader(section);

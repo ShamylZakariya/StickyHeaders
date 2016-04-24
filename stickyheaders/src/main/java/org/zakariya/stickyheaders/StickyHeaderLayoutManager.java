@@ -1,18 +1,14 @@
 package org.zakariya.stickyheaders;
 
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
 /**
  * StickyHeaderLayoutManager
@@ -34,6 +30,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	/**
 	 * Callback interface for monitoring when header positions change between members of HeaderPosition enum values.
 	 * This can be useful if client code wants to change appearance for headers in HeaderPosition.STICKY vs normal positioning.
+	 *
 	 * @see HeaderPosition
 	 */
 	public interface HeaderPositionChangedCallback {
@@ -50,59 +47,13 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
 	private static final String TAG = StickyHeaderLayoutManager.class.getSimpleName();
 
-	private static class SectionItem {
-		View view;
-		int adapterPosition;
-		int positionInSection;
-
-		public SectionItem(View view, int adapterPosition, int positionInSection) {
-			this.view = view;
-			this.adapterPosition = adapterPosition;
-			this.positionInSection = positionInSection;
-		}
-	}
-
-	private static class Section {
-		int sectionIndex;
-		int headerAdapterPosition;
-		int ghostHeaderAdapterPosition;
-		View header;
-		View ghostHeader;
-		int numberOfItemsInSection;
-		ArrayList<SectionItem> items = new ArrayList<>();
-		View footer;
-		int footerAdapterPosition;
-	}
-
-	private static class ViewTagInfo {
-		int type;
-		int section;
-		int positionInSection;
-		int lengthOfSection;
-	}
-
-	private static class SectionItemSortComparator implements Comparator<SectionItem> {
-
-		@Override
-		public int compare(SectionItem lhs, SectionItem rhs) {
-			return lhs.adapterPosition - rhs.adapterPosition;
-		}
-
-	}
-
 	SectioningAdapter adapter;
-	SparseArray<Section> sections = new SparseArray<>();
-	SectionItemSortComparator sectionItemSortComparator = new SectionItemSortComparator();
-
-	// holds the adapter position of each visible view
-	HashMap<View, Integer> adapterPositionsByView = new HashMap<>();
-	HashSet<View> headerViews = new HashSet<>();
-	HashMap<Integer, HeaderPosition> headerPositionsBySection = new HashMap<>();
+	HashSet<View> headerViews = new HashSet<>(); // holds all the visible section headers
+	HashMap<Integer, HeaderPosition> headerPositionsBySection = new HashMap<>(); // holds the HeaderPosition for each header
+	HeaderPositionChangedCallback headerPositionChangedCallback;
 
 	// adapter position of first (lowest-y-value) visible item.
 	int firstAdapterPosition;
-
-	HeaderPositionChangedCallback headerPositionChangedCallback;
 
 
 	public StickyHeaderLayoutManager() {
@@ -114,8 +65,9 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
 	/**
 	 * Assign callback object to be notified when a header view position changes between states of the HeaderPosition enum
-	 * @see HeaderPosition
+	 *
 	 * @param headerPositionChangedCallback the callback
+	 * @see HeaderPosition
 	 */
 	public void setHeaderPositionChangedCallback(HeaderPositionChangedCallback headerPositionChangedCallback) {
 		this.headerPositionChangedCallback = headerPositionChangedCallback;
@@ -143,9 +95,8 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		int top = updateFirstAdapterPosition();
 
 		// RESET
-		sections.clear();
-		adapterPositionsByView.clear();
 		headerViews.clear();
+		headerPositionsBySection.clear();
 		detachAndScrapAttachedViews(recycler);
 
 		int height;
@@ -156,11 +107,6 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		// walk through adapter starting at firstAdapterPosition stacking each vended item
 		for (int adapterPosition = firstAdapterPosition; adapterPosition < state.getItemCount(); adapterPosition++) {
 
-			View v = recycler.getViewForPosition(adapterPosition);
-			registerView(v, adapterPosition);
-			addView(v);
-			measureChildWithMargins(v, 0, 0);
-
 			int itemViewType = adapter.getItemViewType(adapterPosition);
 
 			// skip headers - they're lazily created on demand
@@ -168,12 +114,16 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 				continue;
 			}
 
+			View v = recycler.getViewForPosition(adapterPosition);
+			addView(v);
+			measureChildWithMargins(v, 0, 0);
+
 			if (itemViewType == SectioningAdapter.TYPE_GHOST_HEADER) {
 
 				// ghost header is sized to same height as the actual header
 				// but to do so, we need to ensure actual header has been created
 				int sectionIndex = adapter.getSectionForAdapterPosition(adapterPosition);
-				View header = getSectionHeader(recycler, sectionIndex);
+				View header = createSectionHeaderIfNeeded(recycler, sectionIndex);
 
 				measureChildWithMargins(header, 0, 0);
 				height = getDecoratedMeasuredHeight(header);
@@ -194,72 +144,38 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		updateHeaderPositions(recycler);
 	}
 
-	View getSectionHeader(RecyclerView.Recycler recycler, int sectionIndex) {
-		Section section = getSection(sectionIndex);
-		return createSectionHeaderIfNeeded(recycler, section);
-	}
+	/**
+	 * Get the header item for a given section, creating it if it's not already in the view hierarchy
+	 *
+	 * @param recycler     the recycler
+	 * @param sectionIndex the index of the section for in question
+	 * @return the header, or null if the adapter specifies no header for the section
+	 */
+	View createSectionHeaderIfNeeded(RecyclerView.Recycler recycler, int sectionIndex) {
 
-	View createSectionHeaderIfNeeded(RecyclerView.Recycler recycler, Section section) {
-		if (adapter.doesSectionHaveHeader(section.sectionIndex) && section.header == null) {
-			int headerAdapterPosition = adapter.getAdapterPositionForSectionHeader(section.sectionIndex);
-			View header = recycler.getViewForPosition(headerAdapterPosition);
-			registerView(header, headerAdapterPosition);
-			addView(header);
-			measureChildWithMargins(header, 0, 0);
+		if (adapter.doesSectionHaveHeader(sectionIndex)) {
+
+			// first, see if we've already got a header for this section
+			for (int i = 0, n = getChildCount(); i < n; i++) {
+				View view = getChildAt(i);
+				if (getViewType(view) == SectioningAdapter.TYPE_HEADER && getViewSectionIndex(view) == sectionIndex) {
+					return view;
+				}
+			}
+
+			// looks like we need to create one
+			int headerAdapterPosition = adapter.getAdapterPositionForSectionHeader(sectionIndex);
+			View headerView = recycler.getViewForPosition(headerAdapterPosition);
+			headerViews.add(headerView);
+			addView(headerView);
+			measureChildWithMargins(headerView, 0, 0);
+
+			return headerView;
 		}
 
-		return section.header;
+		return null;
 	}
 
-	Section getSection(int sectionIndex) {
-		Section section = sections.get(sectionIndex);
-		if (section == null) {
-			section = new Section();
-			section.sectionIndex = sectionIndex;
-			section.numberOfItemsInSection = adapter.getNumberOfItemsInSection(sectionIndex);
-			sections.put(sectionIndex, section);
-		}
-
-		return section;
-	}
-
-	void registerView(View v, int adapterPosition) {
-
-		// determine which section this item lives in,
-		// and then mark it as the header footer, item etc accordingly
-
-		int sectionIndex = adapter.getSectionForAdapterPosition(adapterPosition);
-		Section section = getSection(sectionIndex);
-
-		adapterPositionsByView.put(v, adapterPosition);
-
-		switch (adapter.getItemViewType(adapterPosition)) {
-			case SectioningAdapter.TYPE_HEADER:
-				section.header = v;
-				section.headerAdapterPosition = adapterPosition;
-				headerViews.add(section.header);
-				break;
-
-			case SectioningAdapter.TYPE_GHOST_HEADER:
-				section.ghostHeader = v;
-				section.ghostHeaderAdapterPosition = adapterPosition;
-				break;
-
-			case SectioningAdapter.TYPE_ITEM:
-				int positionInSection = adapter.getPositionOfItemInSection(sectionIndex, adapterPosition);
-				section.items.add(new SectionItem(v, adapterPosition, positionInSection));
-				// sort so that items are in order of adapterPosition
-				Collections.sort(section.items, sectionItemSortComparator);
-				break;
-
-			case SectioningAdapter.TYPE_FOOTER:
-				section.footer = v;
-				section.footerAdapterPosition = adapterPosition;
-				break;
-		}
-
-
-	}
 
 	@Override
 	public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
@@ -298,6 +214,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 					int itemViewType = adapter.getItemViewType(firstAdapterPosition);
 					boolean isHeader = itemViewType == SectioningAdapter.TYPE_HEADER;
 
+					// skip the header, move to next item above
 					if (isHeader) {
 						firstAdapterPosition--;
 						if (firstAdapterPosition < 0) {
@@ -306,14 +223,13 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 					}
 
 					View v = recycler.getViewForPosition(firstAdapterPosition);
-					registerView(v, firstAdapterPosition);
 					addView(v, 0);
 
 					int bottom = getDecoratedTop(topView);
 					int top;
 					boolean isGhostHeader = itemViewType == SectioningAdapter.TYPE_GHOST_HEADER;
 					if (isGhostHeader) {
-						View header = getSectionHeader(recycler, adapter.getSectionForAdapterPosition(firstAdapterPosition));
+						View header = createSectionHeaderIfNeeded(recycler, adapter.getSectionForAdapterPosition(firstAdapterPosition));
 						top = bottom - getDecoratedMeasuredHeight(header); // header is already measured
 					} else {
 						measureChildWithMargins(v, 0, 0);
@@ -343,37 +259,44 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 				scrolled -= scrollBy;
 				offsetChildrenVertical(scrollBy);
 
-				int nextAdapterPosition = adapterPositionsByView.get(bottomView) + 1;
+				int adapterPosition = getViewAdapterPosition(bottomView);
+				int nextAdapterPosition = adapterPosition + 1;
 
 				if (scrolled < dy && nextAdapterPosition < state.getItemCount()) {
-
-					// we're skipping headers. they should already be vended, but if we're vending a ghostHeader
-					// here an actual header will be vended if needed for measurement
 
 					int top = getDecoratedBottom(bottomView);
 
 					int itemViewType = adapter.getItemViewType(nextAdapterPosition);
 					if (itemViewType == SectioningAdapter.TYPE_HEADER) {
 
-						View headerView = getSectionHeader(recycler, adapter.getSectionForAdapterPosition(nextAdapterPosition));
+						// get the header and measure it so we can followup immediately by vending the ghost header
+						View headerView = createSectionHeaderIfNeeded(recycler, adapter.getSectionForAdapterPosition(nextAdapterPosition));
 						int height = getDecoratedMeasuredHeight(headerView);
 						layoutDecorated(headerView, left, 0, right, height);
 
 						// but we need to vend the followup ghost header too
 						nextAdapterPosition++;
 						View ghostHeader = recycler.getViewForPosition(nextAdapterPosition);
-						registerView(ghostHeader, nextAdapterPosition);
 						addView(ghostHeader);
 						layoutDecorated(ghostHeader, left, top, right, top + height);
 						bottomView = ghostHeader;
+
+					} else if (itemViewType == SectioningAdapter.TYPE_GHOST_HEADER) {
+
+						// get the header and measure it so we can followup immediately by vending the ghost header
+						View headerView = createSectionHeaderIfNeeded(recycler, adapter.getSectionForAdapterPosition(nextAdapterPosition));
+						int height = getDecoratedMeasuredHeight(headerView);
+						layoutDecorated(headerView, left, 0, right, height);
+
+						// but we need to vend the followup ghost header too
+						View ghostHeader = recycler.getViewForPosition(nextAdapterPosition);
+						addView(ghostHeader);
+						layoutDecorated(ghostHeader, left, top, right, top + height);
+						bottomView = ghostHeader;
+
 					} else {
 
-						if (itemViewType == SectioningAdapter.TYPE_GHOST_HEADER) {
-							throw new IllegalStateException("Should never be vending a GHOST_HEADER here");
-						}
-
 						View v = recycler.getViewForPosition(nextAdapterPosition);
-						registerView(v, nextAdapterPosition);
 						addView(v);
 
 						measureChildWithMargins(v, 0, 0);
@@ -405,71 +328,47 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
 	public void recycleViewsOutOfBounds(RecyclerView.Recycler recycler) {
 
-		List<Integer> sectionIndicesToRemove = new ArrayList<>();
 		int height = getHeight();
+		int numChildren = getChildCount();
+		Set<Integer> remainingSections = new HashSet<>();
+		Set<View> viewsToRecycle = new HashSet<>();
 
-		for (int i = 0, n = sections.size(); i < n; i++) {
-			int sectionIndex = sections.keyAt(i);
-			Section section = sections.get(sectionIndex);
+		// we do this in two passes.
+		// first, recycle everything but headers
+		for (int i = 0; i < numChildren; i++) {
+			View view = getChildAt(i);
 
-			//Log.i(TAG, "recycleViewsOutOfBounds: section: " + sectionIndex + " header: " + section.header + " ghostHeader: " + section.ghostHeader + " items: " + section.items + " footer: " + section.footer);
-
-			// remove any item which is offscreen. note we keep section.items in sync hence use of iterator
-			Iterator<SectionItem> it = section.items.iterator();
-			while (it.hasNext()) {
-				SectionItem item = it.next();
-				if (getDecoratedBottom(item.view) < 0 || getDecoratedTop(item.view) > height) {
-					removeAndRecycleView(item.view, recycler);
-					adapterPositionsByView.remove(item.view);
-					it.remove();
+			if (getViewType(view) != SectioningAdapter.TYPE_HEADER) {
+				if (getDecoratedBottom(view) < 0 || getDecoratedTop(view) > height) {
+					//Log.i(TAG, "recycleViewsOutOfBounds: recycling view at adapter position" + getViewAdapterPosition(view));
+					viewsToRecycle.add(view);
+				} else {
+					// this view is visible, therefore the section lives
+					remainingSections.add(getViewSectionIndex(view));
 				}
 			}
+		}
 
-			// recycle footer
-			if (section.footer != null) {
-				if (getDecoratedBottom(section.footer) < 0 || getDecoratedTop(section.footer) > height) {
-					removeAndRecycleView(section.footer, recycler);
-					adapterPositionsByView.remove(section.footer);
-					section.footer = null;
-					section.footerAdapterPosition = -1;
-				}
-			}
+		// second pass, for each "orphaned" header (a header who's section is completely recycled)
+		// we remove it if it's gone offscreen
 
-			// recycle ghost header
-			if (section.ghostHeader != null) {
-				if (getDecoratedBottom(section.ghostHeader) < 0 || getDecoratedTop(section.ghostHeader) > height) {
-					removeAndRecycleView(section.ghostHeader, recycler);
-					adapterPositionsByView.remove(section.ghostHeader);
-					section.ghostHeader = null;
-					section.ghostHeaderAdapterPosition = -1;
-				}
-			}
-
-			// recycle headers iff offscreen && all items and footers are recycled
-			if (section.header != null && section.footer == null && section.items.isEmpty()) {
-				float translationY = section.header.getTranslationY();
-				if ((getDecoratedBottom(section.header) + translationY) <= 0 || (getDecoratedTop(section.header) + translationY) >= height) {
-					removeAndRecycleView(section.header, recycler);
-					adapterPositionsByView.remove(section.header);
-					headerViews.remove(section.header);
-					section.header = null;
-					section.headerAdapterPosition = -1;
-
-					// reset the header position state
+		for (int i = 0; i < numChildren; i++) {
+			View view = getChildAt(i);
+			int sectionIndex = getViewSectionIndex(view);
+			if (getViewType(view) == SectioningAdapter.TYPE_HEADER && !remainingSections.contains(sectionIndex)) {
+				float translationY = view.getTranslationY();
+				if ((getDecoratedBottom(view) + translationY) < 0 || (getDecoratedTop(view) + translationY) > height) {
+					viewsToRecycle.add(view);
+					headerViews.remove(view);
 					headerPositionsBySection.remove(sectionIndex);
-
-					// if the actual header is offscreen, that means this section is entirely offscreen
-					// and we need to clean it up
-					sectionIndicesToRemove.add(sectionIndex);
 				}
 			}
 		}
 
-		// destroy any sections which are now empty
-		for (int sectionIndex : sectionIndicesToRemove) {
-			//Log.i(TAG, "recycleViewsOutOfBounds: deleting section: " + sectionIndex);
-			sections.remove(sectionIndex);
+		for (View view : viewsToRecycle) {
+			removeAndRecycleView(view, recycler);
 		}
+
 
 		// determine the adapter adapterPosition of first visible item
 		updateFirstAdapterPosition();
@@ -488,9 +387,10 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			View v = getChildAt(i);
 
 			// ignore headers
-			if (headerViews.contains(v)) {
+			if (getViewType(v) == SectioningAdapter.TYPE_HEADER) {
 				continue;
 			}
+
 			int t = getDecoratedTop(v);
 			if (t < top) {
 				top = t;
@@ -514,7 +414,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			View v = getChildAt(i);
 
 			// ignore headers
-			if (headerViews.contains(v)) {
+			if (getViewType(v) == SectioningAdapter.TYPE_HEADER) {
 				continue;
 			}
 
@@ -538,83 +438,126 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
 		View topmostView = getTopmostChildView();
 		if (topmostView != null) {
-			if (adapterPositionsByView.containsKey(topmostView)) {
-				firstAdapterPosition = adapterPositionsByView.get(topmostView);
-				return topmostView.getTop();
-			}
+			firstAdapterPosition = getViewAdapterPosition(topmostView);
+			return topmostView.getTop();
 		}
 
 		firstAdapterPosition = 0;
 		return getPaddingTop();
 	}
 
-	View getFirstViewAfterSection(Section section) {
+	View getFirstViewAfterSection(int sectionIndex) {
 
-		int sectionIndex = section.sectionIndex + 1;
-		Section nextSection = sections.get(sectionIndex);
-		while( nextSection != null) {
-
-			if (nextSection.ghostHeader != null) {
-				return nextSection.ghostHeader;
+		for (int i = 0, n = getChildCount(); i < n; i++) {
+			View v = getChildAt(i);
+			if (getViewType(v) != SectioningAdapter.TYPE_HEADER) {
+				if (getViewSectionIndex(v) == sectionIndex + 1) {
+					return v;
+				}
 			}
+		}
 
-			if (!nextSection.items.isEmpty()) {
-				return nextSection.items.get(0).view;
+		return null;
+	}
+
+	/**
+	 * Find the ghost header for the items in a given section
+	 *
+	 * @param sectionIndex the index of the section in question
+	 * @return the ghostHeader, if it's on-screen and hasn't been recycled
+	 */
+	@Nullable
+	View findSectionGhostHeader(int sectionIndex) {
+		for (int i = 0, n = getChildCount(); i < n; i++) {
+			View view = getChildAt(i);
+			if (getViewType(view) == SectioningAdapter.TYPE_GHOST_HEADER && getViewSectionIndex(view) == sectionIndex) {
+				return view;
 			}
-
-			if (nextSection.footer != null) {
-				return nextSection.footer;
-			}
-
-			sectionIndex++;
-			nextSection = sections.get(sectionIndex);
 		}
 
 		return null;
 	}
 
 	void updateHeaderPositions(RecyclerView.Recycler recycler) {
-		for (int i = 0, n = sections.size(); i < n; i++) {
 
-			Section section = sections.valueAt(i);
-			createSectionHeaderIfNeeded(recycler, section);
+		// first, for each section represented by the current list of items,
+		// ensure that the header for that section is extant
 
-			// if the adapter says this section has a header, we'll have it now
-			if (section.header != null) {
-
-				// header is always positioned at top
-				int left = getPaddingLeft();
-				int right = getWidth() - getPaddingRight();
-				int height = getDecoratedMeasuredHeight(section.header);
-				int top = getPaddingTop();
-				layoutDecorated(section.header, left, top, right, top + height);
-
-				HeaderPosition headerPosition = HeaderPosition.STICKY;
-
-				if (section.ghostHeader != null) {
-					int ghostHeaderTop = getDecoratedTop(section.ghostHeader);
-					if (ghostHeaderTop >= top) {
-						top = ghostHeaderTop;
-						headerPosition = HeaderPosition.NATURAL;
-					}
-				}
-
-				View nextView = getFirstViewAfterSection(section);
-				if (nextView != null) {
-					int nextViewTop = getDecoratedTop(nextView);
-					if (nextViewTop - height < top) {
-						top = nextViewTop - height;
-						headerPosition = HeaderPosition.TRAILING;
-					}
-				}
-
-				// now bring header to front of stack for overlap, and offset y for sticky positioning
-				section.header.bringToFront();
-				section.header.setTranslationY(top);
-
-				// notify adapter of positioning for this header
-				setHeaderPosition(section.sectionIndex, section.header, headerPosition);
+		Set<Integer> visitedSections = new HashSet<>();
+		for (int i = 0, n = getChildCount(); i < n; i++) {
+			View view = getChildAt(i);
+			int sectionIndex = getViewSectionIndex(view);
+			if (visitedSections.add(sectionIndex)) {
+				createSectionHeaderIfNeeded(recycler, sectionIndex);
 			}
+		}
+
+		// header is always positioned at top
+		int left = getPaddingLeft();
+		int right = getWidth() - getPaddingRight();
+		Set<View> headersToRecycle = new HashSet<>();
+
+		for (View headerView : headerViews) {
+			int sectionIndex = getViewSectionIndex(headerView);
+
+			// find first and last non-header views in this section
+			View ghostHeader = null;
+			View firstViewInNextSection = null;
+			for (int i = 0, n = getChildCount(); i < n; i++) {
+				View view = getChildAt(i);
+				int type = getViewType(view);
+				if (type == SectioningAdapter.TYPE_HEADER) {
+					continue;
+				}
+
+				int viewSectionIndex = getViewSectionIndex(view);
+				if (viewSectionIndex == sectionIndex) {
+					if (type == SectioningAdapter.TYPE_GHOST_HEADER) {
+						ghostHeader = view;
+					}
+				} else if (viewSectionIndex == sectionIndex + 1) {
+					if (firstViewInNextSection == null) {
+						firstViewInNextSection = view;
+					}
+				}
+			}
+
+			// first position header at top
+			int height = getDecoratedMeasuredHeight(headerView);
+			int top = getPaddingTop();
+			layoutDecorated(headerView, left, top, right, top + height);
+
+			// initial position mark
+			HeaderPosition headerPosition = HeaderPosition.STICKY;
+
+			if (ghostHeader != null) {
+				int ghostHeaderTop = getDecoratedTop(ghostHeader);
+				if (ghostHeaderTop >= top) {
+					top = ghostHeaderTop;
+					headerPosition = HeaderPosition.NATURAL;
+				}
+			}
+
+			if (firstViewInNextSection != null) {
+				int nextViewTop = getDecoratedTop(firstViewInNextSection);
+				if (nextViewTop - height < top) {
+					top = nextViewTop - height;
+					headerPosition = HeaderPosition.TRAILING;
+				}
+			}
+
+			// now bring header to front of stack for overlap, and offset y for sticky positioning
+			headerView.bringToFront();
+			headerView.setTranslationY(top);
+
+			// notify adapter of positioning for this header
+			setHeaderPosition(sectionIndex, headerView, headerPosition);
+		}
+
+		// dispose any headers which weren't positionable
+		for (View headerView : headersToRecycle) {
+			headerViews.remove(headerView);
+			removeAndRecycleView(headerView, recycler);
 		}
 	}
 
@@ -636,20 +579,24 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		}
 	}
 
-	ViewTagInfo getViewTagInfoForView(View view) {
-		return getViewTagInfoForView(view, null);
+	int getViewType(View view) {
+		return (int) view.getTag(R.id.sectioning_adapter_tag_key_view_type);
 	}
 
-	ViewTagInfo getViewTagInfoForView(View view, ViewTagInfo viewTagInfo) {
-		if (viewTagInfo == null) {
-			viewTagInfo = new ViewTagInfo();
-		}
+	int getViewSectionIndex(View view) {
+		return (int) view.getTag(R.id.sectioning_adapter_tag_key_view_section);
+	}
 
-		viewTagInfo.type = (int) view.getTag(R.id.sectioning_adapter_tag_key_view_type);
-		viewTagInfo.section = (int) view.getTag(R.id.sectioning_adapter_tag_key_view_section);
-		viewTagInfo.lengthOfSection = (int) view.getTag(R.id.sectioning_adapter_tag_key_view_length_of_section);
-		viewTagInfo.positionInSection = (int) view.getTag(R.id.sectioning_adapter_tag_key_view_position_in_section);
-		return viewTagInfo;
+	int getViewAdapterPosition(View view) {
+		return (int) view.getTag(R.id.sectioning_adapter_tag_key_view_adapter_position);
+	}
+
+	int getViewSectionLength(View view) {
+		return (int) view.getTag(R.id.sectioning_adapter_tag_key_view_length_of_section);
+	}
+
+	int getViewPositionInSection(View view) {
+		return (int) view.getTag(R.id.sectioning_adapter_tag_key_view_position_in_section);
 	}
 
 }

@@ -21,6 +21,7 @@ public class AddressBookAdapter extends SectioningAdapter {
 
 	private static final String TAG = AddressBookAdapter.class.getSimpleName();
 	Locale locale = Locale.getDefault();
+	boolean debugAppearance = false;
 
 	private class Section {
 		String alpha;
@@ -126,11 +127,18 @@ public class AddressBookAdapter extends SectioningAdapter {
 		ivh.personNameTextView.setText(capitalize(person.name.last) + ", " + capitalize(person.name.first));
 	}
 
+	@SuppressLint("SetTextI18n")
 	@Override
 	public void onBindHeaderViewHolder(SectioningAdapter.HeaderViewHolder viewHolder, int sectionIndex) {
 		Section s = sections.get(sectionIndex);
 		HeaderViewHolder hvh = (HeaderViewHolder) viewHolder;
-		hvh.titleTextView.setText(s.alpha);
+
+		if (debugAppearance) {
+			hvh.itemView.setBackgroundColor(0x55ffffff);
+			hvh.titleTextView.setText(pad(sectionIndex * 2) + s.alpha);
+		} else {
+			hvh.titleTextView.setText(s.alpha);
+		}
 	}
 
 	private String capitalize(String s) {
@@ -139,6 +147,14 @@ public class AddressBookAdapter extends SectioningAdapter {
 		}
 
 		return "";
+	}
+
+	private String pad(int spaces) {
+		StringBuffer b = new StringBuffer();
+		for (int i = 0; i < spaces; i++) {
+			b.append(' ');
+		}
+		return b.toString();
 	}
 
 }

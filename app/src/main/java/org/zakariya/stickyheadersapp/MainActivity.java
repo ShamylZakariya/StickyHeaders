@@ -201,14 +201,16 @@ public class MainActivity extends AppCompatActivity {
 			return "Address Book";
 		}
 
+		RandomUserLoader getRandomUserLoader() {
+			return ((StickyHeadersDemoApp) getContext().getApplicationContext()).getRandomUserLoader();
+		}
+
 		@Nullable
 		@Override
 		public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 			final View v = super.onCreateView(inflater, container, savedInstanceState);
 
-			StickyHeaderLayoutManager stickyHeaderLayoutManager = new StickyHeaderLayoutManager();
-			recyclerView.setLayoutManager(stickyHeaderLayoutManager);
-			recyclerView.setLayoutManager(stickyHeaderLayoutManager);
+			recyclerView.setLayoutManager(new StickyHeaderLayoutManager());
 
 			final AddressBookAdapter adapter = new AddressBookAdapter();
 			recyclerView.setAdapter(adapter);
@@ -216,8 +218,7 @@ public class MainActivity extends AppCompatActivity {
 			progressBar.setVisibility(View.VISIBLE);
 			recyclerView.setVisibility(View.GONE);
 
-			RandomUserLoader randomUserLoader = ((StickyHeadersDemoApp) getContext().getApplicationContext()).getRandomUserLoader();
-			randomUserLoader.load(new RandomUserLoader.OnLoadCallback() {
+			getRandomUserLoader().load(new RandomUserLoader.OnLoadCallback() {
 				@Override
 				public void onRandomUsersDidLoad(List<Person> randomUsers) {
 					progressBar.setVisibility(View.GONE);
@@ -229,7 +230,9 @@ public class MainActivity extends AppCompatActivity {
 				public void onFailure(Throwable t) {
 					progressBar.setVisibility(View.GONE);
 					recyclerView.setVisibility(View.GONE);
-					Snackbar.make(v, "Unable to load fake people", Snackbar.LENGTH_LONG).show();
+					if (v != null) {
+						Snackbar.make(v, "Unable to load fake people", Snackbar.LENGTH_LONG).show();
+					}
 				}
 			});
 
