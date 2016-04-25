@@ -76,8 +76,8 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		public Fragment getItem(int position) {
 			switch(position) {
-				case 0: return new AddressBookDemo();
-				case 1: return new StickySectionHeadersDemo();
+				case 0: return new StickySectionHeadersDemo();
+				case 1: return new AddressBookDemo();
 				case 2: return new SectionsDemo();
 				default: return null;
 			}
@@ -86,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		public CharSequence getPageTitle(int position) {
 			switch (position) {
-				case 0: return AddressBookDemo.demoName();
-				case 1: return StickySectionHeadersDemo.demoName();
+				case 0: return StickySectionHeadersDemo.demoName();
+				case 1: return AddressBookDemo.demoName();
 				case 2: return SectionsDemo.demoName();
 				default: return null;
 			}

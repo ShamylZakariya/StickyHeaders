@@ -521,10 +521,8 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 				}
 			}
 
-			// first position header at top
 			int height = getDecoratedMeasuredHeight(headerView);
 			int top = getPaddingTop();
-			layoutDecorated(headerView, left, top, right, top + height);
 
 			// initial position mark
 			HeaderPosition headerPosition = HeaderPosition.STICKY;
@@ -545,9 +543,9 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 				}
 			}
 
-			// now bring header to front of stack for overlap, and offset y for sticky positioning
+			// now bring header to front of stack for overlap, and position it
 			headerView.bringToFront();
-			headerView.setTranslationY(top);
+			layoutDecorated(headerView, left, top, right, top + height);
 
 			// notify adapter of positioning for this header
 			setHeaderPosition(sectionIndex, headerView, headerPosition);

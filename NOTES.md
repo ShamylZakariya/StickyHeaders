@@ -1,18 +1,8 @@
 #BUGS
-	- headers aren't animated when recycler view runs addition/removal animations
-	- addressbook demo loses rows when scrolling, sometimes. wtf
 
 #TESTING:
 	- need to ensure this works fine for adapters which don't have footer views and which don't have header views (!!!)
 	- need to test against different top/bottom padding scenarios
-
-
-#THOUGHTS ON ALTERNATE APPROACHES
-
-I could subclass the default linear layout manager. I'd have my adapter set a tag on headers (using ids from a values.xml in the library) that marks them as special. All items (including ghost headers) would get a tag that marks which section they belong to.
-
-In onLayoutChildren and scrollVerticallyBy I would call my positionHeaders method which would work similarly to the current one. It would walk the children of the RV, find which sections are represented via tags, and vend if necessary the header (keeping headers in a hashmap like now) and then position them. I suppose I would allow natural recycling to happen, so I'd want to use weak references in my hashmap.
-
 
 
 #RecyclerView.LayoutManager
