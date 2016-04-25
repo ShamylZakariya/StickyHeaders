@@ -495,7 +495,6 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		// header is always positioned at top
 		int left = getPaddingLeft();
 		int right = getWidth() - getPaddingRight();
-		Set<View> headersToRecycle = new HashSet<>();
 
 		for (View headerView : headerViews) {
 			int sectionIndex = getViewSectionIndex(headerView);
@@ -552,12 +551,6 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
 			// notify adapter of positioning for this header
 			setHeaderPosition(sectionIndex, headerView, headerPosition);
-		}
-
-		// dispose any headers which weren't positionable
-		for (View headerView : headersToRecycle) {
-			headerViews.remove(headerView);
-			removeAndRecycleView(headerView, recycler);
 		}
 	}
 
