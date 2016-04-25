@@ -2,8 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
 	<item
+		android:id="@+id/aboutMenuItem"
+		android:title="@string/menu_item_about"
+		app:showAsAction="ifRoom"
+		/>
+
+	<!-- make this visible to show the reload button which is useful in debugging -->
+	<item
 		android:id="@+id/reloadMenuItem"
 		android:title="@string/menu_item_reload"
 	    app:showAsAction="ifRoom"
+	    android:visible="false"
 	    />
 </menu>

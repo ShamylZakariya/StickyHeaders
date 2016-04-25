@@ -9,5 +9,13 @@
 	<string name="action_cancel">Cancel</string>
 
 	<string name="menu_item_reload">Reload</string>
+	<string name="menu_item_about">About</string>
+
+	<string name="about_title">About</string>
+	<string name="about_adapter_title">SectioningAdapter</string>
+	<string name="about_adapter_text">SectioningAdapter is a simple RecyclerView.Adapter subclass which allows for items to be grouped into sections. Each section may have an optional header and footer, as well as any number of items. SectioningAdapter is designed for use with StickyHeaderLayoutManager, but works fine with a vanilla RecyclerView.LinearLayoutManager</string>
+
+	<string name="about_layout_title">StickyHeaderLayoutManager</string>
+	<string name="about_layout_text">The StickyHeaderLayoutManager is a simple RecyclerView.LayoutManager designed for use with the SectioningAdapter. It works like an iOS UITableView where section titles are fixed to the top of the scrollview when content is scrolled up. Its very useful for scenarios like address books.</string>
 
 </resources>

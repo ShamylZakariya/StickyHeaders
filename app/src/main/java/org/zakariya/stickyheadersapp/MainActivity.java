@@ -1,5 +1,6 @@
 package org.zakariya.stickyheadersapp;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -33,7 +34,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-	private static final String TAG = "MainActivity";
+	private static final String TAG = MainActivity.class.getSimpleName();
 
 	TabLayout tabs;
 	ViewPager viewPager;
@@ -62,6 +63,10 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+			case R.id.aboutMenuItem:
+				Intent intent = new Intent(this, AboutActivity.class);
+				startActivity(intent);
+				return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -76,8 +81,8 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		public Fragment getItem(int position) {
 			switch(position) {
-				case 0: return new StickySectionHeadersDemo();
-				case 1: return new AddressBookDemo();
+				case 0: return new AddressBookDemo();
+				case 1: return new StickySectionHeadersDemo();
 				case 2: return new SectionsDemo();
 				default: return null;
 			}
@@ -86,8 +91,8 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		public CharSequence getPageTitle(int position) {
 			switch (position) {
-				case 0: return StickySectionHeadersDemo.demoName();
-				case 1: return AddressBookDemo.demoName();
+				case 0: return AddressBookDemo.demoName();
+				case 1: return StickySectionHeadersDemo.demoName();
 				case 2: return SectionsDemo.demoName();
 				default: return null;
 			}
