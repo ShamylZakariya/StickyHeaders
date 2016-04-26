@@ -6,6 +6,7 @@
 	<color name="actionButton">#dddddd</color>
 	<color name="windowBackground">#fafafa</color>
 	<color name="textLight">#dddddd</color>
+	<color name="textMedium">#999999</color>
 	<color name="divider">#dddddd</color>
 
 	<color name="tabTextDefault">#afff</color>

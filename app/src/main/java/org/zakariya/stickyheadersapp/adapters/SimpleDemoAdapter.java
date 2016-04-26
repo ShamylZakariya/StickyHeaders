@@ -1,7 +1,6 @@
 package org.zakariya.stickyheadersapp.adapters;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -194,21 +193,21 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 	@Override
 	public ItemViewHolder onCreateItemViewHolder(ViewGroup parent) {
 		LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-		View v = inflater.inflate(R.layout.list_item_simple, parent, false);
+		View v = inflater.inflate(R.layout.list_item_simple_item, parent, false);
 		return new ItemViewHolder(v);
 	}
 
 	@Override
 	public HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
 		LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-		View v = inflater.inflate(R.layout.list_item_header_simple, parent, false);
+		View v = inflater.inflate(R.layout.list_item_simple_header, parent, false);
 		return new HeaderViewHolder(v);
 	}
 
 	@Override
 	public FooterViewHolder onCreateFooterViewHolder(ViewGroup parent) {
 		LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-		View v = inflater.inflate(R.layout.list_item_footer_simple, parent, false);
+		View v = inflater.inflate(R.layout.list_item_simple_footer, parent, false);
 		return new FooterViewHolder(v);
 	}
 

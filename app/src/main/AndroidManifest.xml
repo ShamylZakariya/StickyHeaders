@@ -12,7 +12,8 @@
 		android:supportsRtl="true"
 		android:theme="@style/AppTheme"
 		android:launchMode="singleTop">
-		<activity android:name="org.zakariya.stickyheadersapp.MainActivity">
+
+		<activity android:name=".ui.MainActivity">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 				<category android:name="android.intent.category.LAUNCHER"/>
@@ -20,13 +21,33 @@
 		</activity>
 
 		<activity
-			android:name=".AboutActivity"
-			android:parentActivityName=".MainActivity"
+			android:name=".ui.AddressBookDemoActivity"
+			android:parentActivityName=".ui.MainActivity"
 			android:launchMode="singleTop"
-			android:label="@string/about_title">
+			android:label="@string/title_address_book_demo">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
-			    android:value=".MainActivity"/>
+				android:value=".ui.MainActivity"/>
+		</activity>
+
+		<activity
+			android:name=".ui.HeaderCallbacksDemoActivity"
+			android:parentActivityName=".ui.MainActivity"
+			android:launchMode="singleTop"
+			android:label="@string/title_simple_demo">
+			<meta-data
+				android:name="android.support.PARENT_ACTIVITY"
+				android:value=".ui.MainActivity"/>
+		</activity>
+
+		<activity
+			android:name=".ui.SectioningAdapterDemoActivity"
+			android:parentActivityName=".ui.MainActivity"
+			android:launchMode="singleTop"
+			android:label="@string/title_sectioning_adapter_demo">
+			<meta-data
+				android:name="android.support.PARENT_ACTIVITY"
+				android:value=".ui.MainActivity"/>
 		</activity>
 
 	</application>

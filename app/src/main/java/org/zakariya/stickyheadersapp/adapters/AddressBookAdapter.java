@@ -107,14 +107,14 @@ public class AddressBookAdapter extends SectioningAdapter {
 	@Override
 	public ItemViewHolder onCreateItemViewHolder(ViewGroup parent) {
 		LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-		View v = inflater.inflate(R.layout.list_item_person_addressbook, parent, false);
+		View v = inflater.inflate(R.layout.list_item_addressbook_person, parent, false);
 		return new ItemViewHolder(v);
 	}
 
 	@Override
 	public HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
 		LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-		View v = inflater.inflate(R.layout.list_item_header_addressbook, parent, false);
+		View v = inflater.inflate(R.layout.list_item_addressbook_header, parent, false);
 		return new HeaderViewHolder(v);
 	}
 
