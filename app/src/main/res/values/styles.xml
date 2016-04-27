@@ -9,4 +9,9 @@
 		<item name="android:windowBackground">@color/windowBackground</item>
 	</style>
 
+	<style name="ToolBarWithNavigationBack">
+		<item name="navigationIcon">@drawable/ic_arrow_back_white_24dp</item>
+	</style>
+
+
 </resources>

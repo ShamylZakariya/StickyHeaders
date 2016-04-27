@@ -18,6 +18,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="?attr/actionBarSize"
 			app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+		    style="@style/ToolBarWithNavigationBack"
 			/>
 
 	</android.support.design.widget.AppBarLayout>

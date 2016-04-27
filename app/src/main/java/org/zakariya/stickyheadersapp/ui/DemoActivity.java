@@ -1,13 +1,13 @@
 package org.zakariya.stickyheadersapp.ui;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ProgressBar;
 
 import org.zakariya.stickyheaders.SectioningAdapter;
@@ -32,10 +32,14 @@ public class DemoActivity extends AppCompatActivity {
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
+		if (toolbar != null) {
+			toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+				@Override public void onClick(View v) {
+					onBackPressed();
+				}
+			});
 		}
+
 	}
 
 	@Override
@@ -48,10 +52,6 @@ public class DemoActivity extends AppCompatActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
-			case android.R.id.home:
-				finish();
-				return true;
-
 			case R.id.reloadMenuItem:
 				RecyclerView.Adapter adapter = recyclerView.getAdapter();
 				if (adapter instanceof SectioningAdapter){
