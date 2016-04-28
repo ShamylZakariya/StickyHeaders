@@ -88,6 +88,7 @@ public class RandomUserLoader {
 					}
 
 				}
+				onLoadCallbacks.clear();
 				loading = false;
 			}
 
@@ -97,6 +98,7 @@ public class RandomUserLoader {
 				for (OnLoadCallback c : onLoadCallbacks) {
 					c.onFailure(t);
 				}
+				onLoadCallbacks.clear();
 				loading = false;
 			}
 		});
