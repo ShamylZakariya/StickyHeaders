@@ -31,4 +31,7 @@
 	<string name="demo_list_item_sections_title">SectioningAdapter</string>
 	<string name="demo_list_item_sections_description">Demonstrates that SectioningAdapter can be used with a vanilla RecyclerView.LinearLayoutManager</string>
 
+	<string name="demo_addressbook_load_error_action">Info</string>
+	<string name="demo_addressbook_load_error_dialog_title">Whoops</string>
+
 </resources>
