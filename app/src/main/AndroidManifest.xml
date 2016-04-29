@@ -9,11 +9,13 @@
 		android:allowBackup="true"
 		android:icon="@mipmap/ic_launcher"
 		android:label="@string/app_name"
+		android:launchMode="singleTop"
 		android:supportsRtl="true"
-		android:theme="@style/AppTheme"
-		android:launchMode="singleTop">
+		android:theme="@style/AppTheme">
 
-		<activity android:name=".ui.MainActivity">
+		<activity
+			android:name=".ui.MainActivity"
+			android:theme="@style/AppTheme.NoActionBar">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 				<category android:name="android.intent.category.LAUNCHER"/>
@@ -22,9 +24,10 @@
 
 		<activity
 			android:name=".ui.AddressBookDemoActivity"
-			android:parentActivityName=".ui.MainActivity"
+			android:theme="@style/AppTheme.NoActionBar"
+			android:label="@string/title_address_book_demo"
 			android:launchMode="singleTop"
-			android:label="@string/title_address_book_demo">
+			android:parentActivityName=".ui.MainActivity">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value=".ui.MainActivity"/>
@@ -32,9 +35,10 @@
 
 		<activity
 			android:name=".ui.HeaderCallbacksDemoActivity"
-			android:parentActivityName=".ui.MainActivity"
+			android:theme="@style/AppTheme.NoActionBar"
+			android:label="@string/title_simple_demo"
 			android:launchMode="singleTop"
-			android:label="@string/title_simple_demo">
+			android:parentActivityName=".ui.MainActivity">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value=".ui.MainActivity"/>
@@ -42,9 +46,10 @@
 
 		<activity
 			android:name=".ui.SectioningAdapterDemoActivity"
-			android:parentActivityName=".ui.MainActivity"
+			android:theme="@style/AppTheme.NoActionBar"
+			android:label="@string/title_sectioning_adapter_demo"
 			android:launchMode="singleTop"
-			android:label="@string/title_sectioning_adapter_demo">
+			android:parentActivityName=".ui.MainActivity">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value=".ui.MainActivity"/>

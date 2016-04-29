@@ -395,9 +395,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * Never directly call notifyDataSetChanged.
 	 */
 	public void notifyAllSectionsDataSetChanged() {
-		if (sections == null) {
-			buildSectionIndex();
-		}
+		buildSectionIndex();
 		notifyDataSetChanged();
 	}
 
