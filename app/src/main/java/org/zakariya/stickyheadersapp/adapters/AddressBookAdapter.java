@@ -19,7 +19,6 @@ import java.util.Locale;
  */
 public class AddressBookAdapter extends SectioningAdapter {
 
-	private static final String TAG = AddressBookAdapter.class.getSimpleName();
 	Locale locale = Locale.getDefault();
 	boolean debugAppearance = false;
 
@@ -150,7 +149,7 @@ public class AddressBookAdapter extends SectioningAdapter {
 	}
 
 	private String pad(int spaces) {
-		StringBuffer b = new StringBuffer();
+		StringBuilder b = new StringBuilder();
 		for (int i = 0; i < spaces; i++) {
 			b.append(' ');
 		}

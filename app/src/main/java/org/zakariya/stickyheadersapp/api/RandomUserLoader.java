@@ -68,7 +68,7 @@ public class RandomUserLoader {
 
 				if (!TextUtils.isEmpty(results.error)) {
 
-					Log.e(TAG, "onResponse: got empty list, and error message: " + results.error);
+					Log.e(TAG, "onResponse: error message: " + results.error);
 					for (OnLoadCallback c : onLoadCallbacks) {
 						c.onRandomUserLoadFailure(new Throwable(results.error));
 					}
