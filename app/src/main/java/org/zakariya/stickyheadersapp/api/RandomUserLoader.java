@@ -33,7 +33,7 @@ public class RandomUserLoader {
 
 	public interface OnLoadCallback {
 		void onRandomUsersDidLoad(List<Person> randomUsers);
-		void onFailure(Throwable t);
+		void onRandomUserLoadFailure(Throwable t);
 	}
 
 	public RandomUserLoader() {
@@ -70,7 +70,7 @@ public class RandomUserLoader {
 
 					Log.e(TAG, "onResponse: got empty list, and error message: " + results.error);
 					for (OnLoadCallback c : onLoadCallbacks) {
-						c.onFailure(new Throwable(results.error));
+						c.onRandomUserLoadFailure(new Throwable(results.error));
 					}
 
 				} else if (results.results != null && results.results.length > 0) {
@@ -84,19 +84,21 @@ public class RandomUserLoader {
 
 					Log.e(TAG, "onResponse: got empty list, and no error message from API");
 					for (OnLoadCallback c : onLoadCallbacks) {
-						c.onFailure(new Throwable("No data received"));
+						c.onRandomUserLoadFailure(new Throwable("No data received"));
 					}
 
 				}
+				onLoadCallbacks.clear();
 				loading = false;
 			}
 
 			@Override
 			public void onFailure(Call<RandomUserResults> call, Throwable t) {
-				Log.e(TAG, "onFailure: error: " + t.toString() );
+				Log.e(TAG, "onRandomUserLoadFailure: error: " + t.toString() );
 				for (OnLoadCallback c : onLoadCallbacks) {
-					c.onFailure(t);
+					c.onRandomUserLoadFailure(t);
 				}
+				onLoadCallbacks.clear();
 				loading = false;
 			}
 		});
