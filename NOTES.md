@@ -1,6 +1,19 @@
 #BUGS
 
-	When deleting a section, the section's header may not be removed from the headers list
+	SectioningAdapter::notifySectionRemoved is buggy
+	 - to reproduce, load StickyHeaderCallbacks, scroll so section 2 is near top and section 3 is just visible and click X
+	 onLayoutChildren is called, and header for section 3 is NOT repositioned.
+	 if you hit the refresh icon, onLayoutChildren is called AGAIN, and the header is correctly positioned
+	 some state is different between the two calls
+	 
+	 SectioningAdapter::notifySectionItemRemoved is also buggy
+	 
+	 The problem clearly lies with StickyHeaderLayoutManager, not with SectioningAdapter, since using SectioningAdapter with a LinearLayoutManager works fine for both above operations.
+	 
+	 
+	 Am attempting a rewrite of onLayoutChildren where I don't query the adapter
+	    it mostly works, but headers which are not the topmost are placed in sticky position...
+	 
 
 #TESTING:
 	- need to ensure this works fine for adapters which don't have footer views and which don't have header views (!!!)
