@@ -107,37 +107,80 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		// walk through adapter starting at firstAdapterPosition stacking each vended item
 		for (int adapterPosition = firstAdapterPosition; adapterPosition < state.getItemCount(); adapterPosition++) {
 
-			int itemViewType = adapter.getItemViewType(adapterPosition);
-
-			// skip headers - they're lazily created on demand
-			if (itemViewType == SectioningAdapter.TYPE_HEADER) {
-				continue;
-			}
-
 			View v = recycler.getViewForPosition(adapterPosition);
 			addView(v);
 			measureChildWithMargins(v, 0, 0);
 
-			if (itemViewType == SectioningAdapter.TYPE_GHOST_HEADER) {
+			int itemViewType = getViewType(v);
+			if (itemViewType == SectioningAdapter.TYPE_HEADER) {
+				headerViews.add(v);
 
-				// ghost header is sized to same height as the actual header
-				// but to do so, we need to ensure actual header has been created
-				int sectionIndex = adapter.getSectionForAdapterPosition(adapterPosition);
-				View header = createSectionHeaderIfNeeded(recycler, sectionIndex);
+				// use the header's height
+				height = getDecoratedMeasuredHeight(v);
+				layoutDecorated(v, left, top, right, top + height);
 
-				measureChildWithMargins(header, 0, 0);
-				height = getDecoratedMeasuredHeight(header);
+				// we need to vend the ghost header and position/size it same as the actual header
+				adapterPosition++;
+				View ghostHeader = recycler.getViewForPosition(adapterPosition);
+				addView(ghostHeader);
+				layoutDecorated(ghostHeader, left, top, right, top + height);
+			} else if (itemViewType == SectioningAdapter.TYPE_GHOST_HEADER) {
+
+				// we need to back up and get the header for this ghostHeader
+				View headerView = recycler.getViewForPosition(adapterPosition-1);
+				headerViews.add(headerView);
+				addView(headerView);
+				measureChildWithMargins(headerView, 0, 0);
+				height = getDecoratedMeasuredHeight(headerView);
+
+				layoutDecorated(headerView, left, top, right, top + height);
+				layoutDecorated(v, left, top, right, top + height);
+
 			} else {
 				height = getDecoratedMeasuredHeight(v);
+				layoutDecorated(v, left, top, right, top + height);
 			}
 
-			layoutDecorated(v, left, top, right, top + height);
 			top += height;
 
 			// if the item we just laid out falls off the bottom of the view, we're done
 			if (v.getBottom() >= parentBottom) {
 				break;
 			}
+
+			///////////////////////////////
+
+//			int itemViewType = adapter.getItemViewType(adapterPosition);
+//
+//			// skip headers - they're lazily created on demand
+//			if (itemViewType == SectioningAdapter.TYPE_HEADER) {
+//				continue;
+//			}
+//
+//			View v = recycler.getViewForPosition(adapterPosition);
+//			addView(v);
+//			measureChildWithMargins(v, 0, 0);
+//
+//			if (itemViewType == SectioningAdapter.TYPE_GHOST_HEADER) {
+//
+//				// ghost header is sized to same height as the actual header
+//				// but to do so, we need to ensure actual header has been created
+//				int sectionIndex = adapter.getSectionForAdapterPosition(adapterPosition);
+//				View header = createSectionHeaderIfNeeded(recycler, sectionIndex);
+//
+//				measureChildWithMargins(header, 0, 0);
+//				height = getDecoratedMeasuredHeight(header);
+//			} else {
+//				height = getDecoratedMeasuredHeight(v);
+//			}
+//
+//			layoutDecorated(v, left, top, right, top + height);
+//			top += height;
+//
+//			// if the item we just laid out falls off the bottom of the view, we're done
+//			if (v.getBottom() >= parentBottom) {
+//				break;
+//			}
 		}
 
 		// put headers in sticky positions if necessary

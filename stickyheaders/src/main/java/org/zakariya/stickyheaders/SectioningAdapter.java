@@ -27,10 +27,10 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 
 	private static final String TAG = "SectioningAdapter";
 
-	public static final int TYPE_ITEM = 0;
-	public static final int TYPE_HEADER = 1;
-	public static final int TYPE_FOOTER = 2;
-	static final int TYPE_GHOST_HEADER = 3; // not necessary to be visible externally
+	public static final int TYPE_HEADER = 0;
+	public static final int TYPE_GHOST_HEADER = 1;
+	public static final int TYPE_ITEM = 2;
+	public static final int TYPE_FOOTER = 3;
 
 	private class Section {
 		int adapterPosition;    // adapterPosition of first item (the header) of this sections
