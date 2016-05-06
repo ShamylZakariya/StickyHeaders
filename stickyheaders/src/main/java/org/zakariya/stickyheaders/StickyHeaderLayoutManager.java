@@ -147,40 +147,6 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			if (v.getBottom() >= parentBottom) {
 				break;
 			}
-
-			///////////////////////////////
-
-//			int itemViewType = adapter.getItemViewType(adapterPosition);
-//
-//			// skip headers - they're lazily created on demand
-//			if (itemViewType == SectioningAdapter.TYPE_HEADER) {
-//				continue;
-//			}
-//
-//			View v = recycler.getViewForPosition(adapterPosition);
-//			addView(v);
-//			measureChildWithMargins(v, 0, 0);
-//
-//			if (itemViewType == SectioningAdapter.TYPE_GHOST_HEADER) {
-//
-//				// ghost header is sized to same height as the actual header
-//				// but to do so, we need to ensure actual header has been created
-//				int sectionIndex = adapter.getSectionForAdapterPosition(adapterPosition);
-//				View header = createSectionHeaderIfNeeded(recycler, sectionIndex);
-//
-//				measureChildWithMargins(header, 0, 0);
-//				height = getDecoratedMeasuredHeight(header);
-//			} else {
-//				height = getDecoratedMeasuredHeight(v);
-//			}
-//
-//			layoutDecorated(v, left, top, right, top + height);
-//			top += height;
-//
-//			// if the item we just laid out falls off the bottom of the view, we're done
-//			if (v.getBottom() >= parentBottom) {
-//				break;
-//			}
 		}
 
 		// put headers in sticky positions if necessary
