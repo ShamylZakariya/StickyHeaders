@@ -14,7 +14,7 @@ import org.zakariya.stickyheaders.SectioningAdapter;
 import org.zakariya.stickyheadersapp.R;
 
 /**
- * Created by shamyl on 4/26/16.
+ * Base activity for StickyHeadersApp demos
  */
 public class DemoActivity extends AppCompatActivity {
 

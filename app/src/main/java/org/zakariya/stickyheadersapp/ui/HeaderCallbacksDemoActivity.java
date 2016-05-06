@@ -2,7 +2,6 @@ package org.zakariya.stickyheadersapp.ui;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
 
@@ -10,7 +9,9 @@ import org.zakariya.stickyheaders.StickyHeaderLayoutManager;
 import org.zakariya.stickyheadersapp.adapters.SimpleDemoAdapter;
 
 /**
- * Created by shamyl on 4/26/16.
+ * Demonstrates use of StickyHeaderLayoutManager::setHeaderPositionChangedCallback
+ * to change appearance of a header when it's "sticky" vs when its in its natural position.
+ * Here we're using elevation to cast a small shadow from sticky headers.
  */
 public class HeaderCallbacksDemoActivity extends DemoActivity {
 

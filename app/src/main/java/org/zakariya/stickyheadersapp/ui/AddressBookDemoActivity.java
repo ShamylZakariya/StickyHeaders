@@ -16,7 +16,8 @@ import org.zakariya.stickyheadersapp.model.Person;
 import java.util.List;
 
 /**
- * Created by shamyl on 4/26/16.
+ * Shows a fake addressbook listing, loaded from randomuser.me, where the people are sorted
+ * into sections by the first letter of last name.
  */
 public class AddressBookDemoActivity extends DemoActivity implements RandomUserLoader.OnLoadCallback {
 
@@ -41,10 +42,8 @@ public class AddressBookDemoActivity extends DemoActivity implements RandomUserL
 
 	@Override
 	public void onRandomUsersDidLoad(List<Person> randomUsers) {
-		Log.i(TAG, "onRandomUsersDidLoad: got users, length: " + randomUsers.size());
 		progressBar.setVisibility(View.GONE);
 		recyclerView.setVisibility(View.VISIBLE);
-
 		adapter.setPeople(randomUsers);
 	}
 

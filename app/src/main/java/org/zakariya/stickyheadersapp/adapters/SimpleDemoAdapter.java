@@ -15,12 +15,12 @@ import org.zakariya.stickyheadersapp.R;
 import java.util.ArrayList;
 
 /**
- * SimpleDemoAdapter
+ * SimpleDemoAdapter, just shows demo data
  */
 public class SimpleDemoAdapter extends SectioningAdapter {
 
 	private static final String TAG = SimpleDemoAdapter.class.getSimpleName();
-	private static final boolean useDebugColoration = false;
+	private static final boolean USE_DEBUG_APPEARANCE = true;
 
 	private class Section {
 		int index;
@@ -225,17 +225,19 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 	public void onBindHeaderViewHolder(SectioningAdapter.HeaderViewHolder viewHolder, int sectionIndex) {
 		Section s = sections.get(sectionIndex);
 		HeaderViewHolder hvh = (HeaderViewHolder) viewHolder;
-		hvh.textView.setText(s.header);
 		hvh.adapterPositionTextView.setText(Integer.toString(getAdapterPositionForSectionHeader(sectionIndex)));
 
-		if (useDebugColoration) {
+		if (USE_DEBUG_APPEARANCE) {
+			hvh.textView.setText(pad(sectionIndex * 2) + s.header);
 			viewHolder.itemView.setBackgroundColor(0x55FF9999);
+		} else {
+			hvh.textView.setText(s.header);
 		}
 	}
 
 	@Override
 	public void onBindGhostHeaderViewHolder(SectioningAdapter.GhostHeaderViewHolder viewHolder, int sectionIndex) {
-		if (useDebugColoration) {
+		if (USE_DEBUG_APPEARANCE) {
 			viewHolder.itemView.setBackgroundColor(0xFF9999FF);
 		}
 	}
@@ -247,6 +249,14 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 		FooterViewHolder fvh = (FooterViewHolder) viewHolder;
 		fvh.textView.setText(s.footer);
 		fvh.adapterPositionTextView.setText(Integer.toString(getAdapterPositionForSectionFooter(sectionIndex)));
+	}
+
+	private String pad(int spaces) {
+		StringBuilder b = new StringBuilder();
+		for (int i = 0; i < spaces; i++) {
+			b.append(' ');
+		}
+		return b.toString();
 	}
 
 }
