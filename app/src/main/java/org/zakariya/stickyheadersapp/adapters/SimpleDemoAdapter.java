@@ -19,8 +19,8 @@ import java.util.ArrayList;
  */
 public class SimpleDemoAdapter extends SectioningAdapter {
 
-	private static final String TAG = SimpleDemoAdapter.class.getSimpleName();
-	private static final boolean USE_DEBUG_APPEARANCE = true;
+	static final String TAG = SimpleDemoAdapter.class.getSimpleName();
+	static final boolean USE_DEBUG_APPEARANCE = false;
 
 	private class Section {
 		int index;

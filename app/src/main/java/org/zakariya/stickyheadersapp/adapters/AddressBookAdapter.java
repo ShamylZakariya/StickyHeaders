@@ -21,7 +21,7 @@ import java.util.Locale;
 public class AddressBookAdapter extends SectioningAdapter {
 
 	Locale locale = Locale.getDefault();
-	boolean debugAppearance = false;
+	static final boolean USE_DEBUG_APPEARANCE = false;
 
 	private class Section {
 		String alpha;
@@ -133,7 +133,7 @@ public class AddressBookAdapter extends SectioningAdapter {
 		Section s = sections.get(sectionIndex);
 		HeaderViewHolder hvh = (HeaderViewHolder) viewHolder;
 
-		if (debugAppearance) {
+		if (USE_DEBUG_APPEARANCE) {
 			hvh.itemView.setBackgroundColor(0x55ffffff);
 			hvh.titleTextView.setText(pad(sectionIndex * 2) + s.alpha);
 		} else {
