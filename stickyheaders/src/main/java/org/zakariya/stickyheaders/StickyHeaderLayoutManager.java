@@ -396,6 +396,11 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		for (int i = 0, e = getChildCount(); i < e; i++) {
 			View v = getChildAt(i);
 
+			// ignore views which are being deleted
+			if (getViewAdapterPosition(v) == RecyclerView.NO_POSITION) {
+				continue;
+			}
+
 			// ignore headers
 			if (getViewType(v) == SectioningAdapter.TYPE_HEADER) {
 				continue;
@@ -422,6 +427,11 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
 		for (int i = 0, e = getChildCount(); i < e; i++) {
 			View v = getChildAt(i);
+
+			// ignore views which are being deleted
+			if (getViewAdapterPosition(v) == RecyclerView.NO_POSITION) {
+				continue;
+			}
 
 			// ignore headers
 			if (getViewType(v) == SectioningAdapter.TYPE_HEADER) {
@@ -581,11 +591,13 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	}
 
 	int getViewType(View view) {
-		return (int) view.getTag(R.id.sectioning_adapter_tag_key_view_type);
+		int adapterPosition = getViewAdapterPosition(view);
+		return adapter.getItemViewType(adapterPosition);
 	}
 
 	int getViewSectionIndex(View view) {
-		return (int) view.getTag(R.id.sectioning_adapter_tag_key_view_section);
+		int adapterPosition = getViewAdapterPosition(view);
+		return adapter.getSectionForAdapterPosition(adapterPosition);
 	}
 
 	SectioningAdapter.ViewHolder getViewViewHolder(View view) {
