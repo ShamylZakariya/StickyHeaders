@@ -459,7 +459,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		View topmostView = getTopmostChildView();
 		if (topmostView != null) {
 			firstAdapterPosition = getViewAdapterPosition(topmostView);
-			return topmostView.getTop();
+			return Math.min(topmostView.getTop(), getPaddingTop());
 		}
 
 		firstAdapterPosition = 0;
