@@ -77,7 +77,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	public void onAttachedToWindow(RecyclerView view) {
 		super.onAttachedToWindow(view);
 		try {
-			this.adapter = (SectioningAdapter) view.getAdapter();
+			adapter = (SectioningAdapter) view.getAdapter();
 		} catch (ClassCastException e) {
 			Log.e(TAG, "onAttachedToWindow: StickyHeaderLayoutManager must be used with a RecyclerView who's adapter is a kind of SectioningAdapter");
 		}
@@ -86,7 +86,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	@Override
 	public void onDetachedFromWindow(RecyclerView view, RecyclerView.Recycler recycler) {
 		super.onDetachedFromWindow(view, recycler);
-		this.adapter = null;
+		adapter = null;
 	}
 
 	@Override
@@ -124,6 +124,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 				View ghostHeader = recycler.getViewForPosition(adapterPosition);
 				addView(ghostHeader);
 				layoutDecorated(ghostHeader, left, top, right, top + height);
+
 			} else if (itemViewType == SectioningAdapter.TYPE_GHOST_HEADER) {
 
 				// we need to back up and get the header for this ghostHeader
@@ -587,16 +588,11 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		return (int) view.getTag(R.id.sectioning_adapter_tag_key_view_section);
 	}
 
+	SectioningAdapter.ViewHolder getViewViewHolder(View view) {
+		return (SectioningAdapter.ViewHolder) view.getTag(R.id.sectioning_adapter_tag_key_view_viewholder);
+	}
+
 	int getViewAdapterPosition(View view) {
-		return (int) view.getTag(R.id.sectioning_adapter_tag_key_view_adapter_position);
+		return getViewViewHolder(view).getAdapterPosition();
 	}
-
-	int getViewSectionLength(View view) {
-		return (int) view.getTag(R.id.sectioning_adapter_tag_key_view_length_of_section);
-	}
-
-	int getViewPositionInSection(View view) {
-		return (int) view.getTag(R.id.sectioning_adapter_tag_key_view_position_in_section);
-	}
-
 }
