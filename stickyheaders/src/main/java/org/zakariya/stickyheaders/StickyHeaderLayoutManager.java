@@ -1,6 +1,5 @@
 package org.zakariya.stickyheaders;
 
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -48,8 +47,13 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	private static final String TAG = StickyHeaderLayoutManager.class.getSimpleName();
 
 	SectioningAdapter adapter;
-	HashSet<View> headerViews = new HashSet<>(); // holds all the visible section headers
-	HashMap<Integer, HeaderPosition> headerPositionsBySection = new HashMap<>(); // holds the HeaderPosition for each header
+
+	// holds all the visible section headers
+	HashSet<View> headerViews = new HashSet<>();
+
+	// holds the HeaderPosition for each header
+	HashMap<Integer, HeaderPosition> headerPositionsBySection = new HashMap<>();
+
 	HeaderPositionChangedCallback headerPositionChangedCallback;
 
 	// adapter position of first (lowest-y-value) visible item.
@@ -466,38 +470,6 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		return getPaddingTop();
 	}
 
-	View getFirstViewAfterSection(int sectionIndex) {
-
-		for (int i = 0, n = getChildCount(); i < n; i++) {
-			View v = getChildAt(i);
-			if (getViewType(v) != SectioningAdapter.TYPE_HEADER) {
-				if (getViewSectionIndex(v) == sectionIndex + 1) {
-					return v;
-				}
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	 * Find the ghost header for the items in a given section
-	 *
-	 * @param sectionIndex the index of the section in question
-	 * @return the ghostHeader, if it's on-screen and hasn't been recycled
-	 */
-	@Nullable
-	View findSectionGhostHeader(int sectionIndex) {
-		for (int i = 0, n = getChildCount(); i < n; i++) {
-			View view = getChildAt(i);
-			if (getViewType(view) == SectioningAdapter.TYPE_GHOST_HEADER && getViewSectionIndex(view) == sectionIndex) {
-				return view;
-			}
-		}
-
-		return null;
-	}
-
 	void updateHeaderPositions(RecyclerView.Recycler recycler) {
 
 		// first, for each section represented by the current list of items,
@@ -568,11 +540,11 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			layoutDecorated(headerView, left, top, right, top + height);
 
 			// notify adapter of positioning for this header
-			setHeaderPosition(sectionIndex, headerView, headerPosition);
+			recordHeaderPositionAndNotify(sectionIndex, headerView, headerPosition);
 		}
 	}
 
-	void setHeaderPosition(int sectionIndex, View headerView, HeaderPosition newHeaderPosition) {
+	void recordHeaderPositionAndNotify(int sectionIndex, View headerView, HeaderPosition newHeaderPosition) {
 		if (headerPositionsBySection.containsKey(sectionIndex)) {
 			HeaderPosition currentHeaderPosition = headerPositionsBySection.get(sectionIndex);
 			if (currentHeaderPosition != newHeaderPosition) {
