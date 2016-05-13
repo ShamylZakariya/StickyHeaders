@@ -57,7 +57,10 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	HeaderPositionChangedCallback headerPositionChangedCallback;
 
 	// adapter position of first (lowest-y-value) visible item.
-	int firstAdapterPosition;
+	int firstViewAdapterPosition;
+
+	// top of first (lowest-y-value) visible item.
+	int firstViewTop;
 
 
 	public StickyHeaderLayoutManager() {
@@ -96,7 +99,8 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	@Override
 	public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
 
-		int top = updateFirstAdapterPosition();
+		updateFirstAdapterPosition();
+		int top = firstViewTop;
 
 		// RESET
 		headerViews.clear();
@@ -108,8 +112,8 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		int right = getWidth() - getPaddingRight();
 		int parentBottom = getHeight() - getPaddingBottom();
 
-		// walk through adapter starting at firstAdapterPosition stacking each vended item
-		for (int adapterPosition = firstAdapterPosition; adapterPosition < state.getItemCount(); adapterPosition++) {
+		// walk through adapter starting at firstViewAdapterPosition stacking each vended item
+		for (int adapterPosition = firstViewAdapterPosition; adapterPosition < state.getItemCount(); adapterPosition++) {
 
 			View v = recycler.getViewForPosition(adapterPosition);
 			addView(v);
@@ -220,30 +224,30 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
 				// vend next view above topView
 
-				if (firstAdapterPosition > 0 && scrolled > dy) {
-					firstAdapterPosition--;
+				if (firstViewAdapterPosition > 0 && scrolled > dy) {
+					firstViewAdapterPosition--;
 
 					// we're skipping headers. they should already be vended, but if we're vending a ghostHeader
 					// here an actual header will be vended if needed for measurement
-					int itemViewType = adapter.getItemViewType(firstAdapterPosition);
+					int itemViewType = adapter.getItemViewType(firstViewAdapterPosition);
 					boolean isHeader = itemViewType == SectioningAdapter.TYPE_HEADER;
 
 					// skip the header, move to next item above
 					if (isHeader) {
-						firstAdapterPosition--;
-						if (firstAdapterPosition < 0) {
+						firstViewAdapterPosition--;
+						if (firstViewAdapterPosition < 0) {
 							break;
 						}
 					}
 
-					View v = recycler.getViewForPosition(firstAdapterPosition);
+					View v = recycler.getViewForPosition(firstViewAdapterPosition);
 					addView(v, 0);
 
 					int bottom = getDecoratedTop(topView);
 					int top;
 					boolean isGhostHeader = itemViewType == SectioningAdapter.TYPE_GHOST_HEADER;
 					if (isGhostHeader) {
-						View header = createSectionHeaderIfNeeded(recycler, adapter.getSectionForAdapterPosition(firstAdapterPosition));
+						View header = createSectionHeaderIfNeeded(recycler, adapter.getSectionForAdapterPosition(firstViewAdapterPosition));
 						top = bottom - getDecoratedMeasuredHeight(header); // header is already measured
 					} else {
 						measureChildWithMargins(v, 0, 0);
@@ -323,6 +327,11 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 					break;
 				}
 			}
+		}
+
+		View topmostView = getTopmostChildView();
+		if (topmostView != null) {
+			firstViewTop = getDecoratedTop(topmostView);
 		}
 
 		updateHeaderPositions(recycler);
@@ -453,21 +462,33 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	}
 
 	/**
-	 * Updates firstAdapterPosition to the adapter position  of the highest item in the list - e.g., the
+	 * Updates firstViewAdapterPosition to the adapter position  of the highest item in the list - e.g., the
 	 * adapter position of the item with lowest y value in the list
 	 *
 	 * @return the y value of the topmost view in the layout, or paddingTop if empty
 	 */
 	int updateFirstAdapterPosition() {
 
-		View topmostView = getTopmostChildView();
-		if (topmostView != null) {
-			firstAdapterPosition = getViewAdapterPosition(topmostView);
-			return Math.min(topmostView.getTop(), getPaddingTop());
+		// we're empty
+		if (getChildCount() == 0) {
+			firstViewAdapterPosition = 0;
+			firstViewTop = getPaddingTop();
+			return firstViewTop;
 		}
 
-		firstAdapterPosition = 0;
-		return getPaddingTop();
+		View topmostView = getTopmostChildView();
+		if (topmostView != null) {
+			firstViewAdapterPosition = getViewAdapterPosition(topmostView);
+			firstViewTop = Math.min(topmostView.getTop(), getPaddingTop());
+			return firstViewTop;
+		}
+
+		// as far as I can tell, if notifyDataSetChanged is called, onLayoutChildren
+		// will be called, but all views will be marked as having NO_POSITION for
+		// adapterPosition, which means the above approach of finding the topmostChildView
+		// doesn't work. So, basically, leave firstViewAdapterPosition and firstViewTop
+		// alone.
+		return firstViewTop;
 	}
 
 	void updateHeaderPositions(RecyclerView.Recycler recycler) {
