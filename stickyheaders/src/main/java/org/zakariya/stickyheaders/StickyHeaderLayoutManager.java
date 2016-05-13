@@ -17,6 +17,8 @@ import java.util.Set;
  *
  * @see SectioningAdapter
  */
+
+@SuppressWarnings("unused")
 public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
 	public enum HeaderPosition {
