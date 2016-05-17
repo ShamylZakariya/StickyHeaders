@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import org.zakariya.stickyheaders.SectioningAdapter;
+import org.zakariya.stickyheadersapp.BuildConfig;
 import org.zakariya.stickyheadersapp.R;
 
 import java.util.ArrayList;
@@ -63,6 +64,12 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 			cloneButton.setOnClickListener(this);
 			deleteButton = (ImageButton) itemView.findViewById(R.id.deleteImageButton);
 			deleteButton.setOnClickListener(this);
+
+			if (!BuildConfig.DEBUG) {
+				cloneButton.setVisibility(View.GONE);
+				deleteButton.setVisibility(View.GONE);
+				adapterPositionTextView.setVisibility(View.GONE);
+			}
 		}
 
 		@Override
@@ -92,6 +99,12 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 			cloneButton.setOnClickListener(this);
 			deleteButton = (ImageButton) itemView.findViewById(R.id.deleteImageButton);
 			deleteButton.setOnClickListener(this);
+
+			if (!BuildConfig.DEBUG) {
+				cloneButton.setVisibility(View.GONE);
+				deleteButton.setVisibility(View.GONE);
+				adapterPositionTextView.setVisibility(View.GONE);
+			}
 		}
 
 		@Override
@@ -103,7 +116,6 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 			} else if (v == deleteButton) {
 				SimpleDemoAdapter.this.onDeleteSection(section);
 			}
-
 		}
 	}
 
@@ -115,6 +127,10 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 			super(itemView);
 			textView = (TextView) itemView.findViewById(R.id.textView);
 			adapterPositionTextView = (TextView) itemView.findViewById(R.id.adapterPositionTextView);
+
+			if (!BuildConfig.DEBUG) {
+				adapterPositionTextView.setVisibility(View.GONE);
+			}
 		}
 	}
 
