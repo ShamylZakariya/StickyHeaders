@@ -27,3 +27,8 @@ To use StickyHeaders, you need to do two things.
 
 You can use sectioning adapter with a normal `android.support.v7.widget.LinearLayoutManager`. it works fine, and could be a good way to implement a list like at the root of Android's Settings app.
 
+## Download
+
+```
+compile 'org.zakariya.stickyheaders:stickyheaders:0.5.0'
+```
