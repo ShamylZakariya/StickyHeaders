@@ -5,10 +5,14 @@ Adapter and LayoutManager for Android RecyclerView which enables sticky header p
 
 StickyHeaders are section headers in a recyclerview which are positioned "stickily" to the top of the scrollview during scrolling. A common use-case is an address book where the list of people's last names are grouped into sections by the first letter of the last name, and the header for each section shows that letter.
 
-For example:
+**For example:**
+
 ![AddressBookSample](readme-assets/video-addressbook.gif)
 
-StickyHeaders also supports a callback when a header becomes "sticky" or returns to normal positioning. For example, it is used here to set the elevation on the header to cast a subtle drop shadow when the header is in sticky position.
+StickyHeaders also supports a callback (`org.zakariya.stickyheaders.StickyHeaderLayoutManager.HeaderPositionChangedCallback`) when a header becomes "sticky" or returns to normal positioning. For example, it is used here to set the elevation on the header to cast a subtle drop shadow when the header is in sticky position.
+
+**For example:**
+
 ![CallbacksSample](readme-assets/video-callbacks.gif)
 
 ##Usage
