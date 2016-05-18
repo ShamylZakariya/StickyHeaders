@@ -10,7 +10,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import org.zakariya.stickyheaders.SectioningAdapter;
-import org.zakariya.stickyheadersapp.BuildConfig;
 import org.zakariya.stickyheadersapp.R;
 
 import java.util.ArrayList;
@@ -22,6 +21,7 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 
 	static final String TAG = SimpleDemoAdapter.class.getSimpleName();
 	static final boolean USE_DEBUG_APPEARANCE = false;
+	static final boolean SHOW_DEBUG_CONTROLS = false;
 
 	private class Section {
 		int index;
@@ -65,10 +65,10 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 			deleteButton = (ImageButton) itemView.findViewById(R.id.deleteImageButton);
 			deleteButton.setOnClickListener(this);
 
-			if (!BuildConfig.DEBUG) {
-				cloneButton.setVisibility(View.GONE);
-				deleteButton.setVisibility(View.GONE);
-				adapterPositionTextView.setVisibility(View.GONE);
+			if (!SHOW_DEBUG_CONTROLS) {
+				cloneButton.setVisibility(View.INVISIBLE);
+				deleteButton.setVisibility(View.INVISIBLE);
+				adapterPositionTextView.setVisibility(View.INVISIBLE);
 			}
 		}
 
@@ -100,10 +100,10 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 			deleteButton = (ImageButton) itemView.findViewById(R.id.deleteImageButton);
 			deleteButton.setOnClickListener(this);
 
-			if (!BuildConfig.DEBUG) {
-				cloneButton.setVisibility(View.GONE);
-				deleteButton.setVisibility(View.GONE);
-				adapterPositionTextView.setVisibility(View.GONE);
+			if (!SHOW_DEBUG_CONTROLS) {
+				cloneButton.setVisibility(View.INVISIBLE);
+				deleteButton.setVisibility(View.INVISIBLE);
+				adapterPositionTextView.setVisibility(View.INVISIBLE);
 			}
 		}
 
@@ -128,8 +128,8 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 			textView = (TextView) itemView.findViewById(R.id.textView);
 			adapterPositionTextView = (TextView) itemView.findViewById(R.id.adapterPositionTextView);
 
-			if (!BuildConfig.DEBUG) {
-				adapterPositionTextView.setVisibility(View.GONE);
+			if (!SHOW_DEBUG_CONTROLS) {
+				adapterPositionTextView.setVisibility(View.INVISIBLE);
 			}
 		}
 	}
