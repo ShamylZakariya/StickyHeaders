@@ -32,7 +32,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	public static final int TYPE_ITEM = 2;
 	public static final int TYPE_FOOTER = 3;
 
-	private class Section {
+	private static class Section {
 		int adapterPosition;    // adapterPosition of first item (the header) of this sections
 		int numberOfItems;      // number of items (not including header or footer)
 		int length;             // total number of items in sections including header and footer
@@ -44,7 +44,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	private int totalNumberOfItems;
 
 
-	public class ViewHolder extends RecyclerView.ViewHolder {
+	public static class ViewHolder extends RecyclerView.ViewHolder {
 		private int section;
 		private int numberOfItemsInSection;
 
@@ -81,7 +81,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		}
 	}
 
-	public class ItemViewHolder extends ViewHolder {
+	public static class ItemViewHolder extends ViewHolder {
 		private int positionInSection;
 
 		public ItemViewHolder(View itemView) {
@@ -97,7 +97,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		}
 	}
 
-	public class HeaderViewHolder extends ViewHolder {
+	public static class HeaderViewHolder extends ViewHolder {
 
 		public HeaderViewHolder(View itemView) {
 			super(itemView);
@@ -109,7 +109,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		}
 	}
 
-	public class GhostHeaderViewHolder extends ViewHolder {
+	public static class GhostHeaderViewHolder extends ViewHolder {
 		public GhostHeaderViewHolder(View itemView) {
 			super(itemView);
 		}
@@ -121,7 +121,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	}
 
 
-	public class FooterViewHolder extends ViewHolder {
+	public static class FooterViewHolder extends ViewHolder {
 		public FooterViewHolder(View itemView) {
 			super(itemView);
 		}
