@@ -39,6 +39,8 @@ com_crashlytics_export_strings.xml
 .signing/
 
 # User-specific configurations
+.idea/gradle.xml
+.idea/dictionaries/
 .idea/libraries/
 .idea/workspace.xml
 .idea/tasks.xml
@@ -50,6 +52,9 @@ com_crashlytics_export_strings.xml
 .idea/modules.xml
 .idea/scopes/scope_settings.xml
 .idea/vcs.xml
+.idea/inspectionProfiles/
+.idea/runConfigurations.xml
+
 *.iml
 
 # OS-specific files
