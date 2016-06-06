@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<array name="scroll_positions">
+		<item>@string/alert_dialog_scroll_start</item>
+		<item>@string/alert_dialog_scroll_middle</item>
+		<item>@string/alert_dialog_scroll_end</item>
+	</array>
+</resources>

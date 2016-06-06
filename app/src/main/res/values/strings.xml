@@ -9,10 +9,12 @@
 	<string name="action_clone">Clone</string>
 
 	<string name="menu_item_reload">Reload</string>
+	<string name="menu_item_scroll_to_bottom">Scroll to bottom</string>
 
 	<string name="title_address_book_demo">Address Book</string>
 	<string name="title_simple_demo">Sticky Header Callbacks</string>
 	<string name="title_sectioning_adapter_demo">Sections</string>
+	<string name="title_stress_test_demo">Stress Test</string>
 
 	<string name="about_title">About</string>
 	<string name="about_adapter_title">SectioningAdapter</string>
@@ -28,10 +30,20 @@
 	<string name="demo_list_item_callbacks_title">Sticky Header Callbacks</string>
 	<string name="demo_list_item_callbacks_description">Demonstrates use of callbacks on header positioning, allowing for elevation effects, etc</string>
 
+	<string name="demo_list_item_stress_test_title">Stress Test</string>
+	<string name="demo_list_item_stress_test_description">Simple stress test of hundreds of sections, thousands of items</string>
+
 	<string name="demo_list_item_sections_title">SectioningAdapter</string>
 	<string name="demo_list_item_sections_description">Demonstrates that SectioningAdapter can be used with a vanilla RecyclerView.LinearLayoutManager</string>
 
 	<string name="demo_addressbook_load_error_action">Info</string>
 	<string name="demo_addressbook_load_error_dialog_title">Whoops</string>
+
+	<string name="alert_dialog_scroll_title">Scroll</string>
+	<string name="alert_dialog_scroll_start">Start</string>
+	<string name="alert_dialog_scroll_middle">Middle</string>
+	<string name="alert_dialog_scroll_end">End</string>
+	<string name="alert_dialog_button_title_jump">Jump</string>
+	<string name="alert_dialog_button_title_smooth">Smooth</string>
 
 </resources>

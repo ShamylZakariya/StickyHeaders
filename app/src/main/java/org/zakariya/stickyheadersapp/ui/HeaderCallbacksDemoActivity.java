@@ -36,7 +36,6 @@ public class HeaderCallbacksDemoActivity extends DemoActivity {
 			}
 		});
 
-		recyclerView.setLayoutManager(stickyHeaderLayoutManager);
 		recyclerView.setAdapter(new SimpleDemoAdapter(5, 5));
 	}
 }

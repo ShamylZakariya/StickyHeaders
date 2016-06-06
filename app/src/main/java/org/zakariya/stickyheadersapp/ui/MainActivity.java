@@ -119,6 +119,10 @@ public class MainActivity extends AppCompatActivity {
 							getString(R.string.demo_list_item_callbacks_description),
 							HeaderCallbacksDemoActivity.class),
 
+					new DemoModel(getString(R.string.demo_list_item_stress_test_title),
+							getString(R.string.demo_list_item_stress_test_description),
+							StressTestDemoActivity.class),
+
 					new DemoModel(getString(R.string.demo_list_item_sections_title),
 							getString(R.string.demo_list_item_sections_description),
 							SectioningAdapterDemoActivity.class)
