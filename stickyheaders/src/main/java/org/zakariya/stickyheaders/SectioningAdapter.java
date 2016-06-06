@@ -41,6 +41,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	}
 
 	private ArrayList<Section> sections;
+	private ArrayList<Integer> sectionIndicesByAdapterPosition;
 	private int totalNumberOfItems;
 
 
@@ -247,24 +248,23 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	/**
 	 * Given a "global" adapter adapterPosition, determine which sections contains that item
 	 *
-	 * @param position an adapter adapterPosition from 0 to getItemCount()-1
+	 * @param adapterPosition an adapter adapterPosition from 0 to getItemCount()-1
 	 * @return the index of the sections containing that item
 	 */
-	public int getSectionForAdapterPosition(int position) {
+	public int getSectionForAdapterPosition(int adapterPosition) {
 		if (sections == null) {
 			buildSectionIndex();
 		}
 
-		// TODO: Speed this up somehow
-		int sectionIndex = 0;
-		for (Section section : this.sections) {
-			if (position >= section.adapterPosition && position < section.adapterPosition + section.length) {
-				return sectionIndex;
-			}
-			sectionIndex++;
+		if (getItemCount() == 0) {
+			return -1;
 		}
 
-		throw new IndexOutOfBoundsException("adapterPosition " + position + " does not correspond to items in adapter");
+		if (adapterPosition < 0 || adapterPosition >= getItemCount()) {
+			throw new IndexOutOfBoundsException("adapterPosition " + adapterPosition + " is not in range of items represented by adapter");
+		}
+
+		return sectionIndicesByAdapterPosition.get(adapterPosition);
 	}
 
 	/**
@@ -516,6 +516,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 
 	private void buildSectionIndex() {
 		sections = new ArrayList<>();
+		sectionIndicesByAdapterPosition = new ArrayList<>();
 
 		int i = 0;
 		for (int s = 0, ns = getNumberOfSections(); s < ns; s++) {
@@ -531,6 +532,10 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 				section.length++;
 			}
 			this.sections.add(section);
+
+			for (int p = 0; p < section.length; p++) {
+				sectionIndicesByAdapterPosition.add(s);
+			}
 
 			i += section.length;
 		}
@@ -648,11 +653,12 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * Tag the itemView of the view holder with information needed for the layout to do its sticky positioning.
 	 * Specifically, it tags R.id.sectioning_adapter_tag_key_view_type to the item type, R.id.sectioning_adapter_tag_key_view_section
 	 * to the item's section, and R.id.sectioning_adapter_tag_key_view_adapter_position which is the adapter position of the view
-	 * @param holder the view holder containing the itemView to tag
-	 * @param section the section index
+	 *
+	 * @param holder          the view holder containing the itemView to tag
+	 * @param section         the section index
 	 * @param adapterPosition the adapter position of the view holder
 	 */
-	void tagViewHolderItemView(ViewHolder holder, int section, int adapterPosition){
+	void tagViewHolderItemView(ViewHolder holder, int section, int adapterPosition) {
 		View view = holder.itemView;
 		view.setTag(R.id.sectioning_adapter_tag_key_view_viewholder, holder);
 	}
