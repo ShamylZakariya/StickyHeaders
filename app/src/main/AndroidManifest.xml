@@ -44,6 +44,16 @@
 				android:value=".ui.MainActivity"/>
 		</activity>
 
+		<activity android:name=".ui.StressTestDemoActivity"
+		          android:theme="@style/AppTheme.NoActionBar"
+		          android:label="@string/title_stress_test_demo"
+		          android:launchMode="singleTop"
+		          android:parentActivityName=".ui.MainActivity">
+			<meta-data
+				android:name="android.support.PARENT_ACTIVITY"
+				android:value=".ui.MainActivity"/>
+		</activity>
+
 		<activity
 			android:name=".ui.SectioningAdapterDemoActivity"
 			android:theme="@style/AppTheme.NoActionBar"

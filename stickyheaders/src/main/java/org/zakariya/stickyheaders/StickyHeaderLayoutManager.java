@@ -64,6 +64,9 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	// top of first (lowest-y-value) visible item.
 	int firstViewTop;
 
+	// adapter position (iff >= 0) of the item selected in scrollToPosition
+	int scrollTargetAdapterPosition = -1;
+
 
 	public StickyHeaderLayoutManager() {
 	}
@@ -93,6 +96,13 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	}
 
 	@Override
+	public void onAdapterChanged(RecyclerView.Adapter oldAdapter, RecyclerView.Adapter newAdapter) {
+		removeAllViews();
+		headerViews.clear();
+		headerPositionsBySection.clear();
+	}
+
+	@Override
 	public void onDetachedFromWindow(RecyclerView view, RecyclerView.Recycler recycler) {
 		super.onDetachedFromWindow(view, recycler);
 		adapter = null;
@@ -101,7 +111,13 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	@Override
 	public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
 
-		updateFirstAdapterPosition();
+		if (scrollTargetAdapterPosition >= 0) {
+			firstViewAdapterPosition = scrollTargetAdapterPosition;
+			firstViewTop = 0;
+		} else {
+			updateFirstAdapterPosition();
+		}
+
 		int top = firstViewTop;
 
 		// RESET
@@ -113,6 +129,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		int left = getPaddingLeft();
 		int right = getWidth() - getPaddingRight();
 		int parentBottom = getHeight() - getPaddingBottom();
+		int totalVendedHeight = 0;
 
 		// walk through adapter starting at firstViewAdapterPosition stacking each vended item
 		for (int adapterPosition = firstViewAdapterPosition; adapterPosition < state.getItemCount(); adapterPosition++) {
@@ -153,6 +170,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			}
 
 			top += height;
+			totalVendedHeight += height;
 
 			// if the item we just laid out falls off the bottom of the view, we're done
 			if (v.getBottom() >= parentBottom) {
@@ -160,8 +178,24 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			}
 		}
 
-		// put headers in sticky positions if necessary
-		updateHeaderPositions(recycler);
+		if (scrollTargetAdapterPosition >= 0) {
+			scrollTargetAdapterPosition = -1; // reset
+
+			// determine if scrolling is necessary to fill viewport
+			int innerHeight = getHeight() - (getPaddingTop() + getPaddingBottom());
+			if (totalVendedHeight < innerHeight) {
+				// note: we're passing null for RecyclerView.State - this is "safe"
+				// only because we don't use it for scrolling negative dy
+				scrollVerticallyBy(totalVendedHeight - innerHeight, recycler, null);
+			} else {
+				// no scroll correction necessary, so position headers
+				updateHeaderPositions(recycler);
+			}
+		} else {
+			// put headers in sticky positions if necessary
+			updateHeaderPositions(recycler);
+		}
+
 	}
 
 	/**
@@ -349,6 +383,16 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	@Override
 	public boolean canScrollVertically() {
 		return true;
+	}
+
+	@Override
+	public void scrollToPosition(int position) {
+		if (position < 0 || position > getItemCount()) {
+			throw new IndexOutOfBoundsException("adapter position out of range");
+		}
+
+		scrollTargetAdapterPosition = position;
+		requestLayout();
 	}
 
 	public void recycleViewsOutOfBounds(RecyclerView.Recycler recycler) {
