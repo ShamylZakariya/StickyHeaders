@@ -43,5 +43,7 @@
 	<string name="alert_dialog_scroll_start">Start</string>
 	<string name="alert_dialog_scroll_middle">Middle</string>
 	<string name="alert_dialog_scroll_end">End</string>
+	<string name="alert_dialog_button_title_jump">Jump</string>
+	<string name="alert_dialog_button_title_smooth">Smooth</string>
 
 </resources>

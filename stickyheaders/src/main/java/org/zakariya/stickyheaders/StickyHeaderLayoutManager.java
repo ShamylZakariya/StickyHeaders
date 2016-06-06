@@ -1,5 +1,8 @@
 package org.zakariya.stickyheaders;
 
+import android.content.Context;
+import android.graphics.PointF;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -393,6 +396,34 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
 		scrollTargetAdapterPosition = position;
 		requestLayout();
+	}
+
+	@Override
+	public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
+		if (position < 0 || position > getItemCount()) {
+			throw new IndexOutOfBoundsException("adapter position out of range");
+		}
+
+		final Context context = recyclerView.getContext();
+		LinearSmoothScroller scroller = new LinearSmoothScroller(context) {
+			@Override
+			public PointF computeScrollVectorForPosition(int targetPosition) {
+				return new PointF(0, StickyHeaderLayoutManager.this.computeScrollVectorForPosition(targetPosition));
+			}
+		};
+
+		scroller.setTargetPosition(position);
+		startSmoothScroll(scroller);
+	}
+
+	protected int computeScrollVectorForPosition(int targetPosition) {
+		updateFirstAdapterPosition();
+		if (targetPosition > firstViewAdapterPosition) {
+			return 1;
+		} else if (targetPosition < firstViewAdapterPosition) {
+			return -1;
+		}
+		return 0;
 	}
 
 	public void recycleViewsOutOfBounds(RecyclerView.Recycler recycler) {
