@@ -41,7 +41,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	}
 
 	private ArrayList<Section> sections;
-	private ArrayList<Integer> sectionIndicesByAdapterPosition;
+	private int[] sectionIndicesByAdapterPosition;
 	private int totalNumberOfItems;
 
 
@@ -264,7 +264,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			throw new IndexOutOfBoundsException("adapterPosition " + adapterPosition + " is not in range of items represented by adapter");
 		}
 
-		return sectionIndicesByAdapterPosition.get(adapterPosition);
+		return sectionIndicesByAdapterPosition[adapterPosition];
 	}
 
 	/**
@@ -516,7 +516,6 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 
 	private void buildSectionIndex() {
 		sections = new ArrayList<>();
-		sectionIndicesByAdapterPosition = new ArrayList<>();
 
 		int i = 0;
 		for (int s = 0, ns = getNumberOfSections(); s < ns; s++) {
@@ -533,14 +532,21 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			}
 			this.sections.add(section);
 
-			for (int p = 0; p < section.length; p++) {
-				sectionIndicesByAdapterPosition.add(s);
-			}
-
 			i += section.length;
 		}
 
 		totalNumberOfItems = i;
+
+		i = 0;
+		sectionIndicesByAdapterPosition = new int[totalNumberOfItems];
+		for (int s = 0, ns = getNumberOfSections(); s < ns; s++) {
+			Section section = sections.get(s);
+			for (int p = 0; p < section.length; p++) {
+				sectionIndicesByAdapterPosition[i+p] = s;
+			}
+
+			i += section.length;
+		}
 	}
 
 	@Override
