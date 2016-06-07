@@ -1,5 +1,7 @@
 #BUGS
 
+When collapsing/expanding a section, the header for the next section disappears while animation runs
+
 
 #TESTING:
 	- need to ensure this works fine for adapters which don't have footer views and which don't have header views (!!!)

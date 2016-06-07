@@ -1,6 +1,8 @@
 package org.zakariya.stickyheadersapp.adapters;
 
 import android.annotation.SuppressLint;
+import android.support.annotation.DrawableRes;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,7 +23,6 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 
 	static final String TAG = SimpleDemoAdapter.class.getSimpleName();
 	static final boolean USE_DEBUG_APPEARANCE = false;
-	static final boolean SHOW_DEBUG_CONTROLS = false;
 
 	private class Section {
 		int index;
@@ -60,15 +61,20 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 			super(itemView);
 			textView = (TextView) itemView.findViewById(R.id.textView);
 			adapterPositionTextView = (TextView) itemView.findViewById(R.id.adapterPositionTextView);
-			cloneButton = (ImageButton) itemView.findViewById(R.id.cloneImageButton);
+
+			cloneButton = (ImageButton) itemView.findViewById(R.id.cloneButton);
 			cloneButton.setOnClickListener(this);
-			deleteButton = (ImageButton) itemView.findViewById(R.id.deleteImageButton);
+
+			deleteButton = (ImageButton) itemView.findViewById(R.id.deleteButton);
 			deleteButton.setOnClickListener(this);
 
-			if (!SHOW_DEBUG_CONTROLS) {
-				cloneButton.setVisibility(View.INVISIBLE);
-				deleteButton.setVisibility(View.INVISIBLE);
-				adapterPositionTextView.setVisibility(View.INVISIBLE);
+			if (!SimpleDemoAdapter.this.showModificationControls) {
+				cloneButton.setVisibility(View.GONE);
+				deleteButton.setVisibility(View.GONE);
+			}
+
+			if (!SimpleDemoAdapter.this.showAdapterPositions) {
+				adapterPositionTextView.setVisibility(View.GONE);
 			}
 		}
 
@@ -90,21 +96,44 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 		TextView adapterPositionTextView;
 		ImageButton cloneButton;
 		ImageButton deleteButton;
+		ImageButton collapseButton;
 
 		public HeaderViewHolder(View itemView) {
 			super(itemView);
 			textView = (TextView) itemView.findViewById(R.id.textView);
 			adapterPositionTextView = (TextView) itemView.findViewById(R.id.adapterPositionTextView);
-			cloneButton = (ImageButton) itemView.findViewById(R.id.cloneImageButton);
+
+			cloneButton = (ImageButton) itemView.findViewById(R.id.cloneButton);
 			cloneButton.setOnClickListener(this);
-			deleteButton = (ImageButton) itemView.findViewById(R.id.deleteImageButton);
+
+			deleteButton = (ImageButton) itemView.findViewById(R.id.deleteButton);
 			deleteButton.setOnClickListener(this);
 
-			if (!SHOW_DEBUG_CONTROLS) {
+			collapseButton = (ImageButton) itemView.findViewById(R.id.collapseButton);
+			collapseButton.setOnClickListener(this);
+
+			if (!SimpleDemoAdapter.this.showModificationControls) {
+				cloneButton.setVisibility(View.GONE);
+				deleteButton.setVisibility(View.GONE);
+			}
+
+			if (!SimpleDemoAdapter.this.showCollapsingSectionControls) {
+				collapseButton.setVisibility(View.GONE);
+			}
+
+			if (!SimpleDemoAdapter.this.showAdapterPositions) {
 				cloneButton.setVisibility(View.INVISIBLE);
 				deleteButton.setVisibility(View.INVISIBLE);
 				adapterPositionTextView.setVisibility(View.INVISIBLE);
 			}
+		}
+
+		void updateSectionCollapseToggle(boolean sectionIsCollapsed) {
+			@DrawableRes int id = sectionIsCollapsed
+					? R.drawable.ic_expand_more_black_24dp
+					: R.drawable.ic_expand_less_black_24dp;
+
+			collapseButton.setImageDrawable(ContextCompat.getDrawable(collapseButton.getContext(), id));
 		}
 
 		@Override
@@ -115,6 +144,9 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 				SimpleDemoAdapter.this.onCloneSection(section);
 			} else if (v == deleteButton) {
 				SimpleDemoAdapter.this.onDeleteSection(section);
+			} else if (v == collapseButton) {
+				SimpleDemoAdapter.this.onToggleSectionCollapse(section);
+				updateSectionCollapseToggle(SimpleDemoAdapter.this.isSectionCollapsed(section));
 			}
 		}
 	}
@@ -128,16 +160,23 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 			textView = (TextView) itemView.findViewById(R.id.textView);
 			adapterPositionTextView = (TextView) itemView.findViewById(R.id.adapterPositionTextView);
 
-			if (!SHOW_DEBUG_CONTROLS) {
-				adapterPositionTextView.setVisibility(View.INVISIBLE);
+			if (!SimpleDemoAdapter.this.showAdapterPositions) {
+				adapterPositionTextView.setVisibility(View.GONE);
 			}
 		}
 	}
 
 
 	ArrayList<Section> sections = new ArrayList<>();
+	boolean showModificationControls;
+	boolean showCollapsingSectionControls;
+	boolean showAdapterPositions;
 
-	public SimpleDemoAdapter(int numSections, int numItemsPerSection) {
+	public SimpleDemoAdapter(int numSections, int numItemsPerSection, boolean showModificationControls, boolean showCollapsingSectionControls, boolean showAdapterPositions) {
+		this.showModificationControls = showModificationControls;
+		this.showCollapsingSectionControls = showCollapsingSectionControls;
+		this.showAdapterPositions = showAdapterPositions;
+
 		for (int i = 0; i < numSections; i++) {
 			appendSection(i, numItemsPerSection);
 		}
@@ -155,6 +194,11 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 		}
 
 		sections.add(section);
+	}
+
+	void onToggleSectionCollapse(int sectionIndex) {
+		Log.d(TAG, "onToggleSectionCollapse() called with: " + "sectionIndex = [" + sectionIndex + "]");
+		setSectionIsCollapsed(sectionIndex, !isSectionCollapsed(sectionIndex));
 	}
 
 	void onDeleteSection(int sectionIndex) {
@@ -249,6 +293,8 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 		} else {
 			hvh.textView.setText(s.header);
 		}
+
+		hvh.updateSectionCollapseToggle(isSectionCollapsed(sectionIndex));
 	}
 
 	@Override

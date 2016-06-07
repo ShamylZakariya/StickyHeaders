@@ -33,7 +33,7 @@
 
 
 		<ImageButton
-			android:id="@+id/cloneImageButton"
+			android:id="@+id/cloneButton"
 			android:layout_width="48dp"
 			android:layout_height="48dp"
 			android:src="@drawable/ic_filter_none_black"
@@ -43,7 +43,7 @@
 			android:contentDescription="@string/action_clone"/>
 
 		<ImageButton
-			android:id="@+id/deleteImageButton"
+			android:id="@+id/deleteButton"
 			android:layout_width="48dp"
 			android:layout_height="48dp"
 			android:src="@drawable/ic_clear_black"
