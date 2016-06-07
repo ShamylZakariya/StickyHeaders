@@ -7,6 +7,7 @@
 
 	<string name="action_delete">Delete</string>
 	<string name="action_clone">Clone</string>
+	<string name="action_collapse">Collapse</string>
 
 	<string name="menu_item_reload">Reload</string>
 	<string name="menu_item_scroll_to_bottom">Scroll to bottom</string>
@@ -15,6 +16,7 @@
 	<string name="title_simple_demo">Sticky Header Callbacks</string>
 	<string name="title_sectioning_adapter_demo">Sections</string>
 	<string name="title_stress_test_demo">Stress Test</string>
+	<string name="title_collapsing_headers_demo">Collapsing Headers</string>
 
 	<string name="about_title">About</string>
 	<string name="about_adapter_title">SectioningAdapter</string>
@@ -35,6 +37,10 @@
 
 	<string name="demo_list_item_sections_title">SectioningAdapter</string>
 	<string name="demo_list_item_sections_description">Demonstrates that SectioningAdapter can be used with a vanilla RecyclerView.LinearLayoutManager</string>
+
+	<string name="demo_list_item_collapsing_headers_title">Collapsing Headers</string>
+	<string name="demo_list_item_collapsing_headers_description">Demonstrates collapsing headers, where sections can be opened and closed</string>
+
 
 	<string name="demo_addressbook_load_error_action">Info</string>
 	<string name="demo_addressbook_load_error_dialog_title">Whoops</string>

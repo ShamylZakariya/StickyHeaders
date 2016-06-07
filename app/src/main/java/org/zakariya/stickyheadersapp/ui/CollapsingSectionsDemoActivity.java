@@ -6,13 +6,19 @@ import org.zakariya.stickyheaders.StickyHeaderLayoutManager;
 import org.zakariya.stickyheadersapp.adapters.SimpleDemoAdapter;
 
 /**
- * Created by shamyl on 6/5/16.
+ * Created by shamyl on 6/7/16.
  */
-public class StressTestDemoActivity extends DemoActivity {
+public class CollapsingSectionsDemoActivity extends DemoActivity {
+
+	SimpleDemoAdapter adapter;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		adapter = new SimpleDemoAdapter(100, 5, false, true, false);
+
 		recyclerView.setLayoutManager(new StickyHeaderLayoutManager());
-		recyclerView.setAdapter(new SimpleDemoAdapter(1000, 5, false, false, false));
+		recyclerView.setAdapter(adapter);
 	}
 }

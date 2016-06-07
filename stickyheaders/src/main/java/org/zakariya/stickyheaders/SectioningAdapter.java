@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * SectioningAdapter
@@ -41,6 +42,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	}
 
 	private ArrayList<Section> sections;
+	private HashMap<Integer,Boolean> collapsedSections = new HashMap<>();
 	private int[] sectionIndicesByAdapterPosition;
 	private int totalNumberOfItems;
 
@@ -390,6 +392,25 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	}
 
 	/**
+	 * Mark that a section is collapsed or not. By default sections are not collapsed and draw
+	 * all their child items. By "collapsing" a section, the child items are hidden.
+	 * @param sectionIndex index of section
+	 * @param collapsed if true, section is collapsed, false, it's open
+	 */
+	public void setSectionIsCollapsed(int sectionIndex, boolean collapsed) {
+		collapsedSections.put(sectionIndex, collapsed);
+		notifySectionDataSetChanged(sectionIndex);
+	}
+
+	public boolean isSectionCollapsed(int sectionIndex) {
+		if(collapsedSections.containsKey(sectionIndex)) {
+			return collapsedSections.get(sectionIndex);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Notify that all data in the list is invalid and the entire list should be reloaded.
 	 * Equivalent to RecyclerView.Adapter.notifyDataSetChanged.
 	 * Never directly call notifyDataSetChanged.
@@ -523,13 +544,20 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			section.adapterPosition = i;
 			section.hasHeader = doesSectionHaveHeader(s);
 			section.hasFooter = doesSectionHaveFooter(s);
-			section.length = section.numberOfItems = getNumberOfItemsInSection(s);
+
+			if (isSectionCollapsed(s)){
+				section.length = 0;
+			} else {
+				section.length = section.numberOfItems = getNumberOfItemsInSection(s);
+			}
+
 			if (section.hasHeader) {
 				section.length += 2; // room for header and ghostHeader
 			}
 			if (section.hasFooter) {
 				section.length++;
 			}
+
 			this.sections.add(section);
 
 			i += section.length;

@@ -18,7 +18,7 @@ import java.util.Locale;
  * Adapter for Person items. Sorts them by last name into sections starting with the
  * first letter of the last name.
  */
-public class AddressBookAdapter extends SectioningAdapter {
+public class AddressBookDemoAdapter extends SectioningAdapter {
 
 	Locale locale = Locale.getDefault();
 	static final boolean USE_DEBUG_APPEARANCE = false;
@@ -50,7 +50,7 @@ public class AddressBookAdapter extends SectioningAdapter {
 	List<Person> people;
 	ArrayList<Section> sections = new ArrayList<>();
 
-	public AddressBookAdapter() {
+	public AddressBookDemoAdapter() {
 	}
 
 	public List<Person> getPeople() {

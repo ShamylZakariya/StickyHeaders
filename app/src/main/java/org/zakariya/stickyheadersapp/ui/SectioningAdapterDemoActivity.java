@@ -15,6 +15,6 @@ public class SectioningAdapterDemoActivity extends DemoActivity {
 		super.onCreate(savedInstanceState);
 
 		recyclerView.setLayoutManager(new LinearLayoutManager(this));
-		recyclerView.setAdapter(new SimpleDemoAdapter(5, 5));
+		recyclerView.setAdapter(new SimpleDemoAdapter(5, 5, false, false, false));
 	}
 }

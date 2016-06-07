@@ -9,7 +9,7 @@ import android.view.View;
 import org.zakariya.stickyheaders.StickyHeaderLayoutManager;
 import org.zakariya.stickyheadersapp.R;
 import org.zakariya.stickyheadersapp.StickyHeadersDemoApp;
-import org.zakariya.stickyheadersapp.adapters.AddressBookAdapter;
+import org.zakariya.stickyheadersapp.adapters.AddressBookDemoAdapter;
 import org.zakariya.stickyheadersapp.api.RandomUserLoader;
 import org.zakariya.stickyheadersapp.model.Person;
 
@@ -22,7 +22,7 @@ import java.util.List;
 public class AddressBookDemoActivity extends DemoActivity implements RandomUserLoader.OnLoadCallback {
 
 	private static final String TAG = AddressBookDemoActivity.class.getSimpleName();
-	AddressBookAdapter adapter = new AddressBookAdapter();
+	AddressBookDemoAdapter adapter = new AddressBookDemoAdapter();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
