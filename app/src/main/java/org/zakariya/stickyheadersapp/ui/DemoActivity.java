@@ -2,6 +2,7 @@ package org.zakariya.stickyheadersapp.ui;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +22,7 @@ import org.zakariya.stickyheadersapp.R;
 public class DemoActivity extends AppCompatActivity {
 
 	private static final String TAG = DemoActivity.class.getSimpleName();
+	private static final String STATE_SCROLL_POSITION = "DemoActivity.STATE_SCROLL_POSITION";
 
 	RecyclerView recyclerView;
 	ProgressBar progressBar;
@@ -44,7 +46,25 @@ public class DemoActivity extends AppCompatActivity {
 				}
 			});
 		}
+	}
 
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		RecyclerView.LayoutManager lm = recyclerView.getLayoutManager();
+		Parcelable scrollState = lm.onSaveInstanceState();
+		outState.putParcelable(STATE_SCROLL_POSITION, scrollState);
+		super.onSaveInstanceState(outState);
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		if (savedInstanceState != null) {
+			Parcelable scrollPositionState = savedInstanceState.getParcelable(STATE_SCROLL_POSITION);
+			if (scrollPositionState != null) {
+				recyclerView.getLayoutManager().onRestoreInstanceState(scrollPositionState);
+			}
+		}
 	}
 
 	@Override

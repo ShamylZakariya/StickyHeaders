@@ -2,6 +2,8 @@ package org.zakariya.stickyheaders;
 
 import android.content.Context;
 import android.graphics.PointF;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -70,6 +72,8 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	// adapter position (iff >= 0) of the item selected in scrollToPosition
 	int scrollTargetAdapterPosition = -1;
 
+	SavedState pendingSavedState;
+
 
 	public StickyHeaderLayoutManager() {
 	}
@@ -112,11 +116,44 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	}
 
 	@Override
+	public Parcelable onSaveInstanceState() {
+		if (pendingSavedState != null) {
+			Log.d(TAG, "onSaveInstanceState: returning existing unused saved state");
+			return pendingSavedState;
+		}
+
+		updateFirstAdapterPosition();
+		SavedState state = new SavedState();
+		state.firstViewAdapterPosition = firstViewAdapterPosition;
+		state.firstViewTop = firstViewTop;
+
+		Log.d(TAG, "onSaveInstanceState: created saved state: " + state);
+
+		return state;
+	}
+
+	@Override
+	public void onRestoreInstanceState(Parcelable state) {
+		if (state instanceof SavedState) {
+			pendingSavedState = (SavedState)state;
+			Log.d(TAG, "onRestoreInstanceState: received saved state: " + pendingSavedState);
+			requestLayout();
+		} else {
+			Log.e(TAG, "onRestoreInstanceState: invalid saved state class, expected: " + SavedState.class.getCanonicalName() + " got: " + state.getClass().getCanonicalName() );
+		}
+	}
+
+	@Override
 	public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
 
 		if (scrollTargetAdapterPosition >= 0) {
 			firstViewAdapterPosition = scrollTargetAdapterPosition;
 			firstViewTop = 0;
+		} else if (pendingSavedState != null && pendingSavedState.isValid()) {
+			Log.d(TAG, "onLayoutChildren: pendingSavedState present: " + pendingSavedState);
+			firstViewAdapterPosition = pendingSavedState.firstViewAdapterPosition;
+			firstViewTop = pendingSavedState.firstViewTop;
+			pendingSavedState = null; // we're done with saved state now
 		} else {
 			updateFirstAdapterPosition();
 		}
@@ -198,7 +235,6 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			// put headers in sticky positions if necessary
 			updateHeaderPositions(recycler);
 		}
-
 	}
 
 	/**
@@ -395,6 +431,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		}
 
 		scrollTargetAdapterPosition = position;
+		pendingSavedState = null;
 		requestLayout();
 	}
 
@@ -404,9 +441,11 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			throw new IndexOutOfBoundsException("adapter position out of range");
 		}
 
+		pendingSavedState = null;
+
 		// see: https://blog.stylingandroid.com/scrolling-recyclerview-part-3/
 		View firstVisibleChild = recyclerView.getChildAt(0);
-		int itemHeight = getItemHeightForSmoothScroll(recyclerView);
+		int itemHeight = getEstimatedItemHeightForSmoothScroll(recyclerView);
 		int currentPosition = recyclerView.getChildAdapterPosition(firstVisibleChild);
 		int distanceInPixels = Math.abs((currentPosition - position) * itemHeight);
 		if (distanceInPixels == 0) {
@@ -419,7 +458,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		startSmoothScroll(scroller);
 	}
 
-	protected int getItemHeightForSmoothScroll(RecyclerView recyclerView) {
+	protected int getEstimatedItemHeightForSmoothScroll(RecyclerView recyclerView) {
 		int height = 0;
 		for (int i = 0, n = recyclerView.getChildCount(); i < n; i++) {
 			height = Math.max(getDecoratedMeasuredHeight(recyclerView.getChildAt(i)), height);
@@ -690,7 +729,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	}
 
 	// https://blog.stylingandroid.com/scrolling-recyclerview-part-3/
-	private class SmoothScroller extends LinearSmoothScroller {
+	class SmoothScroller extends LinearSmoothScroller {
 		private static final int TARGET_SEEK_SCROLL_DISTANCE_PX = 10000;
 		private static final float DEFAULT_DURATION = 1000;
 		private final float distanceInPixels;
@@ -714,5 +753,60 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			float proportion = (float) dx / distanceInPixels;
 			return (int) (duration * proportion);
 		}
+	}
+
+	static class SavedState implements Parcelable {
+
+		int firstViewAdapterPosition = RecyclerView.NO_POSITION;
+		int firstViewTop = 0;
+
+		public SavedState() {
+		}
+
+		SavedState(Parcel in) {
+			firstViewAdapterPosition = in.readInt();
+			firstViewTop = in.readInt();
+		}
+
+		public SavedState(SavedState other) {
+			firstViewAdapterPosition = other.firstViewAdapterPosition;
+			firstViewTop = other.firstViewTop;
+		}
+
+		boolean isValid() {
+			return firstViewAdapterPosition >= 0;
+		}
+
+		void invalidate() {
+			firstViewAdapterPosition = RecyclerView.NO_POSITION;
+		}
+
+		@Override
+		public String toString() {
+			return "<" + this.getClass().getCanonicalName() + " firstViewAdapterPosition: " + firstViewAdapterPosition + " firstViewTop: " + firstViewTop + ">";
+		}
+
+		@Override
+		public int describeContents() {
+			return 0;
+		}
+
+		@Override
+		public void writeToParcel(Parcel dest, int flags) {
+			dest.writeInt(firstViewAdapterPosition);
+			dest.writeInt(firstViewTop);
+		}
+
+		public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+			@Override
+			public SavedState createFromParcel(Parcel in) {
+				return new SavedState(in);
+			}
+
+			@Override
+			public SavedState[] newArray(int size) {
+				return new SavedState[size];
+			}
+		};
 	}
 }
