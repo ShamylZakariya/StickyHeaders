@@ -98,6 +98,9 @@ public class MainActivity extends AppCompatActivity {
 
 	public static class MainPageFragment extends Fragment {
 
+		private static final String TAG = MainPageFragment.class.getSimpleName();
+		private static final String SCROLL_STATE = "MainPageFragment.SCROLL_STATE";
+
 		RecyclerView recyclerView;
 
 		@Nullable
@@ -106,7 +109,18 @@ public class MainActivity extends AppCompatActivity {
 			View view = inflater.inflate(R.layout.fragment_main, container, false);
 			recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
 			setupDemoRecyclerView();
+
+			if (savedInstanceState != null) {
+				recyclerView.getLayoutManager().onRestoreInstanceState(savedInstanceState.getParcelable(SCROLL_STATE));
+			}
+
 			return view;
+		}
+
+		@Override
+		public void onSaveInstanceState(Bundle outState) {
+			outState.putParcelable(SCROLL_STATE, recyclerView.getLayoutManager().onSaveInstanceState());
+			super.onSaveInstanceState(outState);
 		}
 
 		void setupDemoRecyclerView() {

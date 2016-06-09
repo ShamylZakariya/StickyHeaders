@@ -60,10 +60,7 @@ public class DemoActivity extends AppCompatActivity {
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 		if (savedInstanceState != null) {
-			Parcelable scrollPositionState = savedInstanceState.getParcelable(STATE_SCROLL_POSITION);
-			if (scrollPositionState != null) {
-				recyclerView.getLayoutManager().onRestoreInstanceState(scrollPositionState);
-			}
+			recyclerView.getLayoutManager().onRestoreInstanceState(savedInstanceState.getParcelable(STATE_SCROLL_POSITION));
 		}
 	}
 
