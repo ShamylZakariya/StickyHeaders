@@ -118,7 +118,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	@Override
 	public Parcelable onSaveInstanceState() {
 		if (pendingSavedState != null) {
-			Log.d(TAG, "onSaveInstanceState: returning existing unused saved state");
+			//Log.d(TAG, "onSaveInstanceState: returning existing unused saved state");
 			return pendingSavedState;
 		}
 
@@ -127,16 +127,20 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		state.firstViewAdapterPosition = firstViewAdapterPosition;
 		state.firstViewTop = firstViewTop;
 
-		Log.d(TAG, "onSaveInstanceState: created saved state: " + state);
+		//Log.d(TAG, "onSaveInstanceState: created saved state: " + state);
 
 		return state;
 	}
 
 	@Override
 	public void onRestoreInstanceState(Parcelable state) {
+		if (state == null) {
+			return;
+		}
+
 		if (state instanceof SavedState) {
 			pendingSavedState = (SavedState)state;
-			Log.d(TAG, "onRestoreInstanceState: received saved state: " + pendingSavedState);
+			//Log.d(TAG, "onRestoreInstanceState: received saved state: " + pendingSavedState);
 			requestLayout();
 		} else {
 			Log.e(TAG, "onRestoreInstanceState: invalid saved state class, expected: " + SavedState.class.getCanonicalName() + " got: " + state.getClass().getCanonicalName() );
@@ -149,8 +153,8 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		if (scrollTargetAdapterPosition >= 0) {
 			firstViewAdapterPosition = scrollTargetAdapterPosition;
 			firstViewTop = 0;
+			scrollTargetAdapterPosition = RecyclerView.NO_POSITION; // we're done here
 		} else if (pendingSavedState != null && pendingSavedState.isValid()) {
-			Log.d(TAG, "onLayoutChildren: pendingSavedState present: " + pendingSavedState);
 			firstViewAdapterPosition = pendingSavedState.firstViewAdapterPosition;
 			firstViewTop = pendingSavedState.firstViewTop;
 			pendingSavedState = null; // we're done with saved state now
@@ -218,21 +222,14 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			}
 		}
 
-		if (scrollTargetAdapterPosition >= 0) {
-			scrollTargetAdapterPosition = -1; // reset
-
-			// determine if scrolling is necessary to fill viewport
-			int innerHeight = getHeight() - (getPaddingTop() + getPaddingBottom());
-			if (totalVendedHeight < innerHeight) {
-				// note: we're passing null for RecyclerView.State - this is "safe"
-				// only because we don't use it for scrolling negative dy
-				scrollVerticallyBy(totalVendedHeight - innerHeight, recycler, null);
-			} else {
-				// no scroll correction necessary, so position headers
-				updateHeaderPositions(recycler);
-			}
+		// determine if scrolling is necessary to fill viewport
+		int innerHeight = getHeight() - (getPaddingTop() + getPaddingBottom());
+		if (totalVendedHeight < innerHeight) {
+			// note: we're passing null for RecyclerView.State - this is "safe"
+			// only because we don't use it for scrolling negative dy
+			scrollVerticallyBy(totalVendedHeight - innerHeight, recycler, null);
 		} else {
-			// put headers in sticky positions if necessary
+			// no scroll correction necessary, so position headers
 			updateHeaderPositions(recycler);
 		}
 	}
