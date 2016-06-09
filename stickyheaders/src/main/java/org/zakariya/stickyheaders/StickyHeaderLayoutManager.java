@@ -98,7 +98,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		try {
 			adapter = (SectioningAdapter) view.getAdapter();
 		} catch (ClassCastException e) {
-			Log.e(TAG, "onAttachedToWindow: StickyHeaderLayoutManager must be used with a RecyclerView who's adapter is a kind of SectioningAdapter");
+			throw new ClassCastException("StickyHeaderLayoutManager must be used with a RecyclerView where the adapter is a kind of SectioningAdapter");
 		}
 	}
 
@@ -118,7 +118,6 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	@Override
 	public Parcelable onSaveInstanceState() {
 		if (pendingSavedState != null) {
-			//Log.d(TAG, "onSaveInstanceState: returning existing unused saved state");
 			return pendingSavedState;
 		}
 
@@ -126,8 +125,6 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		SavedState state = new SavedState();
 		state.firstViewAdapterPosition = firstViewAdapterPosition;
 		state.firstViewTop = firstViewTop;
-
-		//Log.d(TAG, "onSaveInstanceState: created saved state: " + state);
 
 		return state;
 	}
@@ -140,7 +137,6 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
 		if (state instanceof SavedState) {
 			pendingSavedState = (SavedState)state;
-			//Log.d(TAG, "onRestoreInstanceState: received saved state: " + pendingSavedState);
 			requestLayout();
 		} else {
 			Log.e(TAG, "onRestoreInstanceState: invalid saved state class, expected: " + SavedState.class.getCanonicalName() + " got: " + state.getClass().getCanonicalName() );
@@ -282,7 +278,6 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		if (dy < 0) {
 
 			// content moving downwards, so we're panning to top of list
-			//Log.i(TAG, "scrollVerticallyBy: SCROLLING TO TOP");
 
 			View topView = getTopmostChildView();
 			while (scrolled > dy) {
@@ -338,7 +333,6 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		} else {
 
 			// content moving up, we're headed to bottom of list
-			//Log.i(TAG, "scrollVerticallyBy: SCROLLING TO BOTTOM");
 
 			int parentHeight = getHeight();
 			View bottomView = getBottommostChildView();
@@ -487,7 +481,6 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
 			if (getViewType(view) != SectioningAdapter.TYPE_HEADER) {
 				if (getDecoratedBottom(view) < 0 || getDecoratedTop(view) > height) {
-					//Log.i(TAG, "recycleViewsOutOfBounds: recycling view at adapter position" + getViewAdapterPosition(view));
 					viewsToRecycle.add(view);
 				} else {
 					// this view is visible, therefore the section lives
