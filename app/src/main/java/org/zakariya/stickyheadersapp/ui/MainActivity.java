@@ -143,7 +143,11 @@ public class MainActivity extends AppCompatActivity {
 
 					new DemoModel(getString(R.string.demo_list_item_sections_title),
 							getString(R.string.demo_list_item_sections_description),
-							SectioningAdapterDemoActivity.class)
+							SectioningAdapterDemoActivity.class),
+
+					new DemoModel(getString(R.string.demo_list_item_endless_scroll_title),
+							getString(R.string.demo_list_item_endless_scroll_description),
+							EndlessScrollDemoActivity.class)
 			};
 
 			recyclerView.setAdapter(new DemoAdapter(getContext(), demos, new ItemClickListener() {

@@ -75,6 +75,17 @@
 				android:value=".ui.MainActivity"/>
 		</activity>
 
+		<activity
+			android:name=".ui.EndlessScrollDemoActivity"
+			android:theme="@style/AppTheme.NoActionBar"
+			android:label="@string/title_endless_scroll_demo"
+			android:launchMode="singleTop"
+			android:parentActivityName=".ui.MainActivity">
+			<meta-data
+				android:name="android.support.PARENT_ACTIVITY"
+				android:value=".ui.MainActivity"/>
+		</activity>
+
 	</application>
 
 </manifest>

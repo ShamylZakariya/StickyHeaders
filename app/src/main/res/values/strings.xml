@@ -17,6 +17,7 @@
 	<string name="title_sectioning_adapter_demo">Sections</string>
 	<string name="title_stress_test_demo">Stress Test</string>
 	<string name="title_collapsing_headers_demo">Collapsing Headers</string>
+	<string name="title_endless_scroll_demo">Endless Scrolling…</string>
 
 	<string name="about_title">About</string>
 	<string name="about_adapter_title">SectioningAdapter</string>
@@ -41,6 +42,8 @@
 	<string name="demo_list_item_collapsing_headers_title">Collapsing Headers</string>
 	<string name="demo_list_item_collapsing_headers_description">Demonstrates collapsing headers, where sections can be opened and closed</string>
 
+	<string name="demo_list_item_endless_scroll_title">Endless Scroll</string>
+	<string name="demo_list_item_endless_scroll_description">Demonstrates endless scrolling, where data can be paged in from a remote source as user scrolls to bottom of list</string>
 
 	<string name="demo_addressbook_load_error_action">Info</string>
 	<string name="demo_addressbook_load_error_dialog_title">Whoops</string>
