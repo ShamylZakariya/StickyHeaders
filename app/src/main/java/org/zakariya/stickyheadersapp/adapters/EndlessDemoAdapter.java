@@ -111,21 +111,21 @@ public class EndlessDemoAdapter extends SectioningAdapter {
 	}
 
 	@Override
-	public ItemViewHolder onCreateItemViewHolder(ViewGroup parent) {
+	public ItemViewHolder onCreateItemViewHolder(ViewGroup parent, int itemType) {
 		LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 		View v = inflater.inflate(R.layout.list_item_simple_item, parent, false);
 		return new ItemViewHolder(v);
 	}
 
 	@Override
-	public HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
+	public HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent, int headerType) {
 		LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 		View v = inflater.inflate(R.layout.list_item_simple_header, parent, false);
 		return new HeaderViewHolder(v);
 	}
 
 	@Override
-	public FooterViewHolder onCreateFooterViewHolder(ViewGroup parent) {
+	public FooterViewHolder onCreateFooterViewHolder(ViewGroup parent, int footerType) {
 		LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 		View v = inflater.inflate(R.layout.list_item_simple_footer, parent, false);
 		return new FooterViewHolder(v);
@@ -133,7 +133,7 @@ public class EndlessDemoAdapter extends SectioningAdapter {
 
 	@SuppressLint("SetTextI18n")
 	@Override
-	public void onBindItemViewHolder(SectioningAdapter.ItemViewHolder viewHolder, int sectionIndex, int itemIndex) {
+	public void onBindItemViewHolder(SectioningAdapter.ItemViewHolder viewHolder, int sectionIndex, int itemIndex, int itemType) {
 		EndlessDemoMockLoader.SectionModel s = sections.get(sectionIndex);
 		ItemViewHolder ivh = (ItemViewHolder) viewHolder;
 		ivh.textView.setText(s.getItems().get(itemIndex).getTitle());
@@ -142,7 +142,7 @@ public class EndlessDemoAdapter extends SectioningAdapter {
 
 	@SuppressLint("SetTextI18n")
 	@Override
-	public void onBindHeaderViewHolder(SectioningAdapter.HeaderViewHolder viewHolder, int sectionIndex) {
+	public void onBindHeaderViewHolder(SectioningAdapter.HeaderViewHolder viewHolder, int sectionIndex, int headerType) {
 		EndlessDemoMockLoader.SectionModel s = sections.get(sectionIndex);
 		HeaderViewHolder hvh = (HeaderViewHolder) viewHolder;
 		hvh.adapterPositionTextView.setText(Integer.toString(getAdapterPositionForSectionHeader(sectionIndex)));

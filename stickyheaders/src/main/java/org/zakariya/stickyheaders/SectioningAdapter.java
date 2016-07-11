@@ -160,6 +160,15 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	}
 
 	/**
+	 * For scenarios with multiple types of headers, override this to return an integer specifying a custom type for this header
+	 * @param sectionIndex the header's section
+	 * @return the custom type for this header
+	 */
+	public int getSectionHeaderUserType(int sectionIndex) {
+		return 0;
+	}
+
+	/**
 	 * @param sectionIndex index of the section in question
 	 * @return true if this section has a footer
 	 */
@@ -167,13 +176,23 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		return false;
 	}
 
+
+	public int getSectionFooterUserType(int sectionIndex) {
+		return 0;
+	}
+
+	public int getSectionItemUserType(int sectionIndex, int itemIndex) {
+		return 0;
+	}
+
 	/**
 	 * Called when a ViewHolder is needed for a section item view
 	 *
 	 * @param parent The ViewGroup into which the new View will be added after it is bound to an adapter position.
+	 * @param itemType If getSectionItemUserType is overridden to vend custom types, this will be the specified type
 	 * @return A new ItemViewHolder holding an item view
 	 */
-	public ItemViewHolder onCreateItemViewHolder(ViewGroup parent) {
+	public ItemViewHolder onCreateItemViewHolder(ViewGroup parent, int itemType) {
 		return null;
 	}
 
@@ -181,9 +200,10 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * Called when a ViewHolder is needed for a section header view
 	 *
 	 * @param parent The ViewGroup into which the new View will be added after it is bound to an adapter position.
+	 * @param headerType If getSectionHeaderUserType is overridden to vend custom types, this will be the specified type
 	 * @return A new HeaderViewHolder holding a header view
 	 */
-	public HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
+	public HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent, int headerType) {
 		return null;
 	}
 
@@ -191,9 +211,10 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * Called when a ViewHolder is needed for a section footer view
 	 *
 	 * @param parent The ViewGroup into which the new View will be added after it is bound to an adapter position.
+	 * @param footerType If getSectionHeaderUserType is overridden to vend custom types, this will be the specified type
 	 * @return A new FooterViewHolder holding a footer view
 	 */
-	public FooterViewHolder onCreateFooterViewHolder(ViewGroup parent) {
+	public FooterViewHolder onCreateFooterViewHolder(ViewGroup parent, int footerType) {
 		return null;
 	}
 
@@ -216,8 +237,9 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * @param viewHolder   the view holder to update
 	 * @param sectionIndex the index of the section containing the item
 	 * @param itemIndex    the index of the item in the section where 0 is the first item
+	 * @param itemType if getSectionItemUserType is overridden to provide custom item types, this will be the type for this item
 	 */
-	public void onBindItemViewHolder(ItemViewHolder viewHolder, int sectionIndex, int itemIndex) {
+	public void onBindItemViewHolder(ItemViewHolder viewHolder, int sectionIndex, int itemIndex, int itemType) {
 	}
 
 	/**
@@ -225,8 +247,9 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 *
 	 * @param viewHolder   the view holder to update
 	 * @param sectionIndex the index of the section containing the header to update
+	 * @param headerType if getSectionHeaderUserType is overridden to provide custom header types, this will be the type for this header
 	 */
-	public void onBindHeaderViewHolder(HeaderViewHolder viewHolder, int sectionIndex) {
+	public void onBindHeaderViewHolder(HeaderViewHolder viewHolder, int sectionIndex, int headerType) {
 	}
 
 	/**
@@ -243,8 +266,9 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 *
 	 * @param viewHolder   the view holder to update
 	 * @param sectionIndex the index of the section containing the footer to update
+	 * @param footerType if getSectionFooterUserType is overridden to provide custom footer types, this will be the type for this footer
 	 */
-	public void onBindFooterViewHolder(FooterViewHolder viewHolder, int sectionIndex) {
+	public void onBindFooterViewHolder(FooterViewHolder viewHolder, int sectionIndex, int footerType) {
 	}
 
 	/**
@@ -601,6 +625,59 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		Section section = this.sections.get(sectionIndex);
 		int localPosition = adapterPosition - section.adapterPosition;
 
+		int baseType = getItemViewBaseType(section, localPosition);
+		int userType = 0;
+
+
+		switch( baseType) {
+			case TYPE_HEADER:
+				userType = getSectionHeaderUserType(sectionIndex);
+				break;
+			case TYPE_ITEM:
+				// adjust local position to accommodate header & ghost header
+				if (section.hasHeader) {
+					localPosition -= 2;
+				}
+				userType = getSectionItemUserType(sectionIndex, localPosition);
+				break;
+			case TYPE_FOOTER:
+				userType = getSectionFooterUserType(sectionIndex);
+				break;
+		}
+
+		if (userType < 0 || userType > 0xFF) {
+			throw new IllegalArgumentException("Custom user view type (" + userType + " must be in range [0,255]");
+		}
+
+		// base is bottom 8 bits, user type next 8 bits
+		return ((userType & 0xFF) << 8) | (baseType & 0xFF);
+	}
+
+	/**
+	 * @param adapterPosition the adapterPosition of the item in question
+	 * @return the base type (TYPE_HEADER, TYPE_GHOST_HEADER, TYPE_ITEM, TYPE_FOOTER) of the item at a given adapter position
+	 */
+	public int getItemViewBaseType(int adapterPosition) {
+		return unmaskBaseViewType(getItemViewType(adapterPosition));
+	}
+
+	/**
+	 * @param adapterPosition the adapterPosition of the item in question
+	 * @return the custom user type of the item at the adapterPosition
+	 */
+	public int getItemViewUserType(int adapterPosition) {
+		return unmaskUserViewType(getItemViewType(adapterPosition));
+	}
+
+	public static int unmaskBaseViewType(int itemViewTypeMask) {
+		return itemViewTypeMask & 0xFF; // base view type (HEADER/ITEM/FOOTER/GHOST_HEADER) is lower 8 bits
+	}
+
+	public static int unmaskUserViewType(int itemViewTypeMask) {
+		return (itemViewTypeMask >> 8) & 0xFF; // use type is in 0x0000FF00 segment
+	}
+
+	int getItemViewBaseType(Section section, int localPosition) {
 		if (section.hasHeader && section.hasFooter) {
 			if (localPosition == 0) {
 				return TYPE_HEADER;
@@ -633,13 +710,17 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 
 	@Override
 	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		switch (viewType) {
+
+		int baseViewType = unmaskBaseViewType(viewType);
+		int userViewType = unmaskUserViewType(viewType);
+
+		switch (baseViewType) {
 			case TYPE_ITEM:
-				return onCreateItemViewHolder(parent);
+				return onCreateItemViewHolder(parent, userViewType);
 			case TYPE_HEADER:
-				return onCreateHeaderViewHolder(parent);
+				return onCreateHeaderViewHolder(parent, userViewType);
 			case TYPE_FOOTER:
-				return onCreateFooterViewHolder(parent);
+				return onCreateFooterViewHolder(parent, userViewType);
 			case TYPE_GHOST_HEADER:
 				return onCreateGhostHeaderViewHolder(parent);
 		}
@@ -658,20 +739,22 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		// tag the viewHolder's item so as to make it possible to track in layout manager
 		tagViewHolderItemView(holder, section, adapterPosition);
 
-		switch (holder.getItemViewType()) {
+		int baseType = unmaskBaseViewType(holder.getItemViewType());
+		int userType = unmaskUserViewType(holder.getItemViewType());
+		switch (baseType) {
 			case TYPE_HEADER:
-				onBindHeaderViewHolder((HeaderViewHolder) holder, section);
+				onBindHeaderViewHolder((HeaderViewHolder) holder, section, userType);
 				break;
 
 			case TYPE_ITEM:
 				ItemViewHolder ivh = (ItemViewHolder) holder;
 				int positionInSection = getPositionOfItemInSection(section, adapterPosition);
 				ivh.setPositionInSection(positionInSection);
-				onBindItemViewHolder(ivh, section, positionInSection);
+				onBindItemViewHolder(ivh, section, positionInSection, userType);
 				break;
 
 			case TYPE_FOOTER:
-				onBindFooterViewHolder((FooterViewHolder) holder, section);
+				onBindFooterViewHolder((FooterViewHolder) holder, section, userType);
 				break;
 
 			case TYPE_GHOST_HEADER:
@@ -679,7 +762,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 				break;
 
 			default:
-				throw new IllegalArgumentException("unrecognized viewType: " + holder.getItemViewType() + " does not correspond to TYPE_ITEM, TYPE_HEADER, TYPE_GHOST_HEADER or TYPE_FOOTER");
+				throw new IllegalArgumentException("unrecognized viewType: " + baseType + " does not correspond to TYPE_ITEM, TYPE_HEADER, TYPE_GHOST_HEADER or TYPE_FOOTER");
 		}
 	}
 

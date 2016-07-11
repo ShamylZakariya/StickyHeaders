@@ -296,7 +296,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
 					// we're skipping headers. they should already be vended, but if we're vending a ghostHeader
 					// here an actual header will be vended if needed for measurement
-					int itemViewType = adapter.getItemViewType(firstViewAdapterPosition);
+					int itemViewType = adapter.getItemViewBaseType(firstViewAdapterPosition);
 					boolean isHeader = itemViewType == SectioningAdapter.TYPE_HEADER;
 
 					// skip the header, move to next item above
@@ -350,7 +350,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
 					int top = getDecoratedBottom(bottomView);
 
-					int itemViewType = adapter.getItemViewType(nextAdapterPosition);
+					int itemViewType = adapter.getItemViewBaseType(nextAdapterPosition);
 					if (itemViewType == SectioningAdapter.TYPE_HEADER) {
 
 						// get the header and measure it so we can followup immediately by vending the ghost header
@@ -702,7 +702,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
 	int getViewType(View view) {
 		int adapterPosition = getViewAdapterPosition(view);
-		return adapter.getItemViewType(adapterPosition);
+		return adapter.getItemViewBaseType(adapterPosition);
 	}
 
 	int getViewSectionIndex(View view) {
