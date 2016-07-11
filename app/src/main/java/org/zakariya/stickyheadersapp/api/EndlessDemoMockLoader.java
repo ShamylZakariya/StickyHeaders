@@ -63,6 +63,22 @@ public class EndlessDemoMockLoader {
 	public EndlessDemoMockLoader() {
 	}
 
+	/**
+	 * Build a section and vend it synchronously
+	 * @return a new populated SectionModel
+	 */
+	public SectionModel vendSection() {
+		EndlessDemoMockLoader.SectionModel sectionModel = new EndlessDemoMockLoader.SectionModel();
+		sectionModel.setTitle("Page " + Integer.toString(vendCount));
+
+		for (int j = 0; j < 20; j++) {
+			sectionModel.addItem(new EndlessDemoMockLoader.ItemModel("Item " + Integer.toString(j)));
+		}
+
+		vendCount++;
+		return sectionModel;
+	}
+
 	public void load(final Listener listener) {
 
 		this.listener = listener;
@@ -91,22 +107,6 @@ public class EndlessDemoMockLoader {
 		stepLoad();
 	}
 
-	/**
-	 * Build a section and vend it synchronously
-	 * @return a new populated SectionModel
-	 */
-	public SectionModel vendSection() {
-		EndlessDemoMockLoader.SectionModel sectionModel = new EndlessDemoMockLoader.SectionModel();
-		sectionModel.setTitle("Page " + Integer.toString(vendCount));
-
-		for (int j = 0; j < 20; j++) {
-			sectionModel.addItem(new EndlessDemoMockLoader.ItemModel("Item " + Integer.toString(j)));
-		}
-
-		vendCount++;
-		return sectionModel;
-	}
-
 	private void stepLoad() {
 		listener.onSectionLoadProgress((float) tick / (float) STEPS);
 		handler.postDelayed(runnable, DELAY);
@@ -114,6 +114,7 @@ public class EndlessDemoMockLoader {
 
 	private void finishLoad() {
 		listener.onSectionLoaded(vendSection());
+		listener = null;
 	}
 
 

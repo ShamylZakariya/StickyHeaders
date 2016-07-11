@@ -12,7 +12,7 @@ import org.zakariya.stickyheadersapp.R;
 import org.zakariya.stickyheadersapp.adapters.EndlessDemoAdapter;
 import org.zakariya.stickyheadersapp.api.EndlessDemoMockLoader;
 
-public class EndlessScrollDemoActivity extends DemoActivity {
+public class EndlessScrollDemoActivity extends DemoActivity implements EndlessDemoMockLoader.Listener {
 
 	private static final String TAG = EndlessScrollDemoActivity.class.getSimpleName();
 
@@ -36,10 +36,9 @@ public class EndlessScrollDemoActivity extends DemoActivity {
 			@Override
 			public void onLoadMore(int page, int totalItemsCount) {
 				Log.d(TAG, "onLoadMore() called with: " + "page = [" + page + "], totalItemsCount = [" + totalItemsCount + "]");
-				adapter.addSection(loader.vendSection());
+				loader.load(EndlessScrollDemoActivity.this);
 			}
 		});
-
 	}
 
 	@Override
@@ -57,4 +56,19 @@ public class EndlessScrollDemoActivity extends DemoActivity {
 		}
 	}
 
+	@Override
+	public void onSectionLoadBegun() {
+		Log.i(TAG, "onSectionLoadBegun: ");
+	}
+
+	@Override
+	public void onSectionLoadProgress(float progress) {
+		Log.d(TAG, "onSectionLoadProgress() called with: " + "progress = [" + progress + "]");
+	}
+
+	@Override
+	public void onSectionLoaded(EndlessDemoMockLoader.SectionModel sectionModel) {
+		Log.i(TAG, "onSectionLoaded: ");
+		adapter.addSection(sectionModel);
+	}
 }
