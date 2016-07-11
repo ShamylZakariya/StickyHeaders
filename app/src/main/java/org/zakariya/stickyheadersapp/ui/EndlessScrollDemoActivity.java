@@ -19,6 +19,8 @@ public class EndlessScrollDemoActivity extends DemoActivity implements EndlessDe
 	EndlessDemoAdapter adapter;
 	EndlessDemoMockLoader loader;
 
+
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -59,6 +61,7 @@ public class EndlessScrollDemoActivity extends DemoActivity implements EndlessDe
 	@Override
 	public void onSectionLoadBegun() {
 		Log.i(TAG, "onSectionLoadBegun: ");
+		adapter.showLoadingIndicator();
 	}
 
 	@Override
@@ -69,6 +72,7 @@ public class EndlessScrollDemoActivity extends DemoActivity implements EndlessDe
 	@Override
 	public void onSectionLoaded(EndlessDemoMockLoader.SectionModel sectionModel) {
 		Log.i(TAG, "onSectionLoaded: ");
+		adapter.hideLoadingIndicator();
 		adapter.addSection(sectionModel);
 	}
 }

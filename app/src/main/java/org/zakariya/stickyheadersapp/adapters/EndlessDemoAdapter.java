@@ -60,6 +60,7 @@ public class EndlessDemoAdapter extends SectioningAdapter {
 	}
 
 	ArrayList<EndlessDemoMockLoader.SectionModel> sections = new ArrayList<>();
+	EndlessDemoMockLoader.SectionModel loadingIndicatorSectionModel;
 
 	public EndlessDemoAdapter() {
 	}
@@ -67,6 +68,26 @@ public class EndlessDemoAdapter extends SectioningAdapter {
 	public void addSection(EndlessDemoMockLoader.SectionModel section) {
 		sections.add(section);
 		notifySectionInserted(sections.size()-1);
+	}
+
+	public void showLoadingIndicator() {
+		if (loadingIndicatorSectionModel == null) {
+			loadingIndicatorSectionModel = new EndlessDemoMockLoader.SectionModel(null);
+			loadingIndicatorSectionModel.addItem(new EndlessDemoMockLoader.ItemModel("Loading..."));
+			addSection(loadingIndicatorSectionModel);
+		}
+	}
+
+	public void hideLoadingIndicator() {
+		if (loadingIndicatorSectionModel != null) {
+			int position = sections.indexOf(loadingIndicatorSectionModel);
+			if (position >= 0) {
+				sections.remove(position);
+				notifySectionRemoved(position);
+			}
+
+			loadingIndicatorSectionModel = null;
+		}
 	}
 
 	@Override

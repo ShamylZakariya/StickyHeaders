@@ -1,6 +1,7 @@
 package org.zakariya.stickyheadersapp.api;
 
 import android.os.Handler;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -8,6 +9,8 @@ import java.util.ArrayList;
  * This is a fake service for async loading data for use by EndlessScrollDemoActivity
  */
 public class EndlessDemoMockLoader {
+
+	public static final String TAG = EndlessDemoMockLoader.class.getSimpleName();
 
 	public static class ItemModel {
 		String title;
@@ -25,12 +28,12 @@ public class EndlessDemoMockLoader {
 		String title;
 		ArrayList<ItemModel> items = new ArrayList<>();
 
-		public String getTitle() {
-			return title;
+		public SectionModel(String title) {
+			this.title = title;
 		}
 
-		public void setTitle(String title) {
-			this.title = title;
+		public String getTitle() {
+			return title;
 		}
 
 		public ArrayList<ItemModel> getItems() {
@@ -68,8 +71,7 @@ public class EndlessDemoMockLoader {
 	 * @return a new populated SectionModel
 	 */
 	public SectionModel vendSection() {
-		EndlessDemoMockLoader.SectionModel sectionModel = new EndlessDemoMockLoader.SectionModel();
-		sectionModel.setTitle("Page " + Integer.toString(vendCount));
+		EndlessDemoMockLoader.SectionModel sectionModel = new EndlessDemoMockLoader.SectionModel("Page " + Integer.toString(vendCount));
 
 		for (int j = 0; j < 20; j++) {
 			sectionModel.addItem(new EndlessDemoMockLoader.ItemModel("Item " + Integer.toString(j)));
@@ -113,8 +115,11 @@ public class EndlessDemoMockLoader {
 	}
 
 	private void finishLoad() {
-		listener.onSectionLoaded(vendSection());
-		listener = null;
+		Log.i(TAG, "finishLoad: listener? " + listener);
+		if (listener != null) {
+			listener.onSectionLoaded(vendSection());
+			listener = null;
+		}
 	}
 
 
