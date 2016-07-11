@@ -310,6 +310,13 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 						if (firstViewAdapterPosition < 0) {
 							break;
 						}
+
+						itemViewType = adapter.getItemViewType(firstViewAdapterPosition);
+						isHeader = itemViewType == SectioningAdapter.TYPE_HEADER;
+
+						// If it's still a header, we don't need to do anything right now
+						if(isHeader)
+							break;
 					}
 
 					View v = recycler.getViewForPosition(firstViewAdapterPosition);
