@@ -398,8 +398,19 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * @param collapsed if true, section is collapsed, false, it's open
 	 */
 	public void setSectionIsCollapsed(int sectionIndex, boolean collapsed) {
+		boolean notify = isSectionCollapsed(sectionIndex) != collapsed;
+
 		collapsedSections.put(sectionIndex, collapsed);
-		notifySectionDataSetChanged(sectionIndex);
+
+		if(notify) {
+			Section section = sections.get(sectionIndex);
+			int number = section.numberOfItems;
+
+			if(collapsed)
+				notifySectionItemRangeRemoved(sectionIndex, 0, number);
+			else
+				notifySectionItemRangeInserted(sectionIndex, 0, number);
+		}
 	}
 
 	public boolean isSectionCollapsed(int sectionIndex) {
@@ -436,6 +447,63 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			notifyItemRangeChanged(section.adapterPosition, section.length);
 		}
 	}
+
+	/**
+	 * Notify that a range of items in a section has been inserted
+	 * @param sectionIndex index of the section
+	 * @param fromPosition index to start adding
+	 * @param number amount of items inserted
+     */
+	public void notifySectionItemRangeInserted(int sectionIndex, int fromPosition, int number) {
+		if (sections == null) {
+			buildSectionIndex();
+			notifyAllSectionsDataSetChanged();
+		} else {
+			Section section = this.sections.get(sectionIndex);
+
+			if (fromPosition > section.numberOfItems) {
+				throw new IndexOutOfBoundsException("itemIndex adapterPosition: " + fromPosition + " exceeds sectionIndex numberOfItems: " + section.numberOfItems);
+			}
+
+			if(section.hasHeader) {
+				fromPosition += 2;
+			}
+
+			notifyItemRangeInserted(section.adapterPosition + fromPosition, number);
+			buildSectionIndex();
+		}
+	}
+
+	/**
+	 * Notify that a range of items in a section has been inserted
+	 * @param sectionIndex index of the section
+	 * @param fromPosition index to start removing
+	 * @param number amount of items removed
+	 */
+	public void notifySectionItemRangeRemoved(int sectionIndex, int fromPosition, int number) {
+		if (sections == null) {
+			buildSectionIndex();
+			notifyAllSectionsDataSetChanged();
+		} else {
+			Section section = this.sections.get(sectionIndex);
+
+			if (fromPosition > section.numberOfItems) {
+				throw new IndexOutOfBoundsException("itemIndex adapterPosition: " + fromPosition + " exceeds sectionIndex numberOfItems: " + section.numberOfItems);
+			}
+
+			if (fromPosition + number > section.numberOfItems) {
+				throw new IndexOutOfBoundsException("itemIndex adapterPosition: " + fromPosition + number + " exceeds sectionIndex numberOfItems: " + section.numberOfItems);
+			}
+
+			if(section.hasHeader) {
+				fromPosition += 2;
+			}
+
+			notifyItemRangeRemoved(section.adapterPosition + fromPosition, number);
+			buildSectionIndex();
+		}
+	}
+
 
 	/**
 	 * Notify that a particular itemIndex in a section has been invalidated and must be reloaded
@@ -547,6 +615,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 
 			if (isSectionCollapsed(s)){
 				section.length = 0;
+				section.numberOfItems = getNumberOfItemsInSection(s);
 			} else {
 				section.length = section.numberOfItems = getNumberOfItemsInSection(s);
 			}
