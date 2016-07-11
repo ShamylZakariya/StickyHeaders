@@ -461,6 +461,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		} else {
 			Section section = this.sections.get(sectionIndex);
 
+			// 0 is a valid position to insert from
 			if (fromPosition > section.numberOfItems) {
 				throw new IndexOutOfBoundsException("itemIndex adapterPosition: " + fromPosition + " exceeds sectionIndex numberOfItems: " + section.numberOfItems);
 			}
@@ -475,9 +476,9 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	}
 
 	/**
-	 * Notify that a range of items in a section has been inserted
+	 * Notify that a range of items in a section has been removed
 	 * @param sectionIndex index of the section
-	 * @param fromPosition index to start removing
+	 * @param fromPosition index to start removing from
 	 * @param number amount of items removed
 	 */
 	public void notifySectionItemRangeRemoved(int sectionIndex, int fromPosition, int number) {
@@ -487,10 +488,12 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		} else {
 			Section section = this.sections.get(sectionIndex);
 
+			// 0 is a valid position to remove from
 			if (fromPosition > section.numberOfItems) {
 				throw new IndexOutOfBoundsException("itemIndex adapterPosition: " + fromPosition + " exceeds sectionIndex numberOfItems: " + section.numberOfItems);
 			}
 
+			// Verify we don't run off the end of the section
 			if (fromPosition + number > section.numberOfItems) {
 				throw new IndexOutOfBoundsException("itemIndex adapterPosition: " + fromPosition + number + " exceeds sectionIndex numberOfItems: " + section.numberOfItems);
 			}
