@@ -176,6 +176,10 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		int parentBottom = getHeight() - getPaddingBottom();
 		int totalVendedHeight = 0;
 
+		// If we emptied the view with a notify, we may overshoot and fail to draw
+		if(firstViewAdapterPosition > state.getItemCount())
+			firstViewAdapterPosition = 0;
+
 		// walk through adapter starting at firstViewAdapterPosition stacking each vended item
 		for (int adapterPosition = firstViewAdapterPosition; adapterPosition < state.getItemCount(); adapterPosition++) {
 

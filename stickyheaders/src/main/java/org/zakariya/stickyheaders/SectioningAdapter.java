@@ -403,6 +403,9 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		collapsedSections.put(sectionIndex, collapsed);
 
 		if(notify) {
+			if(sections == null)
+				buildSectionIndex();
+
 			Section section = sections.get(sectionIndex);
 			int number = section.numberOfItems;
 
@@ -459,6 +462,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			buildSectionIndex();
 			notifyAllSectionsDataSetChanged();
 		} else {
+			buildSectionIndex();
 			Section section = this.sections.get(sectionIndex);
 
 			// 0 is a valid position to insert from
@@ -471,7 +475,6 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			}
 
 			notifyItemRangeInserted(section.adapterPosition + fromPosition, number);
-			buildSectionIndex();
 		}
 	}
 
@@ -486,6 +489,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			buildSectionIndex();
 			notifyAllSectionsDataSetChanged();
 		} else {
+			buildSectionIndex();
 			Section section = this.sections.get(sectionIndex);
 
 			// 0 is a valid position to remove from
@@ -503,7 +507,6 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			}
 
 			notifyItemRangeRemoved(section.adapterPosition + fromPosition, number);
-			buildSectionIndex();
 		}
 	}
 
