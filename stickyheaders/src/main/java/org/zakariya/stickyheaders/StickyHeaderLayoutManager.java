@@ -112,6 +112,9 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	@Override
 	public void onDetachedFromWindow(RecyclerView view, RecyclerView.Recycler recycler) {
 		super.onDetachedFromWindow(view, recycler);
+
+		// Update positions in case we need to save post-detach
+		updateFirstAdapterPosition();
 		adapter = null;
 	}
 
@@ -121,7 +124,9 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			return pendingSavedState;
 		}
 
-		updateFirstAdapterPosition();
+		// Check if we're detached; if not, update
+		if(adapter != null)
+			updateFirstAdapterPosition();
 		SavedState state = new SavedState();
 		state.firstViewAdapterPosition = firstViewAdapterPosition;
 		state.firstViewTop = firstViewTop;
