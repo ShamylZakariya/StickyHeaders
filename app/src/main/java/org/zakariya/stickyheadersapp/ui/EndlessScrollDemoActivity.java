@@ -1,25 +1,45 @@
 package org.zakariya.stickyheadersapp.ui;
 
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import org.zakariya.stickyheaders.EndlessRecyclerViewScrollListener;
+import org.zakariya.stickyheaders.StickyHeaderLayoutManager;
 import org.zakariya.stickyheadersapp.R;
-import org.zakariya.stickyheadersapp.adapters.SimpleDemoAdapter;
+import org.zakariya.stickyheadersapp.adapters.EndlessDemoAdapter;
+import org.zakariya.stickyheadersapp.api.EndlessDemoMockLoader;
 
-/**
- * Created by shamyl on 7/9/16.
- */
 public class EndlessScrollDemoActivity extends DemoActivity {
+
+	private static final String TAG = EndlessScrollDemoActivity.class.getSimpleName();
+
+	EndlessDemoAdapter adapter;
+	EndlessDemoMockLoader loader;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		recyclerView.setLayoutManager(new LinearLayoutManager(this));
-		recyclerView.setAdapter(new SimpleDemoAdapter(5, 5, false, false, false));
+		loader = new EndlessDemoMockLoader();
+
+		adapter = new EndlessDemoAdapter();
+		adapter.addSection(loader.vendSection());
+
+		StickyHeaderLayoutManager layoutManager = new StickyHeaderLayoutManager();
+		recyclerView.setLayoutManager(layoutManager);
+		recyclerView.setAdapter(adapter);
+
+		recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
+			@Override
+			public void onLoadMore(int page, int totalItemsCount) {
+				Log.d(TAG, "onLoadMore() called with: " + "page = [" + page + "], totalItemsCount = [" + totalItemsCount + "]");
+				adapter.addSection(loader.vendSection());
+			}
+		});
+
 	}
 
 	@Override
