@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.zakariya.stickyheaders.SectioningAdapter;
@@ -17,6 +18,9 @@ import java.util.ArrayList;
 public class EndlessDemoAdapter extends SectioningAdapter {
 
 	private static final boolean USE_DEBUG_APPEARANCE = false;
+
+	private static final int USER_ITEM_TYPE_NORMAL = 0;
+	private static final int USER_ITEM_TYPE_PROGRESS_INDICATOR = 1;
 
 	public class ItemViewHolder extends SectioningAdapter.ItemViewHolder {
 		TextView textView;
@@ -36,6 +40,30 @@ public class EndlessDemoAdapter extends SectioningAdapter {
 			adapterPositionTextView.setVisibility(View.VISIBLE);
 		}
 	}
+
+	public class LoadingIndicatorItemViewHolder extends SectioningAdapter.ItemViewHolder {
+
+		private static final int MAX_PROGRESS = 100;
+
+		ProgressBar progressBar;
+
+		public LoadingIndicatorItemViewHolder(View itemView) {
+			super(itemView);
+			progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
+			progressBar.setMax(MAX_PROGRESS);
+		}
+
+		void setProgress(float progress) {
+			progress = Math.max(Math.min(progress, 1), 0);
+			progressBar.setProgress((int)(progress * MAX_PROGRESS));
+		}
+
+		float getProgress() {
+			return (float)progressBar.getProgress() / (float) MAX_PROGRESS;
+		}
+
+	}
+
 
 	public class HeaderViewHolder extends SectioningAdapter.HeaderViewHolder {
 		TextView textView;
@@ -61,6 +89,7 @@ public class EndlessDemoAdapter extends SectioningAdapter {
 
 	ArrayList<EndlessDemoMockLoader.SectionModel> sections = new ArrayList<>();
 	EndlessDemoMockLoader.SectionModel loadingIndicatorSectionModel;
+	LoadingIndicatorItemViewHolder currentLoadingIndicatorItemViewHolder;
 
 	public EndlessDemoAdapter() {
 	}
@@ -73,8 +102,14 @@ public class EndlessDemoAdapter extends SectioningAdapter {
 	public void showLoadingIndicator() {
 		if (loadingIndicatorSectionModel == null) {
 			loadingIndicatorSectionModel = new EndlessDemoMockLoader.SectionModel(null);
-			loadingIndicatorSectionModel.addItem(new EndlessDemoMockLoader.ItemModel("Loading..."));
+			loadingIndicatorSectionModel.addItem(new EndlessDemoMockLoader.ItemModel(null, true));
 			addSection(loadingIndicatorSectionModel);
+		}
+	}
+
+	public void updateLoadingIndicatorProgress(float progress) {
+		if (currentLoadingIndicatorItemViewHolder != null) {
+			currentLoadingIndicatorItemViewHolder.setProgress(progress);
 		}
 	}
 
@@ -101,6 +136,12 @@ public class EndlessDemoAdapter extends SectioningAdapter {
 	}
 
 	@Override
+	public int getSectionItemUserType(int sectionIndex, int itemIndex) {
+		EndlessDemoMockLoader.ItemModel item = sections.get(sectionIndex).getItems().get(itemIndex);
+		return item.isLoadingIndicator() ? USER_ITEM_TYPE_PROGRESS_INDICATOR : USER_ITEM_TYPE_NORMAL;
+	}
+
+	@Override
 	public boolean doesSectionHaveHeader(int sectionIndex) {
 		return !TextUtils.isEmpty(sections.get(sectionIndex).getTitle());
 	}
@@ -111,10 +152,18 @@ public class EndlessDemoAdapter extends SectioningAdapter {
 	}
 
 	@Override
-	public ItemViewHolder onCreateItemViewHolder(ViewGroup parent, int itemType) {
+	public SectioningAdapter.ItemViewHolder onCreateItemViewHolder(ViewGroup parent, int itemType) {
 		LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-		View v = inflater.inflate(R.layout.list_item_simple_item, parent, false);
-		return new ItemViewHolder(v);
+
+		switch(itemType) {
+			case USER_ITEM_TYPE_NORMAL:
+				return new ItemViewHolder(inflater.inflate(R.layout.list_item_simple_item, parent, false));
+
+			case USER_ITEM_TYPE_PROGRESS_INDICATOR:
+				return new LoadingIndicatorItemViewHolder(inflater.inflate(R.layout.list_item_load_progress, parent, false));
+		}
+
+		throw new IllegalArgumentException("Unrecognized itemType: " + itemType);
 	}
 
 	@Override
@@ -135,9 +184,21 @@ public class EndlessDemoAdapter extends SectioningAdapter {
 	@Override
 	public void onBindItemViewHolder(SectioningAdapter.ItemViewHolder viewHolder, int sectionIndex, int itemIndex, int itemType) {
 		EndlessDemoMockLoader.SectionModel s = sections.get(sectionIndex);
-		ItemViewHolder ivh = (ItemViewHolder) viewHolder;
-		ivh.textView.setText(s.getItems().get(itemIndex).getTitle());
-		ivh.adapterPositionTextView.setText(Integer.toString(getAdapterPositionForSectionItem(sectionIndex, itemIndex)));
+
+		switch(itemType) {
+			case USER_ITEM_TYPE_NORMAL:
+				ItemViewHolder ivh = (ItemViewHolder) viewHolder;
+				ivh.textView.setText(s.getItems().get(itemIndex).getTitle());
+				ivh.adapterPositionTextView.setText(Integer.toString(getAdapterPositionForSectionItem(sectionIndex, itemIndex)));
+				break;
+
+			case USER_ITEM_TYPE_PROGRESS_INDICATOR:
+				currentLoadingIndicatorItemViewHolder = (LoadingIndicatorItemViewHolder) viewHolder;
+				break;
+
+			default:
+				throw new IllegalArgumentException("Unrecognized item type: " + itemType);
+		}
 	}
 
 	@SuppressLint("SetTextI18n")

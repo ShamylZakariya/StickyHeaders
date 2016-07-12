@@ -1,7 +1,6 @@
 package org.zakariya.stickyheadersapp.api;
 
 import android.os.Handler;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -14,13 +13,24 @@ public class EndlessDemoMockLoader {
 
 	public static class ItemModel {
 		String title;
+		boolean isLoadingIndicator;
 
 		public ItemModel(String title) {
 			this.title = title;
+			this.isLoadingIndicator = false;
+		}
+
+		public ItemModel(String title, boolean isLoadingIndicator) {
+			this.title = title;
+			this.isLoadingIndicator = isLoadingIndicator;
 		}
 
 		public String getTitle() {
 			return title;
+		}
+
+		public boolean isLoadingIndicator() {
+			return isLoadingIndicator;
 		}
 	}
 
@@ -115,7 +125,7 @@ public class EndlessDemoMockLoader {
 	}
 
 	private void finishLoad() {
-		Log.i(TAG, "finishLoad: listener? " + listener);
+		//Log.i(TAG, "finishLoad: listener? " + listener);
 		if (listener != null) {
 			listener.onSectionLoaded(vendSection());
 			listener = null;

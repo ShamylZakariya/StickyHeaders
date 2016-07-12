@@ -1,6 +1,9 @@
 #BUGS
 
-When collapsing/expanding a section, the header for the next section disappears while animation runs
+EndlessScrollDemoActivity
+If you hold on to the list while the load happens, you get a crash on completion. I think it might be because of scroll events which run immediately after the load completes. Might want to:
+	- ensure to disallow loads while a load ir running
+	- prevent loads for some period after a load completes
 
 
 #TESTING:

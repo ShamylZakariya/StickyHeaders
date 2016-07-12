@@ -60,18 +60,16 @@ public class EndlessScrollDemoActivity extends DemoActivity implements EndlessDe
 
 	@Override
 	public void onSectionLoadBegun() {
-		Log.i(TAG, "onSectionLoadBegun: ");
 		adapter.showLoadingIndicator();
 	}
 
 	@Override
 	public void onSectionLoadProgress(float progress) {
-		Log.d(TAG, "onSectionLoadProgress() called with: " + "progress = [" + progress + "]");
+		adapter.updateLoadingIndicatorProgress(progress);
 	}
 
 	@Override
 	public void onSectionLoaded(EndlessDemoMockLoader.SectionModel sectionModel) {
-		Log.i(TAG, "onSectionLoaded: ");
 		adapter.hideLoadingIndicator();
 		adapter.addSection(sectionModel);
 	}
