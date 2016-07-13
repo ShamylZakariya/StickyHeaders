@@ -14,15 +14,26 @@ public class PagedMockLoader {
 	public static class ItemModel {
 		String title;
 		boolean isLoadingIndicator;
+		boolean isExhaustedIndicator;
 
 		public ItemModel(String title) {
 			this.title = title;
 			this.isLoadingIndicator = false;
+			this.isExhaustedIndicator = false;
 		}
 
-		public ItemModel(String title, boolean isLoadingIndicator) {
+		public ItemModel(String title, boolean isLoadingIndicator, boolean isExhaustedIndicator) {
 			this.title = title;
 			this.isLoadingIndicator = isLoadingIndicator;
+			this.isExhaustedIndicator = isExhaustedIndicator;
+		}
+
+		public static ItemModel createLoadingIndicatorItemModel() {
+			return new ItemModel(null, true, false);
+		}
+
+		public static ItemModel createExhaustedIndicatorItemModel() {
+			return new ItemModel(null, false, true);
 		}
 
 		public String getTitle() {
@@ -31,6 +42,10 @@ public class PagedMockLoader {
 
 		public boolean isLoadingIndicator() {
 			return isLoadingIndicator;
+		}
+
+		public boolean isExhaustedIndicator() {
+			return isExhaustedIndicator;
 		}
 	}
 
@@ -63,17 +78,20 @@ public class PagedMockLoader {
 		void onSectionLoadBegun();
 		void onSectionLoadProgress(float progress);
 		void onSectionLoaded(SectionModel sectionModel);
+		void onSectionsExhausted();
 	}
 
 	Handler handler;
 	Runnable runnable;
 	Listener listener;
 	int page;
+	int maxPages;
 	int tick;
 	static final int STEPS = 100;
 	static final long DELAY = 20;
 
-	public PagedMockLoader() {
+	public PagedMockLoader(int maxPages) {
+		this.maxPages = maxPages;
 	}
 
 	/**
@@ -127,7 +145,11 @@ public class PagedMockLoader {
 	private void finishLoad() {
 		//Log.i(TAG, "finishLoad: listener? " + listener);
 		if (listener != null) {
-			listener.onSectionLoaded(vendSection(page));
+			if (page < maxPages) {
+				listener.onSectionLoaded(vendSection(page));
+			} else {
+				listener.onSectionsExhausted();
+			}
 			listener = null;
 		}
 	}

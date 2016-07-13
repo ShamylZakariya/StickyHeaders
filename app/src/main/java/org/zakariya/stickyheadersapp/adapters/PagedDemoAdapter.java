@@ -17,10 +17,9 @@ import java.util.ArrayList;
 
 public class PagedDemoAdapter extends SectioningAdapter {
 
-	private static final boolean USE_DEBUG_APPEARANCE = false;
-
 	private static final int USER_ITEM_TYPE_NORMAL = 0;
 	private static final int USER_ITEM_TYPE_PROGRESS_INDICATOR = 1;
+	private static final int USER_ITEM_TYPE_EXHAUSTED = 2;
 
 	public class ItemViewHolder extends SectioningAdapter.ItemViewHolder {
 		TextView textView;
@@ -38,6 +37,12 @@ public class PagedDemoAdapter extends SectioningAdapter {
 			cloneButton.setVisibility(View.GONE);
 			deleteButton.setVisibility(View.GONE);
 			adapterPositionTextView.setVisibility(View.VISIBLE);
+		}
+	}
+
+	public class ExhaustedItemViewHolder extends SectioningAdapter.ItemViewHolder {
+		public ExhaustedItemViewHolder(View itemView) {
+			super(itemView);
 		}
 	}
 
@@ -102,13 +107,9 @@ public class PagedDemoAdapter extends SectioningAdapter {
 	public void showLoadingIndicator() {
 		if (loadingIndicatorSectionModel == null) {
 			loadingIndicatorSectionModel = new PagedMockLoader.SectionModel(null);
-			loadingIndicatorSectionModel.addItem(new PagedMockLoader.ItemModel(null, true));
-			
-			// TODO: Why does doing this the RIGHT way cause a crash?
-			//addSection(loadingIndicatorSectionModel);
+			loadingIndicatorSectionModel.addItem(PagedMockLoader.ItemModel.createLoadingIndicatorItemModel());
 
-			sections.add(loadingIndicatorSectionModel);
-			notifyAllSectionsDataSetChanged();
+			addSection(loadingIndicatorSectionModel);
 		}
 	}
 
@@ -134,6 +135,13 @@ public class PagedDemoAdapter extends SectioningAdapter {
 		}
 	}
 
+	public void showLoadExhaustedIndicator() {
+		PagedMockLoader.SectionModel section = new PagedMockLoader.SectionModel(null);
+		section.addItem(PagedMockLoader.ItemModel.createExhaustedIndicatorItemModel());
+
+		addSection(section);
+	}
+
 	@Override
 	public int getNumberOfSections() {
 		return sections.size();
@@ -147,7 +155,14 @@ public class PagedDemoAdapter extends SectioningAdapter {
 	@Override
 	public int getSectionItemUserType(int sectionIndex, int itemIndex) {
 		PagedMockLoader.ItemModel item = sections.get(sectionIndex).getItems().get(itemIndex);
-		return item.isLoadingIndicator() ? USER_ITEM_TYPE_PROGRESS_INDICATOR : USER_ITEM_TYPE_NORMAL;
+
+		if (item.isLoadingIndicator()) {
+			return USER_ITEM_TYPE_PROGRESS_INDICATOR;
+		} else if (item.isExhaustedIndicator()) {
+			return USER_ITEM_TYPE_EXHAUSTED;
+		} else {
+			return USER_ITEM_TYPE_NORMAL;
+		}
 	}
 
 	@Override
@@ -170,6 +185,9 @@ public class PagedDemoAdapter extends SectioningAdapter {
 
 			case USER_ITEM_TYPE_PROGRESS_INDICATOR:
 				return new LoadingIndicatorItemViewHolder(inflater.inflate(R.layout.list_item_load_progress, parent, false));
+
+			case USER_ITEM_TYPE_EXHAUSTED:
+				return new ExhaustedItemViewHolder(inflater.inflate(R.layout.list_item_load_exhausted, parent, false));
 		}
 
 		throw new IllegalArgumentException("Unrecognized itemType: " + itemType);
@@ -205,6 +223,9 @@ public class PagedDemoAdapter extends SectioningAdapter {
 				currentLoadingIndicatorItemViewHolder = (LoadingIndicatorItemViewHolder) viewHolder;
 				break;
 
+			case USER_ITEM_TYPE_EXHAUSTED:
+				break;
+
 			default:
 				throw new IllegalArgumentException("Unrecognized item type: " + itemType);
 		}
@@ -216,20 +237,6 @@ public class PagedDemoAdapter extends SectioningAdapter {
 		PagedMockLoader.SectionModel s = sections.get(sectionIndex);
 		HeaderViewHolder hvh = (HeaderViewHolder) viewHolder;
 		hvh.adapterPositionTextView.setText(Integer.toString(getAdapterPositionForSectionHeader(sectionIndex)));
-
-		if (USE_DEBUG_APPEARANCE) {
-			hvh.textView.setText(pad(sectionIndex * 2) + s.getTitle());
-			viewHolder.itemView.setBackgroundColor(0x55FF9999);
-		} else {
-			hvh.textView.setText(s.getTitle());
-		}
-	}
-
-	private String pad(int spaces) {
-		StringBuilder b = new StringBuilder();
-		for (int i = 0; i < spaces; i++) {
-			b.append(' ');
-		}
-		return b.toString();
+		hvh.textView.setText(s.getTitle());
 	}
 }

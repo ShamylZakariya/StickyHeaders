@@ -14,7 +14,9 @@ import org.zakariya.stickyheadersapp.api.PagedMockLoader;
 
 public class PagedScrollDemoActivity extends DemoActivity implements PagedMockLoader.Listener {
 
-	private static final String TAG = "PagedScrollDemo";//PagedScrollDemoActivity.class.getSimpleName();
+	private static final String TAG = PagedScrollDemoActivity.class.getSimpleName();
+	private static final int NUM_PAGES = 3;
+
 
 	PagedDemoAdapter adapter;
 	PagedMockLoader loader;
@@ -26,7 +28,7 @@ public class PagedScrollDemoActivity extends DemoActivity implements PagedMockLo
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		loader = new PagedMockLoader();
+		loader = new PagedMockLoader(NUM_PAGES);
 		adapter = new PagedDemoAdapter();
 		adapter.addSection(loader.vendSection(0));
 
@@ -78,5 +80,14 @@ public class PagedScrollDemoActivity extends DemoActivity implements PagedMockLo
 		loadCompleteNotifier.notifyLoadComplete();
 		adapter.hideLoadingIndicator();
 		adapter.addSection(sectionModel);
+	}
+
+	@Override
+	public void onSectionsExhausted() {
+		Log.i(TAG, "onSectionsExhausted: notifying that there are no more sections to load");
+
+		loadCompleteNotifier.notifyLoadExhausted();
+		adapter.hideLoadingIndicator();
+		adapter.showLoadExhaustedIndicator();
 	}
 }

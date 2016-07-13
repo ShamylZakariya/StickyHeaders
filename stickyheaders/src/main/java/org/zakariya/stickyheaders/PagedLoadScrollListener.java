@@ -13,12 +13,14 @@ public abstract class PagedLoadScrollListener extends RecyclerView.OnScrollListe
 
 	public interface LoadCompleteNotifier {
 		void notifyLoadComplete();
+		void notifyLoadExhausted();
 	}
 
 	private int visibleThreshold;
 	private int currentPage = 0;
 	private int previousTotalItemCount = 0;
 	private boolean loading = false;
+	private boolean loadExhausted = false;
 	StickyHeaderLayoutManager layoutManager;
 
 
@@ -27,6 +29,11 @@ public abstract class PagedLoadScrollListener extends RecyclerView.OnScrollListe
 		public void notifyLoadComplete() {
 			loading = false;
 			previousTotalItemCount = layoutManager.getItemCount();
+		}
+
+		@Override
+		public void notifyLoadExhausted() {
+			loadExhausted = true;
 		}
 	};
 
@@ -42,8 +49,8 @@ public abstract class PagedLoadScrollListener extends RecyclerView.OnScrollListe
 	@Override
 	public void onScrolled(RecyclerView view, int dx, int dy) {
 
-		// no-op if we're loading
-		if (this.loading) {
+		// no-op if we're loading, or exhausted
+		if (loading || loadExhausted) {
 			return;
 		}
 

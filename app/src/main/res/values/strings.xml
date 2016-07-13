@@ -59,4 +59,6 @@
 	<string name="alert_dialog_button_title_jump">Jump</string>
 	<string name="alert_dialog_button_title_smooth">Smooth</string>
 
+	<string name="paged_load_exhausted">No more items</string>
+
 </resources>
