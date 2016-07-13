@@ -76,9 +76,9 @@
 		</activity>
 
 		<activity
-			android:name=".ui.EndlessScrollDemoActivity"
+			android:name=".ui.PagedScrollDemoActivity"
 			android:theme="@style/AppTheme.NoActionBar"
-			android:label="@string/title_endless_scroll_demo"
+			android:label="@string/title_paged_scroll_demo"
 			android:launchMode="singleTop"
 			android:parentActivityName=".ui.MainActivity">
 			<meta-data

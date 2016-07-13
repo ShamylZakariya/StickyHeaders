@@ -1,28 +1,20 @@
 #BUGS
 
+
+
+
 EndlessScrollDemoActivity
-If you hold on to the list while the load happens, you get a crash on completion. I think it might be because of scroll events which run immediately after the load completes. Might want to:
-	- ensure to disallow loads while a load ir running
-	- prevent loads for some period after a load completes
+If I use notifyAllSectionsDataChanged everything's peachy. If I use notifySectionInserted it blows up, catching NULL views in the RecyclerView. WTF!?
+
+Clean up EndlessRecyclerViewScrollListener. Now that I use a notify callback approach (instead of counting items in the list) I ought to be able to remove a lot of ugliness.
+
+Consider a 'first run' scenario with an empty data store. Figure out how to show the loading indicator!
+
+#TODO: 
+I need to figure out how to handle the situation where there's no more data. How to gracefully tell the scroll listener no new data is forthcoming. I should also add a third item type ("No more data!") to indicate we've reached the end of the line. 
+	- Consider a parameter to the LoadCompleteNotifier::notifyLoadComplete(boolean exhausted)
 
 
 #TESTING:
 	- need to ensure this works fine for adapters which don't have footer views and which don't have header views (!!!)
 	- need to test against different top/bottom padding scenarios
-
-
-#RecyclerView.LayoutManager
-
-Here's my understanding of how a linear layout manager works
-- When RV has a change to the number of items it represents, onLayoutChildren is called, and in there, a number of views are vended and positioned (precisely)
-	- note that in the demo code log call, top is a sane number like -163 representing the top of the first item. items are stacked according to height until they fall off the bottom.
-	
-- When user scrolls, scrollVerticallyBy is called
-	- items are vertically shifted
-	- new spaces are filled via same item vending process as onLayoutChildren
-	- out of bounds items are recycled
-	
-firstPosition seems to be the position in the logical list of the first item on screen - it's used to know which item to vend from the adapter
-	- firstPosition is updated on scroll and in recyling offscreen views
-
-LayoutManager::getChildCount() returns number of views attached to RV, not number of hypothetical views in list

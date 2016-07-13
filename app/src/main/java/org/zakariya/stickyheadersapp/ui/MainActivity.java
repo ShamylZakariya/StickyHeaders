@@ -149,9 +149,9 @@ public class MainActivity extends AppCompatActivity {
 							getString(R.string.demo_list_item_multi_type_description),
 							MultiTypeItemDemoActivity.class),
 
-					new DemoModel(getString(R.string.demo_list_item_endless_scroll_title),
-							getString(R.string.demo_list_item_endless_scroll_description),
-							EndlessScrollDemoActivity.class)
+					new DemoModel(getString(R.string.demo_list_item_paged_scroll_title),
+							getString(R.string.demo_list_item_paged_scroll_description),
+							PagedScrollDemoActivity.class)
 			};
 
 			recyclerView.setAdapter(new DemoAdapter(getContext(), demos, new ItemClickListener() {

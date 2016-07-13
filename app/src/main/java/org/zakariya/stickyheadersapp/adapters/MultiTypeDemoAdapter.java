@@ -150,11 +150,13 @@ public class MultiTypeDemoAdapter extends SectioningAdapter {
 	}
 
 
-	Random rng = new Random();
-	ArrayList<Section> sections = new ArrayList<>();
+	Random rng;
+	ArrayList<Section> sections;
 
 	public MultiTypeDemoAdapter(int numSections, int numItemsPerSection) {
 
+		rng = new Random();
+		sections = new ArrayList<>();
 		for (int s = 0; s < numSections; s++) {
 			int sectionType = s % 2;
 			Section section = new Section(sectionType, "Section: " + Integer.toString(s));

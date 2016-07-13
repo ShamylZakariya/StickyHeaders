@@ -11,11 +11,11 @@ import android.widget.TextView;
 
 import org.zakariya.stickyheaders.SectioningAdapter;
 import org.zakariya.stickyheadersapp.R;
-import org.zakariya.stickyheadersapp.api.EndlessDemoMockLoader;
+import org.zakariya.stickyheadersapp.api.PagedMockLoader;
 
 import java.util.ArrayList;
 
-public class EndlessDemoAdapter extends SectioningAdapter {
+public class PagedDemoAdapter extends SectioningAdapter {
 
 	private static final boolean USE_DEBUG_APPEARANCE = false;
 
@@ -87,23 +87,28 @@ public class EndlessDemoAdapter extends SectioningAdapter {
 		}
 	}
 
-	ArrayList<EndlessDemoMockLoader.SectionModel> sections = new ArrayList<>();
-	EndlessDemoMockLoader.SectionModel loadingIndicatorSectionModel;
+	ArrayList<PagedMockLoader.SectionModel> sections = new ArrayList<>();
+	PagedMockLoader.SectionModel loadingIndicatorSectionModel;
 	LoadingIndicatorItemViewHolder currentLoadingIndicatorItemViewHolder;
 
-	public EndlessDemoAdapter() {
+	public PagedDemoAdapter() {
 	}
 
-	public void addSection(EndlessDemoMockLoader.SectionModel section) {
+	public void addSection(PagedMockLoader.SectionModel section) {
 		sections.add(section);
 		notifySectionInserted(sections.size()-1);
 	}
 
 	public void showLoadingIndicator() {
 		if (loadingIndicatorSectionModel == null) {
-			loadingIndicatorSectionModel = new EndlessDemoMockLoader.SectionModel(null);
-			loadingIndicatorSectionModel.addItem(new EndlessDemoMockLoader.ItemModel(null, true));
-			addSection(loadingIndicatorSectionModel);
+			loadingIndicatorSectionModel = new PagedMockLoader.SectionModel(null);
+			loadingIndicatorSectionModel.addItem(new PagedMockLoader.ItemModel(null, true));
+			
+			// TODO: Why does doing this the RIGHT way cause a crash?
+			//addSection(loadingIndicatorSectionModel);
+
+			sections.add(loadingIndicatorSectionModel);
+			notifyAllSectionsDataSetChanged();
 		}
 	}
 
@@ -117,8 +122,12 @@ public class EndlessDemoAdapter extends SectioningAdapter {
 		if (loadingIndicatorSectionModel != null) {
 			int position = sections.indexOf(loadingIndicatorSectionModel);
 			if (position >= 0) {
+
+				// TODO: Why does doing this the RIGHT way cause a crash?
+				//notifySectionRemoved(position);
+
 				sections.remove(position);
-				notifySectionRemoved(position);
+				notifyAllSectionsDataSetChanged();
 			}
 
 			loadingIndicatorSectionModel = null;
@@ -137,7 +146,7 @@ public class EndlessDemoAdapter extends SectioningAdapter {
 
 	@Override
 	public int getSectionItemUserType(int sectionIndex, int itemIndex) {
-		EndlessDemoMockLoader.ItemModel item = sections.get(sectionIndex).getItems().get(itemIndex);
+		PagedMockLoader.ItemModel item = sections.get(sectionIndex).getItems().get(itemIndex);
 		return item.isLoadingIndicator() ? USER_ITEM_TYPE_PROGRESS_INDICATOR : USER_ITEM_TYPE_NORMAL;
 	}
 
@@ -183,7 +192,7 @@ public class EndlessDemoAdapter extends SectioningAdapter {
 	@SuppressLint("SetTextI18n")
 	@Override
 	public void onBindItemViewHolder(SectioningAdapter.ItemViewHolder viewHolder, int sectionIndex, int itemIndex, int itemType) {
-		EndlessDemoMockLoader.SectionModel s = sections.get(sectionIndex);
+		PagedMockLoader.SectionModel s = sections.get(sectionIndex);
 
 		switch(itemType) {
 			case USER_ITEM_TYPE_NORMAL:
@@ -204,7 +213,7 @@ public class EndlessDemoAdapter extends SectioningAdapter {
 	@SuppressLint("SetTextI18n")
 	@Override
 	public void onBindHeaderViewHolder(SectioningAdapter.HeaderViewHolder viewHolder, int sectionIndex, int headerType) {
-		EndlessDemoMockLoader.SectionModel s = sections.get(sectionIndex);
+		PagedMockLoader.SectionModel s = sections.get(sectionIndex);
 		HeaderViewHolder hvh = (HeaderViewHolder) viewHolder;
 		hvh.adapterPositionTextView.setText(Integer.toString(getAdapterPositionForSectionHeader(sectionIndex)));
 

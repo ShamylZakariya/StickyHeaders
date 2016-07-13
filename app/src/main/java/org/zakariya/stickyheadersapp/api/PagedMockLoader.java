@@ -5,11 +5,11 @@ import android.os.Handler;
 import java.util.ArrayList;
 
 /**
- * This is a fake service for async loading data for use by EndlessScrollDemoActivity
+ * This is a fake service for async loading data for use by PagedScrollDemoActivity
  */
-public class EndlessDemoMockLoader {
+public class PagedMockLoader {
 
-	public static final String TAG = EndlessDemoMockLoader.class.getSimpleName();
+	public static final String TAG = PagedMockLoader.class.getSimpleName();
 
 	public static class ItemModel {
 		String title;
@@ -65,35 +65,35 @@ public class EndlessDemoMockLoader {
 		void onSectionLoaded(SectionModel sectionModel);
 	}
 
-	int vendCount = 0;
 	Handler handler;
 	Runnable runnable;
 	Listener listener;
+	int page;
 	int tick;
 	static final int STEPS = 100;
 	static final long DELAY = 20;
 
-	public EndlessDemoMockLoader() {
+	public PagedMockLoader() {
 	}
 
 	/**
 	 * Build a section and vend it synchronously
 	 * @return a new populated SectionModel
 	 */
-	public SectionModel vendSection() {
-		EndlessDemoMockLoader.SectionModel sectionModel = new EndlessDemoMockLoader.SectionModel("Page " + Integer.toString(vendCount));
+	public SectionModel vendSection(int page) {
+		PagedMockLoader.SectionModel sectionModel = new PagedMockLoader.SectionModel("Page " + Integer.toString(page));
 
 		for (int j = 0; j < 20; j++) {
-			sectionModel.addItem(new EndlessDemoMockLoader.ItemModel("Item " + Integer.toString(j)));
+			sectionModel.addItem(new PagedMockLoader.ItemModel("Item " + Integer.toString(j)));
 		}
 
-		vendCount++;
 		return sectionModel;
 	}
 
-	public void load(final Listener listener) {
+	public void load(final int page, final Listener listener) {
 
 		this.listener = listener;
+		this.page = page;
 
 		if (handler == null) {
 			handler = new Handler();
@@ -127,7 +127,7 @@ public class EndlessDemoMockLoader {
 	private void finishLoad() {
 		//Log.i(TAG, "finishLoad: listener? " + listener);
 		if (listener != null) {
-			listener.onSectionLoaded(vendSection());
+			listener.onSectionLoaded(vendSection(page));
 			listener = null;
 		}
 	}
