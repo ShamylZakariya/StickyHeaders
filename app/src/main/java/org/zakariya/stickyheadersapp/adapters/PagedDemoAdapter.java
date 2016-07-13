@@ -95,6 +95,8 @@ public class PagedDemoAdapter extends SectioningAdapter {
 	ArrayList<PagedMockLoader.SectionModel> sections = new ArrayList<>();
 	PagedMockLoader.SectionModel loadingIndicatorSectionModel;
 	LoadingIndicatorItemViewHolder currentLoadingIndicatorItemViewHolder;
+	boolean isLoading;
+	boolean isExhausted;
 
 	public PagedDemoAdapter() {
 	}
@@ -105,10 +107,12 @@ public class PagedDemoAdapter extends SectioningAdapter {
 	}
 
 	public void showLoadingIndicator() {
-		if (loadingIndicatorSectionModel == null) {
-			loadingIndicatorSectionModel = new PagedMockLoader.SectionModel(null);
-			loadingIndicatorSectionModel.addItem(PagedMockLoader.ItemModel.createLoadingIndicatorItemModel());
+		if (!isLoading && !isExhausted) {
+			isLoading = true;
 
+			// add dummy section with a single item in it
+			loadingIndicatorSectionModel = new PagedMockLoader.SectionModel(null);
+			loadingIndicatorSectionModel.addItem(new PagedMockLoader.ItemModel(null));
 			addSection(loadingIndicatorSectionModel);
 		}
 	}
@@ -120,7 +124,7 @@ public class PagedDemoAdapter extends SectioningAdapter {
 	}
 
 	public void hideLoadingIndicator() {
-		if (loadingIndicatorSectionModel != null) {
+		if (isLoading) {
 			int position = sections.indexOf(loadingIndicatorSectionModel);
 			if (position >= 0) {
 
@@ -131,15 +135,20 @@ public class PagedDemoAdapter extends SectioningAdapter {
 				notifyAllSectionsDataSetChanged();
 			}
 
+			isLoading = false;
 			loadingIndicatorSectionModel = null;
 		}
 	}
 
 	public void showLoadExhaustedIndicator() {
-		PagedMockLoader.SectionModel section = new PagedMockLoader.SectionModel(null);
-		section.addItem(PagedMockLoader.ItemModel.createExhaustedIndicatorItemModel());
+		if (!isExhausted) {
+			isExhausted = true;
 
-		addSection(section);
+			// add dummy section with a single item in it
+			PagedMockLoader.SectionModel section = new PagedMockLoader.SectionModel(null);
+			section.addItem(new PagedMockLoader.ItemModel(null));
+			addSection(section);
+		}
 	}
 
 	@Override
@@ -154,15 +163,19 @@ public class PagedDemoAdapter extends SectioningAdapter {
 
 	@Override
 	public int getSectionItemUserType(int sectionIndex, int itemIndex) {
-		PagedMockLoader.ItemModel item = sections.get(sectionIndex).getItems().get(itemIndex);
 
-		if (item.isLoadingIndicator()) {
-			return USER_ITEM_TYPE_PROGRESS_INDICATOR;
-		} else if (item.isExhaustedIndicator()) {
-			return USER_ITEM_TYPE_EXHAUSTED;
-		} else {
-			return USER_ITEM_TYPE_NORMAL;
+		// loading and exhausted indicators are the ONLY item in the LAST section
+		if (sectionIndex == sections.size() - 1) {
+			if (itemIndex == sections.get(sectionIndex).getItems().size() - 1) {
+				if (isLoading) {
+					return USER_ITEM_TYPE_PROGRESS_INDICATOR;
+				} else if (isExhausted) {
+					return USER_ITEM_TYPE_EXHAUSTED;
+				}
+			}
 		}
+
+		return USER_ITEM_TYPE_NORMAL;
 	}
 
 	@Override

@@ -13,39 +13,13 @@ public class PagedMockLoader {
 
 	public static class ItemModel {
 		String title;
-		boolean isLoadingIndicator;
-		boolean isExhaustedIndicator;
 
 		public ItemModel(String title) {
 			this.title = title;
-			this.isLoadingIndicator = false;
-			this.isExhaustedIndicator = false;
-		}
-
-		public ItemModel(String title, boolean isLoadingIndicator, boolean isExhaustedIndicator) {
-			this.title = title;
-			this.isLoadingIndicator = isLoadingIndicator;
-			this.isExhaustedIndicator = isExhaustedIndicator;
-		}
-
-		public static ItemModel createLoadingIndicatorItemModel() {
-			return new ItemModel(null, true, false);
-		}
-
-		public static ItemModel createExhaustedIndicatorItemModel() {
-			return new ItemModel(null, false, true);
 		}
 
 		public String getTitle() {
 			return title;
-		}
-
-		public boolean isLoadingIndicator() {
-			return isLoadingIndicator;
-		}
-
-		public boolean isExhaustedIndicator() {
-			return isExhaustedIndicator;
 		}
 	}
 
