@@ -168,10 +168,10 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	}
 
 	/**
-	 * For scenarios with multiple types of headers, override this to return an integer specifying a custom type for this header.
+	 * For scenarios with multiple types of headers, override this to return an integer in range [0,255] specifying a custom type for this header.
 	 * The value you return here will be passes to onCreateHeaderViewHolder and onBindHeaderViewHolder as the 'userType'
 	 * @param sectionIndex the header's section
-	 * @return the custom type for this header
+	 * @return the custom type for this header in range [0,255]
 	 */
 	public int getSectionHeaderUserType(int sectionIndex) {
 		return 0;
@@ -187,21 +187,21 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 
 
 	/**
-	 * For scenarios with multiple types of footers, override this to return an integer specifying a custom type for this footer.
+	 * For scenarios with multiple types of footers, override this to return an integer in range [0, 255] specifying a custom type for this footer.
 	 * The value you return here will be passes to onCreateFooterViewHolder and onBindFooterViewHolder as the 'userType'
 	 * @param sectionIndex the footer's section
-	 * @return the custom type for this footer
+	 * @return the custom type for this footer in range [0,255]
 	 */
 	public int getSectionFooterUserType(int sectionIndex) {
 		return 0;
 	}
 
 	/**
-	 * For scenarios with multiple types of items, override this to return an integer specifying a custom type for the item at this position
+	 * For scenarios with multiple types of items, override this to return an integer in range [0,255] specifying a custom type for the item at this position
 	 * The value you return here will be passes to onCreateItemViewHolder and onBindItemViewHolder as the 'userType'
 	 * @param sectionIndex the items's section
 	 * @param itemIndex the position of the item in the section
-	 * @return the custom type for this item
+	 * @return the custom type for this item in range [0,255]
 	 */
 	public int getSectionItemUserType(int sectionIndex, int itemIndex) {
 		return 0;
@@ -211,10 +211,10 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * Called when a ViewHolder is needed for a section item view
 	 *
 	 * @param parent The ViewGroup into which the new View will be added after it is bound to an adapter position.
-	 * @param itemType If getSectionItemUserType is overridden to vend custom types, this will be the specified type
+	 * @param itemUserType If getSectionItemUserType is overridden to vend custom types, this will be the specified type
 	 * @return A new ItemViewHolder holding an item view
 	 */
-	public ItemViewHolder onCreateItemViewHolder(ViewGroup parent, int itemType) {
+	public ItemViewHolder onCreateItemViewHolder(ViewGroup parent, int itemUserType) {
 		return null;
 	}
 
@@ -222,10 +222,10 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * Called when a ViewHolder is needed for a section header view
 	 *
 	 * @param parent The ViewGroup into which the new View will be added after it is bound to an adapter position.
-	 * @param headerType If getSectionHeaderUserType is overridden to vend custom types, this will be the specified type
+	 * @param headerUserType If getSectionHeaderUserType is overridden to vend custom types, this will be the specified type
 	 * @return A new HeaderViewHolder holding a header view
 	 */
-	public HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent, int headerType) {
+	public HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent, int headerUserType) {
 		return null;
 	}
 
@@ -233,10 +233,10 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * Called when a ViewHolder is needed for a section footer view
 	 *
 	 * @param parent The ViewGroup into which the new View will be added after it is bound to an adapter position.
-	 * @param footerType If getSectionHeaderUserType is overridden to vend custom types, this will be the specified type
+	 * @param footerUserType If getSectionHeaderUserType is overridden to vend custom types, this will be the specified type
 	 * @return A new FooterViewHolder holding a footer view
 	 */
-	public FooterViewHolder onCreateFooterViewHolder(ViewGroup parent, int footerType) {
+	public FooterViewHolder onCreateFooterViewHolder(ViewGroup parent, int footerUserType) {
 		return null;
 	}
 
@@ -259,9 +259,9 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * @param viewHolder   the view holder to update
 	 * @param sectionIndex the index of the section containing the item
 	 * @param itemIndex    the index of the item in the section where 0 is the first item
-	 * @param itemType if getSectionItemUserType is overridden to provide custom item types, this will be the type for this item
+	 * @param itemUserType if getSectionItemUserType is overridden to provide custom item types, this will be the type for this item
 	 */
-	public void onBindItemViewHolder(ItemViewHolder viewHolder, int sectionIndex, int itemIndex, int itemType) {
+	public void onBindItemViewHolder(ItemViewHolder viewHolder, int sectionIndex, int itemIndex, int itemUserType) {
 	}
 
 	/**
@@ -269,9 +269,9 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 *
 	 * @param viewHolder   the view holder to update
 	 * @param sectionIndex the index of the section containing the header to update
-	 * @param headerType if getSectionHeaderUserType is overridden to provide custom header types, this will be the type for this header
+	 * @param headerUserType if getSectionHeaderUserType is overridden to provide custom header types, this will be the type for this header
 	 */
-	public void onBindHeaderViewHolder(HeaderViewHolder viewHolder, int sectionIndex, int headerType) {
+	public void onBindHeaderViewHolder(HeaderViewHolder viewHolder, int sectionIndex, int headerUserType) {
 	}
 
 	/**
@@ -288,9 +288,9 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 *
 	 * @param viewHolder   the view holder to update
 	 * @param sectionIndex the index of the section containing the footer to update
-	 * @param footerType if getSectionFooterUserType is overridden to provide custom footer types, this will be the type for this footer
+	 * @param footerUserType if getSectionFooterUserType is overridden to provide custom footer types, this will be the type for this footer
 	 */
-	public void onBindFooterViewHolder(FooterViewHolder viewHolder, int sectionIndex, int footerType) {
+	public void onBindFooterViewHolder(FooterViewHolder viewHolder, int sectionIndex, int footerUserType) {
 	}
 
 	/**
@@ -448,6 +448,10 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		notifySectionDataSetChanged(sectionIndex);
 	}
 
+	/**
+	 * @param sectionIndex index of section
+	 * @return true if that section is collapsed
+	 */
 	public boolean isSectionCollapsed(int sectionIndex) {
 		if(collapsedSections.containsKey(sectionIndex)) {
 			return collapsedSections.get(sectionIndex);
