@@ -12,7 +12,14 @@ public abstract class PagedLoadScrollListener extends RecyclerView.OnScrollListe
 	private static final int DEFAULT_VISIBLE_THRESHOLD = 5;
 
 	public interface LoadCompleteNotifier {
+		/**
+		 * Call to notify that a load has completed, with new items present.
+		 */
 		void notifyLoadComplete();
+
+		/**
+		 * Call to notify that a load has completed, but no new items were present, and none will be forthcoming.
+		 */
 		void notifyLoadExhausted();
 	}
 
@@ -73,7 +80,12 @@ public abstract class PagedLoadScrollListener extends RecyclerView.OnScrollListe
 		}
 	}
 
-	// Defines the process for actually loading more data based on page
+	/**
+	 * Override this to handle loading of new data. Each time new data is pulled in, the page counter will increase by one.
+	 * When your load is complete, call the appropriate method on the loadComplete callback.
+	 * @param page the page counter. Increases by one each time onLoadMore is called.
+	 * @param loadComplete callback to invoke when your load has completed.
+	 */
 	public abstract void onLoadMore(int page, LoadCompleteNotifier loadComplete);
 
 }

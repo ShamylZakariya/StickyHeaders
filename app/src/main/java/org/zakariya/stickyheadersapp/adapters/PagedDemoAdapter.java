@@ -92,28 +92,32 @@ public class PagedDemoAdapter extends SectioningAdapter {
 		}
 	}
 
-	ArrayList<PagedMockLoader.SectionModel> sections = new ArrayList<>();
+	ArrayList<PagedMockLoader.SectionModel> sections;
 	PagedMockLoader.SectionModel loadingIndicatorSectionModel;
 	LoadingIndicatorItemViewHolder currentLoadingIndicatorItemViewHolder;
 	boolean isLoading;
 	boolean isExhausted;
 
 	public PagedDemoAdapter() {
+		sections = new ArrayList<>();
 	}
 
 	public void addSection(PagedMockLoader.SectionModel section) {
-		sections.add(section);
-		notifySectionInserted(sections.size()-1);
+		if (!isLoading && !isExhausted) {
+			sections.add(section);
+			notifySectionInserted(sections.size() - 1);
+		}
 	}
 
 	public void showLoadingIndicator() {
 		if (!isLoading && !isExhausted) {
-			isLoading = true;
 
 			// add dummy section with a single item in it
 			loadingIndicatorSectionModel = new PagedMockLoader.SectionModel(null);
 			loadingIndicatorSectionModel.addItem(new PagedMockLoader.ItemModel(null));
 			addSection(loadingIndicatorSectionModel);
+
+			isLoading = true;
 		}
 	}
 
@@ -127,12 +131,8 @@ public class PagedDemoAdapter extends SectioningAdapter {
 		if (isLoading) {
 			int position = sections.indexOf(loadingIndicatorSectionModel);
 			if (position >= 0) {
-
-				// TODO: Why does doing this the RIGHT way cause a crash?
-				//notifySectionRemoved(position);
-
 				sections.remove(position);
-				notifyAllSectionsDataSetChanged();
+				notifySectionRemoved(position);
 			}
 
 			isLoading = false;
@@ -142,12 +142,13 @@ public class PagedDemoAdapter extends SectioningAdapter {
 
 	public void showLoadExhaustedIndicator() {
 		if (!isExhausted) {
-			isExhausted = true;
 
 			// add dummy section with a single item in it
 			PagedMockLoader.SectionModel section = new PagedMockLoader.SectionModel(null);
 			section.addItem(new PagedMockLoader.ItemModel(null));
 			addSection(section);
+
+			isExhausted = true;
 		}
 	}
 

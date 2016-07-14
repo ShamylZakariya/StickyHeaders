@@ -178,7 +178,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			addView(v);
 			measureChildWithMargins(v, 0, 0);
 
-			int itemViewType = getViewType(v);
+			int itemViewType = getViewBaseType(v);
 			if (itemViewType == SectioningAdapter.TYPE_HEADER) {
 				headerViews.add(v);
 
@@ -244,7 +244,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			// first, see if we've already got a header for this section
 			for (int i = 0, n = getChildCount(); i < n; i++) {
 				View view = getChildAt(i);
-				if (getViewType(view) == SectioningAdapter.TYPE_HEADER && getViewSectionIndex(view) == sectionIndex) {
+				if (getViewBaseType(view) == SectioningAdapter.TYPE_HEADER && getViewSectionIndex(view) == sectionIndex) {
 					return view;
 				}
 			}
@@ -479,7 +479,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		for (int i = 0; i < numChildren; i++) {
 			View view = getChildAt(i);
 
-			if (getViewType(view) != SectioningAdapter.TYPE_HEADER) {
+			if (getViewBaseType(view) != SectioningAdapter.TYPE_HEADER) {
 				if (getDecoratedBottom(view) < 0 || getDecoratedTop(view) > height) {
 					viewsToRecycle.add(view);
 				} else {
@@ -495,7 +495,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		for (int i = 0; i < numChildren; i++) {
 			View view = getChildAt(i);
 			int sectionIndex = getViewSectionIndex(view);
-			if (getViewType(view) == SectioningAdapter.TYPE_HEADER && !remainingSections.contains(sectionIndex)) {
+			if (getViewBaseType(view) == SectioningAdapter.TYPE_HEADER && !remainingSections.contains(sectionIndex)) {
 				float translationY = view.getTranslationY();
 				if ((getDecoratedBottom(view) + translationY) < 0 || (getDecoratedTop(view) + translationY) > height) {
 					viewsToRecycle.add(view);
@@ -532,7 +532,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			}
 
 			// ignore headers
-			if (getViewType(v) == SectioningAdapter.TYPE_HEADER) {
+			if (getViewBaseType(v) == SectioningAdapter.TYPE_HEADER) {
 				continue;
 			}
 
@@ -564,7 +564,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			}
 
 			// ignore headers
-			if (getViewType(v) == SectioningAdapter.TYPE_HEADER) {
+			if (getViewBaseType(v) == SectioningAdapter.TYPE_HEADER) {
 				continue;
 			}
 
@@ -634,7 +634,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			View firstViewInNextSection = null;
 			for (int i = 0, n = getChildCount(); i < n; i++) {
 				View view = getChildAt(i);
-				int type = getViewType(view);
+				int type = getViewBaseType(view);
 				if (type == SectioningAdapter.TYPE_HEADER) {
 					continue;
 				}
@@ -700,7 +700,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		}
 	}
 
-	int getViewType(View view) {
+	int getViewBaseType(View view) {
 		int adapterPosition = getViewAdapterPosition(view);
 		return adapter.getItemViewBaseType(adapterPosition);
 	}

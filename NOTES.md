@@ -1,9 +1,14 @@
 #BUGS
 
-
-
-
 EndlessScrollDemoActivity
+
+What if my notifySection methods ASSUME presence of GHOST_HEADERS. Aren't ghost headers lazily inserted sometimes? Do I need to scan the view heirarchy to determine if one's actually present in the visible subset? Or am I barking up the wrong tree??
+
+
+
+
+
+
 If I use notifyAllSectionsDataChanged everything's peachy. If I use notifySectionInserted it blows up, catching NULL views in the RecyclerView. WTF!?
 
 Clean up EndlessRecyclerViewScrollListener. Now that I use a notify callback approach (instead of counting items in the list) I ought to be able to remove a lot of ugliness.

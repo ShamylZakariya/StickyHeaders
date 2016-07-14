@@ -77,17 +77,17 @@ public class PagedScrollDemoActivity extends DemoActivity implements PagedMockLo
 	public void onSectionLoaded(PagedMockLoader.SectionModel sectionModel) {
 		Log.i(TAG, "onSectionLoaded: notifying load complete");
 
-		loadCompleteNotifier.notifyLoadComplete();
 		adapter.hideLoadingIndicator();
 		adapter.addSection(sectionModel);
+		loadCompleteNotifier.notifyLoadComplete();
 	}
 
 	@Override
 	public void onSectionsExhausted() {
 		Log.i(TAG, "onSectionsExhausted: notifying that there are no more sections to load");
 
-		loadCompleteNotifier.notifyLoadExhausted();
 		adapter.hideLoadingIndicator();
 		adapter.showLoadExhaustedIndicator();
+		loadCompleteNotifier.notifyLoadExhausted();
 	}
 }
