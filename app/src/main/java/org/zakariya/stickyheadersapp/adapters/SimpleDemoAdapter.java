@@ -251,21 +251,21 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 	}
 
 	@Override
-	public ItemViewHolder onCreateItemViewHolder(ViewGroup parent) {
+	public ItemViewHolder onCreateItemViewHolder(ViewGroup parent, int itemType) {
 		LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 		View v = inflater.inflate(R.layout.list_item_simple_item, parent, false);
 		return new ItemViewHolder(v);
 	}
 
 	@Override
-	public HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
+	public HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent, int headerType) {
 		LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 		View v = inflater.inflate(R.layout.list_item_simple_header, parent, false);
 		return new HeaderViewHolder(v);
 	}
 
 	@Override
-	public FooterViewHolder onCreateFooterViewHolder(ViewGroup parent) {
+	public FooterViewHolder onCreateFooterViewHolder(ViewGroup parent, int footerType) {
 		LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 		View v = inflater.inflate(R.layout.list_item_simple_footer, parent, false);
 		return new FooterViewHolder(v);
@@ -273,7 +273,7 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 
 	@SuppressLint("SetTextI18n")
 	@Override
-	public void onBindItemViewHolder(SectioningAdapter.ItemViewHolder viewHolder, int sectionIndex, int itemIndex) {
+	public void onBindItemViewHolder(SectioningAdapter.ItemViewHolder viewHolder, int sectionIndex, int itemIndex, int itemType) {
 		Section s = sections.get(sectionIndex);
 		ItemViewHolder ivh = (ItemViewHolder) viewHolder;
 		ivh.textView.setText(s.items.get(itemIndex));
@@ -282,7 +282,7 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 
 	@SuppressLint("SetTextI18n")
 	@Override
-	public void onBindHeaderViewHolder(SectioningAdapter.HeaderViewHolder viewHolder, int sectionIndex) {
+	public void onBindHeaderViewHolder(SectioningAdapter.HeaderViewHolder viewHolder, int sectionIndex, int headerType) {
 		Section s = sections.get(sectionIndex);
 		HeaderViewHolder hvh = (HeaderViewHolder) viewHolder;
 		hvh.adapterPositionTextView.setText(Integer.toString(getAdapterPositionForSectionHeader(sectionIndex)));
@@ -306,7 +306,7 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 
 	@SuppressLint("SetTextI18n")
 	@Override
-	public void onBindFooterViewHolder(SectioningAdapter.FooterViewHolder viewHolder, int sectionIndex) {
+	public void onBindFooterViewHolder(SectioningAdapter.FooterViewHolder viewHolder, int sectionIndex, int footerType) {
 		Section s = sections.get(sectionIndex);
 		FooterViewHolder fvh = (FooterViewHolder) viewHolder;
 		fvh.textView.setText(s.footer);

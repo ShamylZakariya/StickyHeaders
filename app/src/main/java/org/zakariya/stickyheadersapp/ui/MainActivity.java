@@ -143,7 +143,15 @@ public class MainActivity extends AppCompatActivity {
 
 					new DemoModel(getString(R.string.demo_list_item_sections_title),
 							getString(R.string.demo_list_item_sections_description),
-							SectioningAdapterDemoActivity.class)
+							SectioningAdapterDemoActivity.class),
+
+					new DemoModel(getString(R.string.demo_list_item_multi_type_title),
+							getString(R.string.demo_list_item_multi_type_description),
+							MultiTypeItemDemoActivity.class),
+
+					new DemoModel(getString(R.string.demo_list_item_paged_scroll_title),
+							getString(R.string.demo_list_item_paged_scroll_description),
+							PagedScrollDemoActivity.class)
 			};
 
 			recyclerView.setAdapter(new DemoAdapter(getContext(), demos, new ItemClickListener() {
@@ -219,27 +227,27 @@ public class MainActivity extends AppCompatActivity {
 			}
 
 			@Override
-			public SectioningAdapter.HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
+			public SectioningAdapter.HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent, int headerType) {
 				LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 				View v = inflater.inflate(R.layout.list_item_demo_header, parent, false);
 				return new HeaderViewHolder(v);
 			}
 
 			@Override
-			public SectioningAdapter.ItemViewHolder onCreateItemViewHolder(ViewGroup parent) {
+			public SectioningAdapter.ItemViewHolder onCreateItemViewHolder(ViewGroup parent, int itemType) {
 				LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 				View v = inflater.inflate(R.layout.list_item_demo_item, parent, false);
 				return new ItemViewHolder(v);
 			}
 
 			@Override
-			public void onBindHeaderViewHolder(SectioningAdapter.HeaderViewHolder viewHolder, int sectionIndex) {
+			public void onBindHeaderViewHolder(SectioningAdapter.HeaderViewHolder viewHolder, int sectionIndex, int headerType) {
 				HeaderViewHolder hvh = (HeaderViewHolder) viewHolder;
 				hvh.titleTextView.setText(context.getString(R.string.main_demo_list_title));
 			}
 
 			@Override
-			public void onBindItemViewHolder(SectioningAdapter.ItemViewHolder viewHolder, int sectionIndex, int itemIndex) {
+			public void onBindItemViewHolder(SectioningAdapter.ItemViewHolder viewHolder, int sectionIndex, int itemIndex, int itemType) {
 				ItemViewHolder ivh = (ItemViewHolder) viewHolder;
 
 				final DemoModel dm = demos[itemIndex];
