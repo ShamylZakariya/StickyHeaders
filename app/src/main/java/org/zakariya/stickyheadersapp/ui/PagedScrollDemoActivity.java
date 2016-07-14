@@ -30,7 +30,6 @@ public class PagedScrollDemoActivity extends DemoActivity implements PagedMockLo
 
 		loader = new PagedMockLoader(NUM_PAGES);
 		adapter = new PagedDemoAdapter();
-		adapter.addSection(loader.vendSection(0));
 
 		StickyHeaderLayoutManager layoutManager = new StickyHeaderLayoutManager();
 		recyclerView.setLayoutManager(layoutManager);
@@ -46,6 +45,9 @@ public class PagedScrollDemoActivity extends DemoActivity implements PagedMockLo
 				loader.load(page, PagedScrollDemoActivity.this);
 			}
 		});
+
+		// kick off load
+		loader.load(0, this);
 	}
 
 	@Override
@@ -79,7 +81,11 @@ public class PagedScrollDemoActivity extends DemoActivity implements PagedMockLo
 
 		adapter.hideLoadingIndicator();
 		adapter.addSection(sectionModel);
-		loadCompleteNotifier.notifyLoadComplete();
+
+		if (loadCompleteNotifier != null) {
+			loadCompleteNotifier.notifyLoadComplete();
+			loadCompleteNotifier = null;
+		}
 	}
 
 	@Override
@@ -88,6 +94,10 @@ public class PagedScrollDemoActivity extends DemoActivity implements PagedMockLo
 
 		adapter.hideLoadingIndicator();
 		adapter.showLoadExhaustedIndicator();
-		loadCompleteNotifier.notifyLoadExhausted();
+
+		if (loadCompleteNotifier != null) {
+			loadCompleteNotifier.notifyLoadExhausted();
+			loadCompleteNotifier = null;
+		}
 	}
 }
