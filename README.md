@@ -31,6 +31,6 @@ You can use sectioning adapter with a normal `android.support.v7.widget.LinearLa
 
 minSdkVersion: 11
 ```
-compile 'org.zakariya.stickyheaders:stickyheaders:0.7.0'
+compile 'org.zakariya.stickyheaders:stickyheaders:0.7.1'
 
 ```
