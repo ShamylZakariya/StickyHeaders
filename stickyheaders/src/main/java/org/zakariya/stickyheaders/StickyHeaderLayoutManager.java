@@ -112,6 +112,9 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	@Override
 	public void onDetachedFromWindow(RecyclerView view, RecyclerView.Recycler recycler) {
 		super.onDetachedFromWindow(view, recycler);
+
+		// Update positions in case we need to save post-detach
+		updateFirstAdapterPosition();
 		adapter = null;
 	}
 
@@ -121,7 +124,9 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			return pendingSavedState;
 		}
 
-		updateFirstAdapterPosition();
+		// Check if we're detached; if not, update
+		if(adapter != null)
+			updateFirstAdapterPosition();
 		SavedState state = new SavedState();
 		state.firstViewAdapterPosition = firstViewAdapterPosition;
 		state.firstViewTop = firstViewTop;
@@ -170,6 +175,10 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		int right = getWidth() - getPaddingRight();
 		int parentBottom = getHeight() - getPaddingBottom();
 		int totalVendedHeight = 0;
+
+		// If we emptied the view with a notify, we may overshoot and fail to draw
+		if(firstViewAdapterPosition > state.getItemCount())
+			firstViewAdapterPosition = 0;
 
 		// walk through adapter starting at firstViewAdapterPosition stacking each vended item
 		for (int adapterPosition = firstViewAdapterPosition; adapterPosition < state.getItemCount(); adapterPosition++) {
@@ -305,6 +314,13 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 						if (firstViewAdapterPosition < 0) {
 							break;
 						}
+
+						itemViewType = adapter.getItemViewType(firstViewAdapterPosition);
+						isHeader = itemViewType == SectioningAdapter.TYPE_HEADER;
+
+						// If it's still a header, we don't need to do anything right now
+						if(isHeader)
+							break;
 					}
 
 					View v = recycler.getViewForPosition(firstViewAdapterPosition);
