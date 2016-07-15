@@ -3,6 +3,15 @@ Adapter and LayoutManager for Android RecyclerView which enables sticky header p
 
 ---
 
+## Download
+minSdkVersion: 11
+```
+compile 'org.zakariya.stickyheaders:stickyheaders:0.7.1'
+
+```
+
+---
+
 StickyHeaders are section headers in a recyclerview which are positioned "stickily" to the top of the scrollview during scrolling. A common use-case is an address book where the list of people's last names are grouped into sections by the first letter of the last name, and the header for each section shows that letter.
 
 **For example:**
@@ -26,11 +35,3 @@ To use StickyHeaders, you need to do two things.
 ##Also
 
 You can use sectioning adapter with a normal `android.support.v7.widget.LinearLayoutManager`. it works fine, and could be a good way to implement a list like at the root of Android's Settings app.
-
-## Download
-
-minSdkVersion: 11
-```
-compile 'org.zakariya.stickyheaders:stickyheaders:0.7.1'
-
-```
