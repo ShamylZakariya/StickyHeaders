@@ -171,11 +171,13 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 	boolean showModificationControls;
 	boolean showCollapsingSectionControls;
 	boolean showAdapterPositions;
+	boolean hasFooters;
 
-	public SimpleDemoAdapter(int numSections, int numItemsPerSection, boolean showModificationControls, boolean showCollapsingSectionControls, boolean showAdapterPositions) {
+	public SimpleDemoAdapter(int numSections, int numItemsPerSection, boolean hasFooters, boolean showModificationControls, boolean showCollapsingSectionControls, boolean showAdapterPositions) {
 		this.showModificationControls = showModificationControls;
 		this.showCollapsingSectionControls = showCollapsingSectionControls;
 		this.showAdapterPositions = showAdapterPositions;
+		this.hasFooters = hasFooters;
 
 		for (int i = 0; i < numSections; i++) {
 			appendSection(i, numItemsPerSection);
@@ -187,7 +189,10 @@ public class SimpleDemoAdapter extends SectioningAdapter {
 		section.index = index;
 		section.copyCount = 0;
 		section.header = Integer.toString(index);
-		section.footer = "End of section " + index;
+
+		if (this.hasFooters) {
+			section.footer = "End of section " + index;
+		}
 
 		for (int j = 0; j < itemCount; j++) {
 			section.items.add(index + "/" + j);
