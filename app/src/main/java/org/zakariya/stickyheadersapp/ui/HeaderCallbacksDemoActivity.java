@@ -36,6 +36,6 @@ public class HeaderCallbacksDemoActivity extends DemoActivity {
 			}
 		});
 
-		recyclerView.setAdapter(new SimpleDemoAdapter(5, 5, true, false, false, false));
+		recyclerView.setAdapter(new SimpleDemoAdapter(5, 5, true, false, false, SHOW_ADAPTER_POSITIONS));
 	}
 }

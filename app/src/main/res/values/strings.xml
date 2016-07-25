@@ -11,6 +11,7 @@
 
 	<string name="menu_item_reload">Reload</string>
 	<string name="menu_item_scroll_to_bottom">Scroll to bottom</string>
+	<string name="menu_item_inspect">Inspect</string>
 
 	<string name="title_address_book_demo">Address Book</string>
 	<string name="title_simple_demo">Sticky Header Callbacks</string>
@@ -19,6 +20,12 @@
 	<string name="title_collapsing_headers_demo">Collapsing Headers</string>
 	<string name="title_paged_scroll_demo">Paged Scrolling</string>
 	<string name="title_multi_type_demo">Multiple Item Types</string>
+
+	<string name="inspect_title">Inspection</string>
+	<string name="inspect_empty">No visible items</string>
+	<string name="inspect_header_adapter_position">First visible header adapter position: %1$d</string>
+	<string name="inspect_item_adapter_position">First visible item adapter position: %1$d</string>
+	<string name="inspect_footer_adapter_position">First visible footer adapter position: %1$d</string>
 
 	<string name="about_title">About</string>
 	<string name="about_adapter_title">SectioningAdapter</string>

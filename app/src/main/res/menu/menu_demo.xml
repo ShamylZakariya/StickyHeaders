@@ -8,11 +8,16 @@
 	    android:icon="@drawable/ic_vertical_align_bottom_24dp"
 	    app:showAsAction="ifRoom"/>
 
+	<item android:id="@+id/menuItemInspect"
+	      android:title="@string/menu_item_inspect"
+	      android:icon="@drawable/ic_visibility_white_24dp"
+	      app:showAsAction="ifRoom"/>
+
 	<item
 		android:id="@+id/reloadMenuItem"
 		android:title="@string/menu_item_reload"
 		android:icon="@drawable/ic_refresh_white_24dp"
-		app:showAsAction="ifRoom"
+		app:showAsAction="never"
 		/>
 
 </menu>

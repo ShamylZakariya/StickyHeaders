@@ -7,6 +7,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,7 +16,10 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import org.zakariya.stickyheaders.SectioningAdapter;
+import org.zakariya.stickyheaders.StickyHeaderLayoutManager;
 import org.zakariya.stickyheadersapp.R;
+
+import java.util.ArrayList;
 
 /**
  * Base activity for StickyHeadersApp demos
@@ -23,6 +28,8 @@ public class DemoActivity extends AppCompatActivity {
 
 	private static final String TAG = DemoActivity.class.getSimpleName();
 	private static final String STATE_SCROLL_POSITION = "DemoActivity.STATE_SCROLL_POSITION";
+
+	public static final boolean SHOW_ADAPTER_POSITIONS = false;
 
 	RecyclerView recyclerView;
 	ProgressBar progressBar;
@@ -74,6 +81,11 @@ public class DemoActivity extends AppCompatActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+
+			case R.id.menuItemInspect:
+				showInspectDialog();
+				break;
+
 			case R.id.scrollToBottom:
 				showScrollToPositionDialog();
 				break;
@@ -92,6 +104,46 @@ public class DemoActivity extends AppCompatActivity {
 
 	class ScrollDialogSingleChoiceItemSelection {
 		int which = -1;
+	}
+
+	private void showInspectDialog() {
+
+		if (!(recyclerView.getLayoutManager() instanceof StickyHeaderLayoutManager)) {
+			return;
+		}
+
+		StickyHeaderLayoutManager layoutManager = (StickyHeaderLayoutManager) recyclerView.getLayoutManager();
+		SectioningAdapter.HeaderViewHolder headerViewHolder = layoutManager.getFirstVisibleHeaderViewHolder();
+		SectioningAdapter.ItemViewHolder itemViewHolder = layoutManager.getFirstVisibleItemViewHolder();
+		SectioningAdapter.FooterViewHolder footerViewHolder = layoutManager.getFirstVisibleFooterViewHolder();
+
+		ArrayList<String> inspections = new ArrayList<>();
+
+		if (headerViewHolder != null) {
+			Log.i(TAG, "showInspectDialog: first header adapter position: " + headerViewHolder.getAdapterPosition());
+			inspections.add(getString(R.string.inspect_header_adapter_position, headerViewHolder.getAdapterPosition()));
+		}
+
+		if (itemViewHolder != null) {
+			Log.i(TAG, "showInspectDialog: first item adapter position: " + itemViewHolder.getAdapterPosition());
+			inspections.add(getString(R.string.inspect_item_adapter_position, itemViewHolder.getAdapterPosition()));
+		}
+
+		if (footerViewHolder != null) {
+			Log.i(TAG, "showInspectDialog: first footer adapter position: " + footerViewHolder.getAdapterPosition());
+			inspections.add(getString(R.string.inspect_footer_adapter_position, footerViewHolder.getAdapterPosition()));
+		}
+
+		String message = getString(R.string.inspect_empty);;
+		if (!inspections.isEmpty()) {
+			message = TextUtils.join("\n", inspections);
+		}
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(R.string.inspect_title)
+				.setMessage(message)
+				.setPositiveButton(android.R.string.ok, null)
+				.show();
 	}
 
 	private void showScrollToPositionDialog() {

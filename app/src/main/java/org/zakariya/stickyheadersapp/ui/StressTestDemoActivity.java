@@ -13,6 +13,6 @@ public class StressTestDemoActivity extends DemoActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		recyclerView.setLayoutManager(new StickyHeaderLayoutManager());
-		recyclerView.setAdapter(new SimpleDemoAdapter(1000, 5, true, false, false, false));
+		recyclerView.setAdapter(new SimpleDemoAdapter(1000, 5, true, false, false, SHOW_ADAPTER_POSITIONS));
 	}
 }

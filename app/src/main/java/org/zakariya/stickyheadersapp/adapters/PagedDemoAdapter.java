@@ -77,7 +77,7 @@ public class PagedDemoAdapter extends SectioningAdapter {
 		ImageButton deleteButton;
 		ImageButton collapseButton;
 
-		public HeaderViewHolder(View itemView) {
+		public HeaderViewHolder(View itemView, boolean showAdapterPosition) {
 			super(itemView);
 			textView = (TextView) itemView.findViewById(R.id.textView);
 			adapterPositionTextView = (TextView) itemView.findViewById(R.id.adapterPositionTextView);
@@ -89,6 +89,8 @@ public class PagedDemoAdapter extends SectioningAdapter {
 			cloneButton.setVisibility(View.GONE);
 			deleteButton.setVisibility(View.GONE);
 			collapseButton.setVisibility(View.GONE);
+
+			adapterPositionTextView.setVisibility(showAdapterPosition ? View.VISIBLE : View.GONE);
 		}
 	}
 
@@ -97,8 +99,10 @@ public class PagedDemoAdapter extends SectioningAdapter {
 	LoadingIndicatorItemViewHolder currentLoadingIndicatorItemViewHolder;
 	boolean isLoading;
 	boolean isExhausted;
+	boolean showAdapterPositions;
 
-	public PagedDemoAdapter() {
+	public PagedDemoAdapter(boolean showAdapterPositions) {
+		this.showAdapterPositions = showAdapterPositions;
 		sections = new ArrayList<>();
 	}
 
@@ -211,7 +215,7 @@ public class PagedDemoAdapter extends SectioningAdapter {
 	public HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent, int headerType) {
 		LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 		View v = inflater.inflate(R.layout.list_item_simple_header, parent, false);
-		return new HeaderViewHolder(v);
+		return new HeaderViewHolder(v, showAdapterPositions);
 	}
 
 	@Override
