@@ -29,7 +29,7 @@ public class DemoActivity extends AppCompatActivity {
 	private static final String TAG = DemoActivity.class.getSimpleName();
 	private static final String STATE_SCROLL_POSITION = "DemoActivity.STATE_SCROLL_POSITION";
 
-	public static final boolean SHOW_ADAPTER_POSITIONS = false;
+	public static final boolean SHOW_ADAPTER_POSITIONS = true;
 
 	RecyclerView recyclerView;
 	ProgressBar progressBar;
@@ -112,10 +112,11 @@ public class DemoActivity extends AppCompatActivity {
 			return;
 		}
 
+		boolean fullVisibleOnly = true;
 		StickyHeaderLayoutManager layoutManager = (StickyHeaderLayoutManager) recyclerView.getLayoutManager();
-		SectioningAdapter.HeaderViewHolder headerViewHolder = layoutManager.getFirstVisibleHeaderViewHolder();
-		SectioningAdapter.ItemViewHolder itemViewHolder = layoutManager.getFirstVisibleItemViewHolder();
-		SectioningAdapter.FooterViewHolder footerViewHolder = layoutManager.getFirstVisibleFooterViewHolder();
+		SectioningAdapter.HeaderViewHolder headerViewHolder = layoutManager.getFirstVisibleHeaderViewHolder(fullVisibleOnly);
+		SectioningAdapter.ItemViewHolder itemViewHolder = layoutManager.getFirstVisibleItemViewHolder(fullVisibleOnly);
+		SectioningAdapter.FooterViewHolder footerViewHolder = layoutManager.getFirstVisibleFooterViewHolder(fullVisibleOnly);
 
 		ArrayList<String> inspections = new ArrayList<>();
 

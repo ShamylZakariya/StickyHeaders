@@ -126,7 +126,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		}
 
 		// Check if we're detached; if not, update
-		if(adapter != null)
+		if (adapter != null)
 			updateFirstAdapterPosition();
 		SavedState state = new SavedState();
 		state.firstViewAdapterPosition = firstViewAdapterPosition;
@@ -142,10 +142,10 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		}
 
 		if (state instanceof SavedState) {
-			pendingSavedState = (SavedState)state;
+			pendingSavedState = (SavedState) state;
 			requestLayout();
 		} else {
-			Log.e(TAG, "onRestoreInstanceState: invalid saved state class, expected: " + SavedState.class.getCanonicalName() + " got: " + state.getClass().getCanonicalName() );
+			Log.e(TAG, "onRestoreInstanceState: invalid saved state class, expected: " + SavedState.class.getCanonicalName() + " got: " + state.getClass().getCanonicalName());
 		}
 	}
 
@@ -178,7 +178,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		int totalVendedHeight = 0;
 
 		// If we emptied the view with a notify, we may overshoot and fail to draw
-		if(firstViewAdapterPosition > state.getItemCount())
+		if (firstViewAdapterPosition > state.getItemCount())
 			firstViewAdapterPosition = 0;
 
 		// walk through adapter starting at firstViewAdapterPosition stacking each vended item
@@ -320,7 +320,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 						isHeader = itemViewType == SectioningAdapter.TYPE_HEADER;
 
 						// If it's still a header, we don't need to do anything right now
-						if(isHeader)
+						if (isHeader)
 							break;
 					}
 
@@ -444,31 +444,34 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	}
 
 	/**
+	 * @param fullyVisibleOnly if true, the search will be limited to the first item not hanging off top of screen or partially obscured by a header
 	 * @return the viewholder for the first visible item (not header or footer)
 	 */
 	@Nullable
-	public SectioningAdapter.ItemViewHolder getFirstVisibleItemViewHolder() {
-		return (SectioningAdapter.ItemViewHolder) getFirstVisibleViewHolderOfType(SectioningAdapter.TYPE_ITEM);
+	public SectioningAdapter.ItemViewHolder getFirstVisibleItemViewHolder(boolean fullyVisibleOnly) {
+		return (SectioningAdapter.ItemViewHolder) getFirstVisibleViewHolderOfType(SectioningAdapter.TYPE_ITEM, fullyVisibleOnly);
 	}
 
 	/**
+	 * @param fullyVisibleOnly if true, the search will be limited to the first header not hanging off top of screen
 	 * @return the viewholder for the first visible header (not item or footer)
 	 */
 	@Nullable
-	public SectioningAdapter.HeaderViewHolder getFirstVisibleHeaderViewHolder() {
-		return (SectioningAdapter.HeaderViewHolder) getFirstVisibleViewHolderOfType(SectioningAdapter.TYPE_HEADER);
+	public SectioningAdapter.HeaderViewHolder getFirstVisibleHeaderViewHolder(boolean fullyVisibleOnly) {
+		return (SectioningAdapter.HeaderViewHolder) getFirstVisibleViewHolderOfType(SectioningAdapter.TYPE_HEADER, fullyVisibleOnly);
 	}
 
 	/**
+	 * @param fullyVisibleOnly if true, the search will be limited to the first footer not hanging off top of screen or partially obscured by a header
 	 * @return the viewholder for the first visible footer (not header or item)
 	 */
 	@Nullable
-	public SectioningAdapter.FooterViewHolder getFirstVisibleFooterViewHolder() {
-		return (SectioningAdapter.FooterViewHolder) getFirstVisibleViewHolderOfType(SectioningAdapter.TYPE_FOOTER);
+	public SectioningAdapter.FooterViewHolder getFirstVisibleFooterViewHolder(boolean fullyVisibleOnly) {
+		return (SectioningAdapter.FooterViewHolder) getFirstVisibleViewHolderOfType(SectioningAdapter.TYPE_FOOTER, fullyVisibleOnly);
 	}
 
 	@Nullable
-	SectioningAdapter.ViewHolder getFirstVisibleViewHolderOfType(int baseType) {
+	SectioningAdapter.ViewHolder getFirstVisibleViewHolderOfType(int baseType, boolean fullyVisibleOnly) {
 		if (getChildCount() == 0) {
 			return null;
 		}
@@ -478,7 +481,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		// our items is below this value
 		int firstHeaderBottom = 0;
 		if (baseType != SectioningAdapter.TYPE_HEADER) {
-			SectioningAdapter.HeaderViewHolder firstHeader = getFirstVisibleHeaderViewHolder();
+			SectioningAdapter.HeaderViewHolder firstHeader = getFirstVisibleHeaderViewHolder(false);
 			if (firstHeader != null) {
 				firstHeaderBottom = getDecoratedBottom(firstHeader.itemView);
 			}
@@ -501,13 +504,20 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 				continue;
 			}
 
-			// filter out items which are fully obscured by a header
+			// filter out items which are partially or fully obscured by a header
+			int t = getDecoratedTop(v);
 			int b = getDecoratedBottom(v);
-			if (b <= firstHeaderBottom + 1) {
-				continue;
+
+			if (fullyVisibleOnly) {
+				if (t < firstHeaderBottom) {
+					continue;
+				}
+			} else {
+				if (b <= firstHeaderBottom + 1) {
+					continue;
+				}
 			}
 
-			int t = getDecoratedTop(v);
 			if (t < top) {
 				top = t;
 				topmostView = v;
