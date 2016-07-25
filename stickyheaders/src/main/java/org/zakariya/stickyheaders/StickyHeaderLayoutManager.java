@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -442,6 +443,80 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		requestLayout();
 	}
 
+	/**
+	 * @return the viewholder for the first visible item (not header or footer)
+	 */
+	@Nullable
+	public SectioningAdapter.ItemViewHolder getFirstVisibleItemViewHolder() {
+		return (SectioningAdapter.ItemViewHolder) getFirstVisibleViewHolderOfType(SectioningAdapter.TYPE_ITEM);
+	}
+
+	/**
+	 * @return the viewholder for the first visible header (not item or footer)
+	 */
+	@Nullable
+	public SectioningAdapter.HeaderViewHolder getFirstVisibleHeaderViewHolder() {
+		return (SectioningAdapter.HeaderViewHolder) getFirstVisibleViewHolderOfType(SectioningAdapter.TYPE_HEADER);
+	}
+
+	/**
+	 * @return the viewholder for the first visible footer (not header or item)
+	 */
+	@Nullable
+	public SectioningAdapter.FooterViewHolder getFirstVisibleFooterViewHolder() {
+		return (SectioningAdapter.FooterViewHolder) getFirstVisibleViewHolderOfType(SectioningAdapter.TYPE_FOOTER);
+	}
+
+	@Nullable
+	SectioningAdapter.ViewHolder getFirstVisibleViewHolderOfType(int baseType) {
+		if (getChildCount() == 0) {
+			return null;
+		}
+
+		// we need to discard items which are obscured by a header, so find
+		// how tall the first header is, and we'll filter that the decoratedTop of
+		// our items is below this value
+		int firstHeaderBottom = 0;
+		if (baseType != SectioningAdapter.TYPE_HEADER) {
+			SectioningAdapter.HeaderViewHolder firstHeader = getFirstVisibleHeaderViewHolder();
+			if (firstHeader != null) {
+				firstHeaderBottom = getDecoratedBottom(firstHeader.itemView);
+			}
+		}
+
+		// note: We can't use child view order because we muck with moving things to front
+		View topmostView = null;
+		int top = Integer.MAX_VALUE;
+
+		for (int i = 0, e = getChildCount(); i < e; i++) {
+			View v = getChildAt(i);
+
+			// ignore views which are being deleted
+			if (getViewAdapterPosition(v) == RecyclerView.NO_POSITION) {
+				continue;
+			}
+
+			// filter for desired type
+			if (getViewBaseType(v) != baseType) {
+				continue;
+			}
+
+			// filter out items which are fully obscured by a header
+			int b = getDecoratedBottom(v);
+			if (b <= firstHeaderBottom + 1) {
+				continue;
+			}
+
+			int t = getDecoratedTop(v);
+			if (t < top) {
+				top = t;
+				topmostView = v;
+			}
+		}
+
+		return topmostView != null ? getViewViewHolder(topmostView) : null;
+	}
+
 	@Override
 	public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
 		if (position < 0 || position > getItemCount()) {
@@ -465,7 +540,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		startSmoothScroll(scroller);
 	}
 
-	protected int getEstimatedItemHeightForSmoothScroll(RecyclerView recyclerView) {
+	int getEstimatedItemHeightForSmoothScroll(RecyclerView recyclerView) {
 		int height = 0;
 		for (int i = 0, n = recyclerView.getChildCount(); i < n; i++) {
 			height = Math.max(getDecoratedMeasuredHeight(recyclerView.getChildAt(i)), height);
@@ -473,7 +548,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		return height;
 	}
 
-	protected int computeScrollVectorForPosition(int targetPosition) {
+	int computeScrollVectorForPosition(int targetPosition) {
 		updateFirstAdapterPosition();
 		if (targetPosition > firstViewAdapterPosition) {
 			return 1;
@@ -483,7 +558,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		return 0;
 	}
 
-	public void recycleViewsOutOfBounds(RecyclerView.Recycler recycler) {
+	void recycleViewsOutOfBounds(RecyclerView.Recycler recycler) {
 
 		int height = getHeight();
 		int numChildren = getChildCount();
