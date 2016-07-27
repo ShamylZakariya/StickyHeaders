@@ -509,7 +509,12 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			SectionSelectionState state = selectionStateBySection.get(sectionIndex);
 
 			if (state.section) {
+
 				count += getNumberOfItemsInSection(sectionIndex);
+
+				if (doesSectionHaveFooter(sectionIndex)) {
+					count++;
+				}
 			} else {
 				for (int i = 0, s = state.items.size(); i < s; i++) {
 					boolean selected = state.items.valueAt(i);
