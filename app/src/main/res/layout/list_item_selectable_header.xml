@@ -26,7 +26,7 @@
 			android:text="Medium Text"
 			android:textAllCaps="true"
 			android:textAppearance="?android:attr/textAppearanceMedium"
-			android:textColor="@color/colorAccent"
+			android:textColor="@color/selectable_header_text_color"
 			/>
 
 		<TextView
@@ -37,6 +37,7 @@
 			android:padding="16dp"
 			tools:text="0"
 			android:textAppearance="?android:attr/textAppearanceMedium"
+		    android:textColor="@color/selectable_item_text_color"
 			/>
 
 	</LinearLayout>

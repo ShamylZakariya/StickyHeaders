@@ -4,8 +4,13 @@
 
 	<item android:id="@+id/menu_delete"
 	      android:title="@string/menu_cab_selection_demo_delete"
-	      android:icon="@drawable/ic_remove_24dp"
 	      app:showAsAction="ifRoom"
 	      android:orderInCategory="10"/>
+
+	<item android:id="@+id/menu_duplicate"
+	      android:title="@string/menu_cab_selection_demo_duplicate"
+	      app:showAsAction="ifRoom"
+	      android:orderInCategory="10"/>
+
 
 </menu>

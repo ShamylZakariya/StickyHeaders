@@ -73,7 +73,8 @@
 
 	<string name="paged_load_exhausted">No more items</string>
 
-	<string name="menu_cab_selection_demo_delete">Remove</string>
+	<string name="menu_cab_selection_demo_delete">Delete</string>
+	<string name="menu_cab_selection_demo_duplicate">Duplicate</string>
 	<string name="cab_selected_count">%1$s selected</string>
 
 </resources>

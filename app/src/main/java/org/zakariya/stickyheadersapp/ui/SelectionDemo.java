@@ -57,7 +57,6 @@ public class SelectionDemo extends DemoActivity implements ActionMode.Callback {
 			public boolean onSingleTapConfirmed(MotionEvent e) {
 				View view = recyclerView.findChildViewUnder(e.getX(), e.getY());
 				int adapterPosition = recyclerView.getChildAdapterPosition(view);
-				Log.d(TAG, "GestureDetectorCompat::onSingleTapConfirmed: adapterPosition: " + adapterPosition);
 
 				if (actionMode != null) {
 					toggleSelection(adapterPosition);
@@ -83,7 +82,6 @@ public class SelectionDemo extends DemoActivity implements ActionMode.Callback {
 
 			@Override
 			public void onLongPress(MotionEvent e) {
-				Log.d(TAG, "GestureDetectorCompat::onLongPress()");
 				if (actionMode == null) {
 					actionMode = startActionMode(SelectionDemo.this);
 
@@ -91,7 +89,6 @@ public class SelectionDemo extends DemoActivity implements ActionMode.Callback {
 					int adapterPosition = recyclerView.getChildAdapterPosition(view);
 					toggleSelection(adapterPosition);
 				}
-
 
 				super.onLongPress(e);
 			}
@@ -138,9 +135,15 @@ public class SelectionDemo extends DemoActivity implements ActionMode.Callback {
 	public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 		switch(item.getItemId()) {
 			case R.id.menu_delete:{
+				deleteSelection();
 				mode.finish();
 				return true;
 			}
+
+			case R.id.menu_duplicate:
+				duplicateSelection();
+				mode.finish();
+				return true;
 		}
 		return false;
 	}
@@ -149,6 +152,14 @@ public class SelectionDemo extends DemoActivity implements ActionMode.Callback {
 	public void onDestroyActionMode(ActionMode mode) {
 		this.actionMode = null;
 		adapter.clearSelection();
+	}
+
+	void deleteSelection() {
+
+	}
+
+	void duplicateSelection() {
+
 	}
 
 	void toggleSelection(int adapterPosition) {

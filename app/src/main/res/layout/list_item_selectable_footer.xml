@@ -15,7 +15,7 @@
 		android:layout_weight="1"
 		android:text="Medium Text"
 		android:textAppearance="?android:attr/textAppearanceSmall"
-		android:textColor="@color/textLight"
+		android:textColor="@color/selectable_footer_text_color"
 		android:textStyle="bold"/>
 
 	<TextView
@@ -26,6 +26,7 @@
 		android:padding="16dp"
 		android:textAppearance="?android:attr/textAppearanceMedium"
 		tools:text="0"
+		android:textColor="@color/selectable_footer_text_color"
 		/>
 
 
