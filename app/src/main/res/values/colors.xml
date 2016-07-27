@@ -14,4 +14,6 @@
 
 	<color name="headerBackground">#eeeeee</color>
 
+	<color name="selectedItemBackground">#dddddd</color>
+
 </resources>

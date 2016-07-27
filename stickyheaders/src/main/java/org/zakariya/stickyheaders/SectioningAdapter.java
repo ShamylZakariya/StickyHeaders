@@ -1,6 +1,7 @@
 package org.zakariya.stickyheaders;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -41,8 +42,15 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		boolean hasFooter;      // if true, sections has a footer
 	}
 
+	private static class SectionSelectionState {
+		boolean section;
+		SparseBooleanArray items = new SparseBooleanArray();
+		boolean footer;
+	}
+
 	private ArrayList<Section> sections;
 	private HashMap<Integer,Boolean> collapsedSections = new HashMap<>();
+	private HashMap<Integer,SectionSelectionState> selectionStateBySection = new HashMap<>();
 	private int[] sectionIndicesByAdapterPosition;
 	private int totalNumberOfItems;
 
@@ -474,6 +482,166 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		return false;
 	}
 
+	private SectionSelectionState getSectionSelectionState(int sectionIndex) {
+		SectionSelectionState state = selectionStateBySection.get(sectionIndex);
+		if (state != null) {
+			return state;
+		}
+
+		state = new SectionSelectionState();
+		selectionStateBySection.put(sectionIndex, state);
+
+		return state;
+	}
+
+	/**
+	 * Clear selection state
+	 */
+	public void clearSelection() {
+		selectionStateBySection = new HashMap<>();
+		notifyDataSetChanged();
+	}
+
+	public int getSelectedItemCount() {
+		int count = 0;
+		// walk the selection state and update the items which were selected
+		for (int sectionIndex : selectionStateBySection.keySet()) {
+			SectionSelectionState state = selectionStateBySection.get(sectionIndex);
+
+			if (state.section) {
+				count += getNumberOfItemsInSection(sectionIndex);
+			} else {
+				for (int i = 0, s = state.items.size(); i < s; i++) {
+					boolean selected = state.items.valueAt(i);
+					if (selected) {
+						count++;
+					}
+				}
+				if (state.footer) {
+					count++;
+				}
+			}
+		}
+
+		return count;
+	}
+
+	/**
+	 * Set whether an entire section is selected. this affects ALL items (and footer) in section.
+	 * @param sectionIndex index of the section
+	 * @param selected selection state
+	 */
+	public void setSectionSelected(int sectionIndex, boolean selected) {
+		SectionSelectionState state = getSectionSelectionState(sectionIndex);
+		if (state.section != selected) {
+			state.section = selected;
+
+			// update all items and footers
+			state.items.clear();
+			for (int i = 0, n = getNumberOfItemsInSection(sectionIndex); i < n; i++) {
+				state.items.put(i, selected);
+			}
+
+			if (doesSectionHaveFooter(sectionIndex)) {
+				state.footer = selected;
+			}
+
+			notifySectionDataSetChanged(sectionIndex);
+		}
+	}
+
+	/**
+	 * Toggle selection state of an entire section
+	 * @param sectionIndex index of section
+	 */
+	public void toggleSectionSelected(int sectionIndex) {
+		setSectionSelected(sectionIndex, !isSectionSelected(sectionIndex));
+	}
+
+	/**
+	 * Check if section is selected
+	 * @param sectionIndex index of section
+	 * @return true if section is selected
+	 */
+	public boolean isSectionSelected(int sectionIndex) {
+		return getSectionSelectionState(sectionIndex).section;
+	}
+
+	/**
+	 * Select a specific item in a section. Note, if the section is selected, this is a no-op.
+	 * @param sectionIndex index of section
+	 * @param itemIndex index of item, relative to section
+	 * @param selected selection state
+	 */
+	public void setSectionItemSelected(int sectionIndex, int itemIndex, boolean selected) {
+		SectionSelectionState state = getSectionSelectionState(sectionIndex);
+
+		if (state.section) {
+			return;
+		}
+
+		if (selected != state.items.get(itemIndex)) {
+			state.items.put(itemIndex, selected);
+			notifySectionItemChanged(sectionIndex, itemIndex);
+		}
+	}
+
+	/**
+	 * Toggle selection state of a specific item in a section
+	 * @param sectionIndex index of section
+	 * @param itemIndex index of item in section
+	 */
+	public void toggleSectionItemSelected(int sectionIndex, int itemIndex) {
+		setSectionItemSelected(sectionIndex, itemIndex, !isSectionItemSelected(sectionIndex, itemIndex));
+	}
+
+	/**
+	 * Check whether a specific item in a section is selected, or if the entire section is selected
+	 * @param sectionIndex index of section
+	 * @param itemIndex index of item in section
+	 * @return true if the item is selected
+	 */
+	public boolean isSectionItemSelected(int sectionIndex, int itemIndex) {
+		SectionSelectionState state = getSectionSelectionState(sectionIndex);
+		return state.section || state.items.get(itemIndex);
+	}
+
+	/**
+	 * Select the footer of a section
+	 * @param sectionIndex index of section
+	 * @param selected selection state
+	 */
+	public void setSectionFooterSelected(int sectionIndex, boolean selected) {
+		SectionSelectionState state = getSectionSelectionState(sectionIndex);
+
+		if (state.section) {
+			return;
+		}
+
+		if (state.footer != selected) {
+			state.footer = selected;
+			notifySectionFooterChanged(sectionIndex);
+		}
+	}
+
+	/**
+	 * Toggle selection of footer in a section
+	 * @param sectionIndex index of section
+	 */
+	public void toggleSectionFooterSelection(int sectionIndex) {
+		setSectionFooterSelected(sectionIndex, !isSectionFooterSelected(sectionIndex));
+	}
+
+	/**
+	 * Check whether footer of a section is selected, or if the entire section is selected
+	 * @param sectionIndex section index
+	 * @return true if the footer is selected
+	 */
+	public boolean isSectionFooterSelected(int sectionIndex) {
+		SectionSelectionState state = getSectionSelectionState(sectionIndex);
+		return state.section || state.footer;
+	}
+
 	/**
 	 * Notify that all data in the list is invalid and the entire list should be reloaded.
 	 * Equivalent to RecyclerView.Adapter.notifyDataSetChanged.
@@ -640,6 +808,60 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			buildSectionIndex();
 			Section section = this.sections.get(sectionIndex);
 			notifyItemRangeInserted(section.adapterPosition, section.length);
+		}
+	}
+
+	/**
+	 * Notify that a section has had a footer added to it
+	 * @param sectionIndex position of the section
+	 */
+	public void notifySectionFooterInserted(int sectionIndex) {
+		if (sections == null) {
+			buildSectionIndex();
+			notifyAllSectionsDataSetChanged();
+		} else {
+			buildSectionIndex();
+			Section section = this.sections.get(sectionIndex);
+			if (!section.hasFooter) {
+				throw new IllegalArgumentException("notifySectionFooterInserted: adapter implementation reports that section " + sectionIndex + " does not have a footer");
+			}
+			notifyItemInserted(section.adapterPosition + section.length - 1);
+		}
+	}
+
+	/**
+	 * Notify that a section has had a footer removed from it
+	 * @param sectionIndex position of the section
+	 */
+	public void notifySectionFooterRemoved(int sectionIndex) {
+		if (sections == null) {
+			buildSectionIndex();
+			notifyAllSectionsDataSetChanged();
+		} else {
+			buildSectionIndex();
+			Section section = this.sections.get(sectionIndex);
+			if (section.hasFooter) {
+				throw new IllegalArgumentException("notifySectionFooterRemoved: adapter implementation reports that section " + sectionIndex + " has a footer");
+			}
+			notifyItemRemoved(section.adapterPosition + section.length - 1);
+		}
+	}
+
+	/**
+	 * Notify that a section's footer's content has changed
+	 * @param sectionIndex position of the section
+	 */
+	public void notifySectionFooterChanged(int sectionIndex) {
+		if (sections == null) {
+			buildSectionIndex();
+			notifyAllSectionsDataSetChanged();
+		} else {
+			buildSectionIndex();
+			Section section = this.sections.get(sectionIndex);
+			if (!section.hasFooter) {
+				throw new IllegalArgumentException("notifySectionFooterChanged: adapter implementation reports that section " + sectionIndex + " does not have a footer");
+			}
+			notifyItemChanged(section.adapterPosition + section.length - 1);
 		}
 	}
 

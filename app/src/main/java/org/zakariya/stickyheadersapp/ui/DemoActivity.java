@@ -3,6 +3,7 @@ package org.zakariya.stickyheadersapp.ui;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -31,6 +32,7 @@ public class DemoActivity extends AppCompatActivity {
 
 	public static final boolean SHOW_ADAPTER_POSITIONS = true;
 
+	AppBarLayout appBarLayout;
 	RecyclerView recyclerView;
 	ProgressBar progressBar;
 
@@ -39,6 +41,7 @@ public class DemoActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_demo);
 
+		appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
 		recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 		progressBar = (ProgressBar) findViewById(R.id.progress);
 

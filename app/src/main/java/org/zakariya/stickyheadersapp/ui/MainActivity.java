@@ -151,7 +151,11 @@ public class MainActivity extends AppCompatActivity {
 
 					new DemoModel(getString(R.string.demo_list_item_paged_scroll_title),
 							getString(R.string.demo_list_item_paged_scroll_description),
-							PagedScrollDemoActivity.class)
+							PagedScrollDemoActivity.class),
+
+					new DemoModel(getString(R.string.demo_list_item_selection_title),
+							getString(R.string.demo_list_item_selection_description),
+							SelectionDemo.class)
 			};
 
 			recyclerView.setAdapter(new DemoAdapter(getContext(), demos, new ItemClickListener() {

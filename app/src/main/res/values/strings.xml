@@ -20,6 +20,7 @@
 	<string name="title_collapsing_headers_demo">Collapsing Headers</string>
 	<string name="title_paged_scroll_demo">Paged Scrolling</string>
 	<string name="title_multi_type_demo">Multiple Item Types</string>
+	<string name="title_selection_demo">Multiple Selection</string>
 
 	<string name="inspect_title">Inspection</string>
 	<string name="inspect_empty">No visible items</string>
@@ -56,6 +57,10 @@
 	<string name="demo_list_item_multi_type_title">@string/title_multi_type_demo</string>
 	<string name="demo_list_item_multi_type_description">Demonstrates support for multiple types of item, header, &amp; footer</string>
 
+	<string name="demo_list_item_selection_title">@string/title_selection_demo</string>
+	<string name="demo_list_item_selection_description">Demonstrates selection through a contextual action bar</string>
+
+
 	<string name="demo_addressbook_load_error_action">Info</string>
 	<string name="demo_addressbook_load_error_dialog_title">Whoops</string>
 
@@ -67,5 +72,8 @@
 	<string name="alert_dialog_button_title_smooth">Smooth</string>
 
 	<string name="paged_load_exhausted">No more items</string>
+
+	<string name="menu_cab_selection_demo_delete">Remove</string>
+	<string name="cab_selected_count">%1$s selected</string>
 
 </resources>
