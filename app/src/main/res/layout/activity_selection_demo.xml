@@ -6,33 +6,22 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:fitsSystemWindows="true"
 	tools:context="org.zakariya.stickyheadersapp.ui.DemoActivity">
 
 	<android.support.design.widget.AppBarLayout
 		android:id="@+id/appBar"
 		android:layout_width="match_parent"
-		android:layout_height="@dimen/app_bar_height"
+		android:layout_height="wrap_content"
 		android:fitsSystemWindows="true"
 		android:theme="@style/AppTheme.AppBarOverlay">
 
-		<android.support.design.widget.CollapsingToolbarLayout
-			android:id="@+id/collapsingToolbarLayout"
+		<android.support.v7.widget.Toolbar
+			android:id="@+id/toolbar"
+			style="@style/ToolBarWithNavigationBack"
 			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:fitsSystemWindows="true"
-			app:contentScrim="?attr/colorPrimary"
-			app:layout_scrollFlags="scroll|exitUntilCollapsed">
+			android:layout_height="?attr/actionBarSize"
+			app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-			<android.support.v7.widget.Toolbar
-				android:id="@+id/toolbar"
-				android:layout_width="match_parent"
-				android:layout_height="?attr/actionBarSize"
-				app:layout_collapseMode="pin"
-				app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-				style="@style/ToolBarWithNavigationBack"/>
-
-		</android.support.design.widget.CollapsingToolbarLayout>
 	</android.support.design.widget.AppBarLayout>
 
 	<android.support.v7.widget.RecyclerView
@@ -41,13 +30,5 @@
 		android:layout_height="match_parent"
 		app:layout_behavior="@string/appbar_scrolling_view_behavior"
 		/>
-
-	<ProgressBar
-		android:id="@+id/progress"
-		android:visibility="gone"
-		style="@style/Widget.AppCompat.ProgressBar"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center"/>
 
 </android.support.design.widget.CoordinatorLayout>

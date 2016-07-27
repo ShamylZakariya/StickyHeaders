@@ -1,6 +1,7 @@
 package org.zakariya.stickyheadersapp.ui;
 
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -32,7 +33,6 @@ public class SelectionDemo extends DemoActivity implements ActionMode.Callback {
 		super.onCreate(savedInstanceState);
 
 		adapter = new SelectionDemoAdapter(1000, 5, SHOW_ADAPTER_POSITIONS);
-
 		recyclerView.setLayoutManager(new StickyHeaderLayoutManager());
 		recyclerView.setAdapter(adapter);
 
@@ -96,9 +96,14 @@ public class SelectionDemo extends DemoActivity implements ActionMode.Callback {
 				super.onLongPress(e);
 			}
 		});
-
-
 	}
+
+	@Override
+	@LayoutRes
+	protected int getContentViewLayout(){
+		return R.layout.activity_selection_demo;
+	}
+
 
 		@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
