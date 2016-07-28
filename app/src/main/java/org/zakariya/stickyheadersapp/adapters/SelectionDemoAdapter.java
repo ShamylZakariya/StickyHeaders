@@ -2,6 +2,7 @@ package org.zakariya.stickyheadersapp.adapters;
 
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
  * Created by shamyl on 7/26/16.
  */
 public class SelectionDemoAdapter extends SectioningAdapter {
+
+	private static final String TAG = "SelectionDemoAdapter";
 
 	private class Section {
 		int index;
@@ -92,6 +95,31 @@ public class SelectionDemoAdapter extends SectioningAdapter {
 		}
 
 		sections.add(section);
+	}
+
+	public void deleteSelection() {
+
+		traverseSelection(new SelectionVisitor() {
+			@Override
+			public void onVisitSelectedSection(int sectionIndex) {
+				Log.d(TAG, "onVisitSelectedSection() called with: " + "sectionIndex = [" + sectionIndex + "]");
+			}
+
+			@Override
+			public void onVisitSelectedSectionItem(int sectionIndex, int itemIndex) {
+				Log.d(TAG, "onVisitSelectedSectionItem() called with: " + "sectionIndex = [" + sectionIndex + "], itemIndex = [" + itemIndex + "]");
+			}
+
+			@Override
+			public void onVisitSelectedFooter(int sectionIndex) {
+				Log.d(TAG, "onVisitSelectedFooter() called with: " + "sectionIndex = [" + sectionIndex + "]");
+			}
+		});
+
+	}
+
+	public void duplicateSelection() {
+
 	}
 
 	@Override

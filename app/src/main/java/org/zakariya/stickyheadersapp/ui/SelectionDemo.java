@@ -2,6 +2,7 @@ package org.zakariya.stickyheadersapp.ui;
 
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -52,7 +53,7 @@ public class SelectionDemo extends DemoActivity implements ActionMode.Callback {
 			}
 		});
 
-		gestureDetector = new GestureDetectorCompat(this, new GestureDetector.SimpleOnGestureListener(){
+		gestureDetector = new GestureDetectorCompat(this, new GestureDetector.SimpleOnGestureListener() {
 			@Override
 			public boolean onSingleTapConfirmed(MotionEvent e) {
 				View view = recyclerView.findChildViewUnder(e.getX(), e.getY());
@@ -97,12 +98,23 @@ public class SelectionDemo extends DemoActivity implements ActionMode.Callback {
 
 	@Override
 	@LayoutRes
-	protected int getContentViewLayout(){
+	protected int getContentViewLayout() {
 		return R.layout.activity_selection_demo;
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		final Snackbar snack = Snackbar.make(recyclerView, R.string.hint_demo_select_long_press, Snackbar.LENGTH_INDEFINITE);
+		snack.setAction(android.R.string.ok, new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				snack.dismiss();
+			}
+		}).show();
+	}
 
-		@Override
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater menuInflater = getMenuInflater();
 		menuInflater.inflate(R.menu.menu_endless_scroll_demo, menu);
@@ -133,15 +145,15 @@ public class SelectionDemo extends DemoActivity implements ActionMode.Callback {
 
 	@Override
 	public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-		switch(item.getItemId()) {
-			case R.id.menu_delete:{
-				deleteSelection();
+		switch (item.getItemId()) {
+			case R.id.menu_delete: {
+				adapter.deleteSelection();
 				mode.finish();
 				return true;
 			}
 
 			case R.id.menu_duplicate:
-				duplicateSelection();
+				adapter.duplicateSelection();
 				mode.finish();
 				return true;
 		}
@@ -152,14 +164,6 @@ public class SelectionDemo extends DemoActivity implements ActionMode.Callback {
 	public void onDestroyActionMode(ActionMode mode) {
 		this.actionMode = null;
 		adapter.clearSelection();
-	}
-
-	void deleteSelection() {
-
-	}
-
-	void duplicateSelection() {
-
 	}
 
 	void toggleSelection(int adapterPosition) {
