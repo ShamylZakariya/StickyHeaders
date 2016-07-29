@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<item android:id="@+id/menu_delete"
+	      android:title="@string/menu_cab_selection_demo_delete"
+	      app:showAsAction="ifRoom"
+	      android:orderInCategory="10"/>
+
+	<item android:id="@+id/menu_duplicate"
+	      android:title="@string/menu_cab_selection_demo_duplicate"
+	      app:showAsAction="ifRoom"
+	      android:orderInCategory="10"/>
+
+
+</menu>

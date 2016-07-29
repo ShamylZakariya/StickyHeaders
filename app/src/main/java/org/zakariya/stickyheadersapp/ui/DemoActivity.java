@@ -3,6 +3,9 @@ package org.zakariya.stickyheadersapp.ui;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.LayoutRes;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -31,14 +34,18 @@ public class DemoActivity extends AppCompatActivity {
 
 	public static final boolean SHOW_ADAPTER_POSITIONS = true;
 
+	AppBarLayout appBarLayout;
+	CollapsingToolbarLayout collapsingToolbarLayout;
 	RecyclerView recyclerView;
 	ProgressBar progressBar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_demo);
+		setContentView(getContentViewLayout());
 
+		appBarLayout = (AppBarLayout) findViewById(R.id.appBar);
+		collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsingToolbarLayout);
 		recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 		progressBar = (ProgressBar) findViewById(R.id.progress);
 
@@ -53,6 +60,11 @@ public class DemoActivity extends AppCompatActivity {
 				}
 			});
 		}
+	}
+
+	@LayoutRes
+	protected int getContentViewLayout(){
+		return R.layout.activity_demo;
 	}
 
 	@Override

@@ -1,12 +1,14 @@
 package org.zakariya.stickyheaders;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * SectioningAdapter
@@ -28,6 +30,8 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 
 	private static final String TAG = "SectioningAdapter";
 
+	public static final int NO_POSITION = -1;
+
 	public static final int TYPE_HEADER = 0;
 	public static final int TYPE_GHOST_HEADER = 1;
 	public static final int TYPE_ITEM = 2;
@@ -41,8 +45,15 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		boolean hasFooter;      // if true, sections has a footer
 	}
 
+	private static class SectionSelectionState {
+		boolean section;
+		SparseBooleanArray items = new SparseBooleanArray();
+		boolean footer;
+	}
+
 	private ArrayList<Section> sections;
-	private HashMap<Integer,Boolean> collapsedSections = new HashMap<>();
+	private HashMap<Integer, Boolean> collapsedSections = new HashMap<>();
+	private HashMap<Integer, SectionSelectionState> selectionStateBySection = new HashMap<>();
 	private int[] sectionIndicesByAdapterPosition;
 	private int totalNumberOfItems;
 
@@ -170,6 +181,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	/**
 	 * For scenarios with multiple types of headers, override this to return an integer in range [0,255] specifying a custom type for this header.
 	 * The value you return here will be passes to onCreateHeaderViewHolder and onBindHeaderViewHolder as the 'userType'
+	 *
 	 * @param sectionIndex the header's section
 	 * @return the custom type for this header in range [0,255]
 	 */
@@ -189,6 +201,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	/**
 	 * For scenarios with multiple types of footers, override this to return an integer in range [0, 255] specifying a custom type for this footer.
 	 * The value you return here will be passes to onCreateFooterViewHolder and onBindFooterViewHolder as the 'userType'
+	 *
 	 * @param sectionIndex the footer's section
 	 * @return the custom type for this footer in range [0,255]
 	 */
@@ -199,8 +212,9 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	/**
 	 * For scenarios with multiple types of items, override this to return an integer in range [0,255] specifying a custom type for the item at this position
 	 * The value you return here will be passes to onCreateItemViewHolder and onBindItemViewHolder as the 'userType'
+	 *
 	 * @param sectionIndex the items's section
-	 * @param itemIndex the position of the item in the section
+	 * @param itemIndex    the position of the item in the section
 	 * @return the custom type for this item in range [0,255]
 	 */
 	public int getSectionItemUserType(int sectionIndex, int itemIndex) {
@@ -210,7 +224,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	/**
 	 * Called when a ViewHolder is needed for a section item view
 	 *
-	 * @param parent The ViewGroup into which the new View will be added after it is bound to an adapter position.
+	 * @param parent       The ViewGroup into which the new View will be added after it is bound to an adapter position.
 	 * @param itemUserType If getSectionItemUserType is overridden to vend custom types, this will be the specified type
 	 * @return A new ItemViewHolder holding an item view
 	 */
@@ -221,7 +235,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	/**
 	 * Called when a ViewHolder is needed for a section header view
 	 *
-	 * @param parent The ViewGroup into which the new View will be added after it is bound to an adapter position.
+	 * @param parent         The ViewGroup into which the new View will be added after it is bound to an adapter position.
 	 * @param headerUserType If getSectionHeaderUserType is overridden to vend custom types, this will be the specified type
 	 * @return A new HeaderViewHolder holding a header view
 	 */
@@ -232,7 +246,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	/**
 	 * Called when a ViewHolder is needed for a section footer view
 	 *
-	 * @param parent The ViewGroup into which the new View will be added after it is bound to an adapter position.
+	 * @param parent         The ViewGroup into which the new View will be added after it is bound to an adapter position.
 	 * @param footerUserType If getSectionHeaderUserType is overridden to vend custom types, this will be the specified type
 	 * @return A new FooterViewHolder holding a footer view
 	 */
@@ -267,8 +281,8 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	/**
 	 * Called to display header data for a particular section
 	 *
-	 * @param viewHolder   the view holder to update
-	 * @param sectionIndex the index of the section containing the header to update
+	 * @param viewHolder     the view holder to update
+	 * @param sectionIndex   the index of the section containing the header to update
 	 * @param headerUserType if getSectionHeaderUserType is overridden to provide custom header types, this will be the type for this header
 	 */
 	public void onBindHeaderViewHolder(HeaderViewHolder viewHolder, int sectionIndex, int headerUserType) {
@@ -286,8 +300,8 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	/**
 	 * Called to display footer data for a particular section
 	 *
-	 * @param viewHolder   the view holder to update
-	 * @param sectionIndex the index of the section containing the footer to update
+	 * @param viewHolder     the view holder to update
+	 * @param sectionIndex   the index of the section containing the footer to update
 	 * @param footerUserType if getSectionFooterUserType is overridden to provide custom footer types, this will be the type for this footer
 	 */
 	public void onBindFooterViewHolder(FooterViewHolder viewHolder, int sectionIndex, int footerUserType) {
@@ -381,13 +395,13 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * Return the adapter position corresponding to the header of the provided section
 	 *
 	 * @param sectionIndex the index of the section
-	 * @return adapter position of that section's header
+	 * @return adapter position of that section's header, or NO_POSITION if section has no header
 	 */
 	public int getAdapterPositionForSectionHeader(int sectionIndex) {
 		if (doesSectionHaveHeader(sectionIndex)) {
 			return getAdapterPosition(sectionIndex, 0);
 		} else {
-			throw new InvalidParameterException("Section " + sectionIndex + " has no header");
+			return NO_POSITION;
 		}
 	}
 
@@ -395,13 +409,13 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * Return the adapter position corresponding to the ghost header of the provided section
 	 *
 	 * @param sectionIndex the index of the section
-	 * @return adapter position of that section's ghost header
+	 * @return adapter position of that section's ghost header, or NO_POSITION if section has no ghost header
 	 */
 	public int getAdapterPositionForSectionGhostHeader(int sectionIndex) {
 		if (doesSectionHaveHeader(sectionIndex)) {
 			return getAdapterPosition(sectionIndex, 1); // ghost header follows the header
 		} else {
-			throw new InvalidParameterException("Section " + sectionIndex + " has no header");
+			return NO_POSITION;
 		}
 	}
 
@@ -425,7 +439,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * Return the adapter position corresponding to the footer of the provided section
 	 *
 	 * @param sectionIndex the index of the section
-	 * @return adapter position of that section's footer
+	 * @return adapter position of that section's footer, or NO_POSITION if section does not have footer
 	 */
 	public int getAdapterPositionForSectionFooter(int sectionIndex) {
 		if (doesSectionHaveFooter(sectionIndex)) {
@@ -433,29 +447,30 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			int adapterPosition = section.adapterPosition;
 			return adapterPosition + section.length - 1;
 		} else {
-			throw new InvalidParameterException("Section " + sectionIndex + " has no footer");
+			return NO_POSITION;
 		}
 	}
 
 	/**
 	 * Mark that a section is collapsed or not. By default sections are not collapsed and draw
 	 * all their child items. By "collapsing" a section, the child items are hidden.
+	 *
 	 * @param sectionIndex index of section
-	 * @param collapsed if true, section is collapsed, false, it's open
+	 * @param collapsed    if true, section is collapsed, false, it's open
 	 */
 	public void setSectionIsCollapsed(int sectionIndex, boolean collapsed) {
 		boolean notify = isSectionCollapsed(sectionIndex) != collapsed;
 
 		collapsedSections.put(sectionIndex, collapsed);
 
-		if(notify) {
-			if(sections == null)
+		if (notify) {
+			if (sections == null)
 				buildSectionIndex();
 
 			Section section = sections.get(sectionIndex);
 			int number = section.numberOfItems;
 
-			if(collapsed)
+			if (collapsed)
 				notifySectionItemRangeRemoved(sectionIndex, 0, number);
 			else
 				notifySectionItemRangeInserted(sectionIndex, 0, number);
@@ -467,26 +482,305 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * @return true if that section is collapsed
 	 */
 	public boolean isSectionCollapsed(int sectionIndex) {
-		if(collapsedSections.containsKey(sectionIndex)) {
+		if (collapsedSections.containsKey(sectionIndex)) {
 			return collapsedSections.get(sectionIndex);
 		}
 
 		return false;
 	}
 
+	private SectionSelectionState getSectionSelectionState(int sectionIndex) {
+		SectionSelectionState state = selectionStateBySection.get(sectionIndex);
+		if (state != null) {
+			return state;
+		}
+
+		state = new SectionSelectionState();
+		selectionStateBySection.put(sectionIndex, state);
+
+		return state;
+	}
+
+	/**
+	 * Clear selection state
+	 * @param notify if true, notifies data change for recyclerview, if false, silent
+	 */
+	public void clearSelection(boolean notify) {
+
+		HashMap<Integer,SectionSelectionState> selectionState = notify ? new HashMap<>(selectionStateBySection) : null;
+		selectionStateBySection = new HashMap<>();
+
+		if (notify) {
+
+			// walk the selection state and update the items which were selected
+			for (int sectionIndex : selectionState.keySet()) {
+				SectionSelectionState state = selectionState.get(sectionIndex);
+
+				if (state.section) {
+					notifySectionDataSetChanged(sectionIndex);
+				} else {
+					for (int i = 0, s = state.items.size(); i < s; i++) {
+						if (state.items.valueAt(i)) {
+							notifySectionItemChanged(sectionIndex, state.items.keyAt(i));
+						}
+					}
+					if (state.footer) {
+						notifySectionFooterChanged(sectionIndex);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Clear selection state
+	 */
+	public void clearSelection() {
+		clearSelection(true);
+	}
+
+	/**
+	 * Quick check if selection is empty
+	 * @return true iff the selection state is empty
+	 */
+	public boolean isSelectionEmpty() {
+		for (int sectionIndex : selectionStateBySection.keySet()) {
+			SectionSelectionState state = selectionStateBySection.get(sectionIndex);
+
+			if (state.section) {
+				return false;
+			} else {
+				for (int i = 0, s = state.items.size(); i < s; i++) {
+					if (state.items.valueAt(i)) {
+						return false;
+					}
+				}
+				if (state.footer) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	public int getSelectedItemCount() {
+		int count = 0;
+		for (int sectionIndex : selectionStateBySection.keySet()) {
+			SectionSelectionState state = selectionStateBySection.get(sectionIndex);
+
+			if (state.section) {
+
+				count += getNumberOfItemsInSection(sectionIndex);
+
+				if (doesSectionHaveFooter(sectionIndex)) {
+					count++;
+				}
+			} else {
+				for (int i = 0, s = state.items.size(); i < s; i++) {
+					boolean selected = state.items.valueAt(i);
+					if (selected) {
+						count++;
+					}
+				}
+				if (state.footer) {
+					count++;
+				}
+			}
+		}
+
+		return count;
+	}
+
+	/**
+	 * Visitor interface for walking adapter selection state.
+	 */
+	public interface SelectionVisitor {
+		void onVisitSelectedSection(int sectionIndex);
+		void onVisitSelectedSectionItem(int sectionIndex, int itemIndex);
+		void onVisitSelectedFooter(int sectionIndex);
+	}
+
+	/**
+	 * Walks the selection state of the adapter, in reverse order from end to front. This is to ensure that any additions or deletions
+	 * which are made based on selection are safe to perform.
+	 * @param visitor visitor which is invoked to process selection state
+	 */
+	public void traverseSelection(SelectionVisitor visitor) {
+
+		// walk the section indices backwards
+		List<Integer> sectionIndices = new ArrayList<>(selectionStateBySection.keySet());
+		java.util.Collections.sort(sectionIndices, Collections.<Integer>reverseOrder());
+
+		for (int sectionIndex : sectionIndices) {
+			SectionSelectionState state = selectionStateBySection.get(sectionIndex);
+			if (state == null) {
+				continue;
+			}
+
+			if (state.section) {
+				visitor.onVisitSelectedSection(sectionIndex);
+			} else {
+
+				if (state.footer) {
+					visitor.onVisitSelectedFooter(sectionIndex);
+				}
+
+				// walk items backwards
+				for (int i = state.items.size() - 1; i >= 0; i--) {
+					if (state.items.valueAt(i)) {
+						visitor.onVisitSelectedSectionItem(sectionIndex, state.items.keyAt(i));
+					}
+				}
+
+
+			}
+		}
+
+	}
+
+	/**
+	 * Set whether an entire section is selected. this affects ALL items (and footer) in section.
+	 *
+	 * @param sectionIndex index of the section
+	 * @param selected     selection state
+	 */
+	public void setSectionSelected(int sectionIndex, boolean selected) {
+		SectionSelectionState state = getSectionSelectionState(sectionIndex);
+		if (state.section != selected) {
+			state.section = selected;
+
+			// update all items and footers
+			state.items.clear();
+			for (int i = 0, n = getNumberOfItemsInSection(sectionIndex); i < n; i++) {
+				state.items.put(i, selected);
+			}
+
+			if (doesSectionHaveFooter(sectionIndex)) {
+				state.footer = selected;
+			}
+
+			notifySectionDataSetChanged(sectionIndex);
+		}
+	}
+
+	/**
+	 * Toggle selection state of an entire section
+	 *
+	 * @param sectionIndex index of section
+	 */
+	public void toggleSectionSelected(int sectionIndex) {
+		setSectionSelected(sectionIndex, !isSectionSelected(sectionIndex));
+	}
+
+	/**
+	 * Check if section is selected
+	 *
+	 * @param sectionIndex index of section
+	 * @return true if section is selected
+	 */
+	public boolean isSectionSelected(int sectionIndex) {
+		return getSectionSelectionState(sectionIndex).section;
+	}
+
+	/**
+	 * Select a specific item in a section. Note, if the section is selected, this is a no-op.
+	 *
+	 * @param sectionIndex index of section
+	 * @param itemIndex    index of item, relative to section
+	 * @param selected     selection state
+	 */
+	public void setSectionItemSelected(int sectionIndex, int itemIndex, boolean selected) {
+		SectionSelectionState state = getSectionSelectionState(sectionIndex);
+
+		if (state.section) {
+			return;
+		}
+
+		if (selected != state.items.get(itemIndex)) {
+			state.items.put(itemIndex, selected);
+			notifySectionItemChanged(sectionIndex, itemIndex);
+		}
+	}
+
+	/**
+	 * Toggle selection state of a specific item in a section
+	 *
+	 * @param sectionIndex index of section
+	 * @param itemIndex    index of item in section
+	 */
+	public void toggleSectionItemSelected(int sectionIndex, int itemIndex) {
+		setSectionItemSelected(sectionIndex, itemIndex, !isSectionItemSelected(sectionIndex, itemIndex));
+	}
+
+	/**
+	 * Check whether a specific item in a section is selected, or if the entire section is selected
+	 *
+	 * @param sectionIndex index of section
+	 * @param itemIndex    index of item in section
+	 * @return true if the item is selected
+	 */
+	public boolean isSectionItemSelected(int sectionIndex, int itemIndex) {
+		SectionSelectionState state = getSectionSelectionState(sectionIndex);
+		return state.section || state.items.get(itemIndex);
+	}
+
+	/**
+	 * Select the footer of a section
+	 *
+	 * @param sectionIndex index of section
+	 * @param selected     selection state
+	 */
+	public void setSectionFooterSelected(int sectionIndex, boolean selected) {
+		SectionSelectionState state = getSectionSelectionState(sectionIndex);
+
+		if (state.section) {
+			return;
+		}
+
+		if (state.footer != selected) {
+			state.footer = selected;
+			notifySectionFooterChanged(sectionIndex);
+		}
+	}
+
+	/**
+	 * Toggle selection of footer in a section
+	 *
+	 * @param sectionIndex index of section
+	 */
+	public void toggleSectionFooterSelection(int sectionIndex) {
+		setSectionFooterSelected(sectionIndex, !isSectionFooterSelected(sectionIndex));
+	}
+
+	/**
+	 * Check whether footer of a section is selected, or if the entire section is selected
+	 *
+	 * @param sectionIndex section index
+	 * @return true if the footer is selected
+	 */
+	public boolean isSectionFooterSelected(int sectionIndex) {
+		SectionSelectionState state = getSectionSelectionState(sectionIndex);
+		return state.section || state.footer;
+	}
+
 	/**
 	 * Notify that all data in the list is invalid and the entire list should be reloaded.
+	 * NOTE: This will clear selection state, and collapsed section state.
 	 * Equivalent to RecyclerView.Adapter.notifyDataSetChanged.
 	 * Never directly call notifyDataSetChanged.
 	 */
 	public void notifyAllSectionsDataSetChanged() {
 		buildSectionIndex();
 		notifyDataSetChanged();
+		collapsedSections.clear();
+		selectionStateBySection.clear();
 	}
 
 	/**
 	 * Notify that all the items in a particular section are invalid and that section should be reloaded
 	 * Never directly call notifyDataSetChanged.
+	 * This will clear item selection state for the affected section.
 	 *
 	 * @param sectionIndex index of the section to reload.
 	 */
@@ -499,14 +793,18 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			Section section = this.sections.get(sectionIndex);
 			notifyItemRangeChanged(section.adapterPosition, section.length);
 		}
+
+		// clear item selection state
+		getSectionSelectionState(sectionIndex).items.clear();
 	}
 
 	/**
 	 * Notify that a range of items in a section has been inserted
+	 *
 	 * @param sectionIndex index of the section
 	 * @param fromPosition index to start adding
-	 * @param number amount of items inserted
-     */
+	 * @param number       amount of items inserted
+	 */
 	public void notifySectionItemRangeInserted(int sectionIndex, int fromPosition, int number) {
 		if (sections == null) {
 			buildSectionIndex();
@@ -520,19 +818,24 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 				throw new IndexOutOfBoundsException("itemIndex adapterPosition: " + fromPosition + " exceeds sectionIndex numberOfItems: " + section.numberOfItems);
 			}
 
-			if(section.hasHeader) {
-				fromPosition += 2;
+			int offset = fromPosition;
+			if (section.hasHeader) {
+				offset += 2;
 			}
 
-			notifyItemRangeInserted(section.adapterPosition + fromPosition, number);
+			notifyItemRangeInserted(section.adapterPosition + offset, number);
 		}
+
+		// update selection state by inserting unselected spaces
+		updateSectionItemRangeSelectionState(sectionIndex, fromPosition, +number);
 	}
 
 	/**
 	 * Notify that a range of items in a section has been removed
+	 *
 	 * @param sectionIndex index of the section
 	 * @param fromPosition index to start removing from
-	 * @param number amount of items removed
+	 * @param number       amount of items removed
 	 */
 	public void notifySectionItemRangeRemoved(int sectionIndex, int fromPosition, int number) {
 		if (sections == null) {
@@ -552,13 +855,18 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 				throw new IndexOutOfBoundsException("itemIndex adapterPosition: " + fromPosition + number + " exceeds sectionIndex numberOfItems: " + section.numberOfItems);
 			}
 
-			if(section.hasHeader) {
-				fromPosition += 2;
+			int offset = fromPosition;
+			if (section.hasHeader) {
+				offset += 2;
 			}
 
-			notifyItemRangeRemoved(section.adapterPosition + fromPosition, number);
+			notifyItemRangeRemoved(section.adapterPosition + offset, number);
 		}
+
+		// update selection state by removing specified items
+		updateSectionItemRangeSelectionState(sectionIndex, fromPosition, -number);
 	}
+
 
 
 	/**
@@ -599,11 +907,15 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		} else {
 			buildSectionIndex();
 			Section section = this.sections.get(sectionIndex);
+
+			int offset = itemIndex;
 			if (section.hasHeader) {
-				itemIndex += 2;
+				offset += 2;
 			}
-			notifyItemInserted(section.adapterPosition + itemIndex);
+			notifyItemInserted(section.adapterPosition + offset);
 		}
+
+		updateSectionItemRangeSelectionState(sectionIndex, itemIndex, 1);
 	}
 
 	/**
@@ -620,11 +932,15 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		} else {
 			buildSectionIndex();
 			Section section = this.sections.get(sectionIndex);
+
+			int offset = itemIndex;
 			if (section.hasHeader) {
-				itemIndex += 2;
+				offset += 2;
 			}
-			notifyItemRemoved(section.adapterPosition + itemIndex);
+			notifyItemRemoved(section.adapterPosition + offset);
 		}
+
+		updateSectionItemRangeSelectionState(sectionIndex, itemIndex, -1);
 	}
 
 	/**
@@ -641,6 +957,8 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			Section section = this.sections.get(sectionIndex);
 			notifyItemRangeInserted(section.adapterPosition, section.length);
 		}
+
+		updateCollapseAndSelectionStateForSectionChange(sectionIndex, +1);
 	}
 
 	/**
@@ -652,6 +970,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 
 		buildSectionIndex();
 		notifyAllSectionsDataSetChanged();
+		updateCollapseAndSelectionStateForSectionChange(sectionIndex, -1);
 
 		// TODO: The below implementation is in principle superior, but doesn't work!
 
@@ -667,6 +986,63 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		*/
 	}
 
+	/**
+	 * Notify that a section has had a footer added to it
+	 *
+	 * @param sectionIndex position of the section
+	 */
+	public void notifySectionFooterInserted(int sectionIndex) {
+		if (sections == null) {
+			buildSectionIndex();
+			notifyAllSectionsDataSetChanged();
+		} else {
+			buildSectionIndex();
+			Section section = this.sections.get(sectionIndex);
+			if (!section.hasFooter) {
+				throw new IllegalArgumentException("notifySectionFooterInserted: adapter implementation reports that section " + sectionIndex + " does not have a footer");
+			}
+			notifyItemInserted(section.adapterPosition + section.length - 1);
+		}
+	}
+
+	/**
+	 * Notify that a section has had a footer removed from it
+	 *
+	 * @param sectionIndex position of the section
+	 */
+	public void notifySectionFooterRemoved(int sectionIndex) {
+		if (sections == null) {
+			buildSectionIndex();
+			notifyAllSectionsDataSetChanged();
+		} else {
+			buildSectionIndex();
+			Section section = this.sections.get(sectionIndex);
+			if (section.hasFooter) {
+				throw new IllegalArgumentException("notifySectionFooterRemoved: adapter implementation reports that section " + sectionIndex + " has a footer");
+			}
+			notifyItemRemoved(section.adapterPosition + section.length - 1);
+		}
+	}
+
+	/**
+	 * Notify that a section's footer's content has changed
+	 *
+	 * @param sectionIndex position of the section
+	 */
+	public void notifySectionFooterChanged(int sectionIndex) {
+		if (sections == null) {
+			buildSectionIndex();
+			notifyAllSectionsDataSetChanged();
+		} else {
+			buildSectionIndex();
+			Section section = this.sections.get(sectionIndex);
+			if (!section.hasFooter) {
+				throw new IllegalArgumentException("notifySectionFooterChanged: adapter implementation reports that section " + sectionIndex + " does not have a footer");
+			}
+			notifyItemChanged(section.adapterPosition + section.length - 1);
+		}
+	}
+
 	private void buildSectionIndex() {
 		sections = new ArrayList<>();
 
@@ -677,7 +1053,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			section.hasHeader = doesSectionHaveHeader(s);
 			section.hasFooter = doesSectionHaveFooter(s);
 
-			if (isSectionCollapsed(s)){
+			if (isSectionCollapsed(s)) {
 				section.length = 0;
 				section.numberOfItems = getNumberOfItemsInSection(s);
 			} else {
@@ -703,10 +1079,73 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		for (int s = 0, ns = getNumberOfSections(); s < ns; s++) {
 			Section section = sections.get(s);
 			for (int p = 0; p < section.length; p++) {
-				sectionIndicesByAdapterPosition[i+p] = s;
+				sectionIndicesByAdapterPosition[i + p] = s;
 			}
 
 			i += section.length;
+		}
+	}
+
+	private void updateSectionItemRangeSelectionState(int sectionIndex, int fromPosition, int delta) {
+		SectionSelectionState sectionSelectionState = getSectionSelectionState(sectionIndex);
+		SparseBooleanArray itemState = sectionSelectionState.items.clone();
+		sectionSelectionState.items.clear();
+
+		for (int i = 0, n = itemState.size(); i < n; i++) {
+			int pos = itemState.keyAt(i);
+
+			if (delta < 0 && pos >= fromPosition && pos < fromPosition - delta ) { // erasure
+				continue;
+			}
+
+			int newPos = pos;
+			if (pos >= fromPosition) {
+				newPos += delta;
+			}
+
+			if (itemState.get(pos)) {
+				sectionSelectionState.items.put(newPos, true);
+			}
+		}
+	}
+
+
+	private void updateCollapseAndSelectionStateForSectionChange(int sectionIndex, int delta) {
+
+		// update section collapse state
+		HashMap<Integer, Boolean> collapseState = new HashMap<>(collapsedSections);
+		collapsedSections.clear();
+
+		for (int i : collapseState.keySet()) {
+			// erasure
+			if (delta < 0 && i == sectionIndex) {
+				continue;
+			}
+
+			int j = i;
+			if (j >= sectionIndex) {
+				j += delta;
+			}
+
+			collapsedSections.put(j, collapseState.get(i));
+		}
+
+		// update selection state
+		HashMap<Integer, SectionSelectionState> selectionState = new HashMap<>(selectionStateBySection);
+		selectionStateBySection.clear();
+
+		for (int i : selectionState.keySet()) {
+			// erasure
+			if (delta < 0 && i == sectionIndex) {
+				continue;
+			}
+
+			int j = i;
+			if (j >= sectionIndex) {
+				j += delta;
+			}
+
+			selectionStateBySection.put(j, selectionState.get(i));
 		}
 	}
 
@@ -738,7 +1177,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		int userType = 0;
 
 
-		switch( baseType) {
+		switch (baseType) {
 			case TYPE_HEADER:
 				userType = getSectionHeaderUserType(sectionIndex);
 				if (userType < 0 || userType > 0xFF) {

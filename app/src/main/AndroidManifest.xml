@@ -97,6 +97,17 @@
 				android:value=".ui.MainActivity"/>
 		</activity>
 
+		<activity
+			android:name=".ui.SelectionDemo"
+			android:theme="@style/AppTheme.NoActionBar"
+			android:label="@string/title_selection_demo"
+			android:launchMode="singleTop"
+			android:parentActivityName=".ui.MainActivity">
+			<meta-data
+				android:name="android.support.PARENT_ACTIVITY"
+				android:value=".ui.MainActivity"/>
+		</activity>
+
 	</application>
 
 </manifest>
