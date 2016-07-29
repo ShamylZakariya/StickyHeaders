@@ -125,7 +125,6 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
 		// Update positions in case we need to save post-detach
 		updateFirstAdapterPosition();
-		//adapter = null;
 	}
 
 	@Override
