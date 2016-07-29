@@ -88,7 +88,7 @@ public class SelectionDemoAdapter extends SectioningAdapter {
 		Section section = new Section();
 		section.index = index;
 		section.header = Integer.toString(index);
-		section.footer = "End of section " + index;
+		section.footer = "End of section " + Integer.toString(index);
 
 		for (int j = 0; j < itemCount; j++) {
 			section.items.add(index + "/" + j);
@@ -97,29 +97,86 @@ public class SelectionDemoAdapter extends SectioningAdapter {
 		sections.add(section);
 	}
 
+	void duplicateSection(int sectionIndex) {
+		Section srcSection = sections.get(sectionIndex);
+		Section cloneSection = new Section();
+		cloneSection.index = srcSection.index;
+		cloneSection.header = srcSection.header + " (clone)";
+		cloneSection.footer = srcSection.footer + " (clone)";
+		cloneSection.items = new ArrayList<>(srcSection.items);
+		sections.add(sectionIndex + 1, cloneSection);
+
+		notifySectionInserted(sectionIndex + 1);
+	}
+
+	void duplicateItem(int sectionIndex, int itemIndex) {
+		Section section = sections.get(sectionIndex);
+		if (section != null) {
+			String src = section.items.get(itemIndex);
+			section.items.add(itemIndex + 1, src + " (copy)");
+
+			notifySectionItemInserted(sectionIndex, itemIndex + 1);
+		}
+	}
+
 	public void deleteSelection() {
 
 		traverseSelection(new SelectionVisitor() {
 			@Override
 			public void onVisitSelectedSection(int sectionIndex) {
 				Log.d(TAG, "onVisitSelectedSection() called with: " + "sectionIndex = [" + sectionIndex + "]");
+				sections.remove(sectionIndex);
+				notifySectionRemoved(sectionIndex);
 			}
 
 			@Override
 			public void onVisitSelectedSectionItem(int sectionIndex, int itemIndex) {
 				Log.d(TAG, "onVisitSelectedSectionItem() called with: " + "sectionIndex = [" + sectionIndex + "], itemIndex = [" + itemIndex + "]");
+				Section section = sections.get(sectionIndex);
+				if (section != null) {
+					section.items.remove(itemIndex);
+					notifySectionItemRemoved(sectionIndex, itemIndex);
+				}
 			}
 
 			@Override
 			public void onVisitSelectedFooter(int sectionIndex) {
 				Log.d(TAG, "onVisitSelectedFooter() called with: " + "sectionIndex = [" + sectionIndex + "]");
+				Section section = sections.get(sectionIndex);
+				if (section != null) {
+					section.footer = null;
+					notifySectionFooterRemoved(sectionIndex);
+				}
 			}
 		});
+
+		// clear selection without notification - because that would fight the deletion animations triggered above
+		clearSelection(false);
 
 	}
 
 	public void duplicateSelection() {
 
+		traverseSelection(new SelectionVisitor() {
+			@Override
+			public void onVisitSelectedSection(int sectionIndex) {
+				Log.d(TAG, "onVisitSelectedSection() called with: " + "sectionIndex = [" + sectionIndex + "]");
+				duplicateSection(sectionIndex);
+			}
+
+			@Override
+			public void onVisitSelectedSectionItem(int sectionIndex, int itemIndex) {
+				Log.d(TAG, "onVisitSelectedSectionItem() called with: " + "sectionIndex = [" + sectionIndex + "], itemIndex = [" + itemIndex + "]");
+				duplicateItem(sectionIndex, itemIndex);
+			}
+
+			@Override
+			public void onVisitSelectedFooter(int sectionIndex) {
+				// no-op
+			}
+		});
+
+		clearSelection();
 	}
 
 	@Override
