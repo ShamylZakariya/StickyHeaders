@@ -2,6 +2,7 @@ package org.zakariya.stickyheadersapp.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -12,6 +13,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -164,7 +166,21 @@ public class MainActivity extends AppCompatActivity {
 					startActivity(new Intent(getActivity(), demoModel.activityClass));
 				}
 			}));
-			recyclerView.setLayoutManager(new StickyHeaderLayoutManager());
+
+			StickyHeaderLayoutManager layoutManager = new StickyHeaderLayoutManager();
+
+			// set a header position callback to set elevation on sticky headers, because why not
+			layoutManager.setHeaderPositionChangedCallback(new StickyHeaderLayoutManager.HeaderPositionChangedCallback() {
+				@Override
+				public void onHeaderPositionChanged(int sectionIndex, View header, StickyHeaderLayoutManager.HeaderPosition oldPosition, StickyHeaderLayoutManager.HeaderPosition newPosition) {
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+						boolean elevated = newPosition == StickyHeaderLayoutManager.HeaderPosition.STICKY;
+						header.setElevation(elevated ? 8 : 0);
+					}
+				}
+			});
+
+			recyclerView.setLayoutManager(layoutManager);
 		}
 
 		private static class DemoModel {
