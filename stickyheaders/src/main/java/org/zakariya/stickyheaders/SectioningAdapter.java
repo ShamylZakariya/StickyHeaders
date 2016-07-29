@@ -5,7 +5,6 @@ import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,6 +29,8 @@ import java.util.List;
 public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.ViewHolder> {
 
 	private static final String TAG = "SectioningAdapter";
+
+	public static final int NO_POSITION = -1;
 
 	public static final int TYPE_HEADER = 0;
 	public static final int TYPE_GHOST_HEADER = 1;
@@ -394,13 +395,13 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * Return the adapter position corresponding to the header of the provided section
 	 *
 	 * @param sectionIndex the index of the section
-	 * @return adapter position of that section's header
+	 * @return adapter position of that section's header, or NO_POSITION if section has no header
 	 */
 	public int getAdapterPositionForSectionHeader(int sectionIndex) {
 		if (doesSectionHaveHeader(sectionIndex)) {
 			return getAdapterPosition(sectionIndex, 0);
 		} else {
-			throw new InvalidParameterException("Section " + sectionIndex + " has no header");
+			return NO_POSITION;
 		}
 	}
 
@@ -408,13 +409,13 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * Return the adapter position corresponding to the ghost header of the provided section
 	 *
 	 * @param sectionIndex the index of the section
-	 * @return adapter position of that section's ghost header
+	 * @return adapter position of that section's ghost header, or NO_POSITION if section has no ghost header
 	 */
 	public int getAdapterPositionForSectionGhostHeader(int sectionIndex) {
 		if (doesSectionHaveHeader(sectionIndex)) {
 			return getAdapterPosition(sectionIndex, 1); // ghost header follows the header
 		} else {
-			throw new InvalidParameterException("Section " + sectionIndex + " has no header");
+			return NO_POSITION;
 		}
 	}
 
@@ -438,7 +439,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * Return the adapter position corresponding to the footer of the provided section
 	 *
 	 * @param sectionIndex the index of the section
-	 * @return adapter position of that section's footer
+	 * @return adapter position of that section's footer, or NO_POSITION if section does not have footer
 	 */
 	public int getAdapterPositionForSectionFooter(int sectionIndex) {
 		if (doesSectionHaveFooter(sectionIndex)) {
@@ -446,7 +447,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			int adapterPosition = section.adapterPosition;
 			return adapterPosition + section.length - 1;
 		} else {
-			throw new InvalidParameterException("Section " + sectionIndex + " has no footer");
+			return NO_POSITION;
 		}
 	}
 
@@ -502,15 +503,69 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 
 	/**
 	 * Clear selection state
+	 * @param notify if true, notifies data change for recyclerview, if false, silent
+	 */
+	public void clearSelection(boolean notify) {
+
+		HashMap<Integer,SectionSelectionState> selectionState = notify ? new HashMap<>(selectionStateBySection) : null;
+		selectionStateBySection = new HashMap<>();
+
+		if (notify) {
+
+			// walk the selection state and update the items which were selected
+			for (int sectionIndex : selectionState.keySet()) {
+				SectionSelectionState state = selectionState.get(sectionIndex);
+
+				if (state.section) {
+					notifySectionDataSetChanged(sectionIndex);
+				} else {
+					for (int i = 0, s = state.items.size(); i < s; i++) {
+						if (state.items.valueAt(i)) {
+							notifySectionItemChanged(sectionIndex, state.items.keyAt(i));
+						}
+					}
+					if (state.footer) {
+						notifySectionFooterChanged(sectionIndex);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Clear selection state
 	 */
 	public void clearSelection() {
-		selectionStateBySection = new HashMap<>();
-		notifyDataSetChanged();
+		clearSelection(true);
+	}
+
+	/**
+	 * Quick check if selection is empty
+	 * @return true iff the selection state is empty
+	 */
+	public boolean isSelectionEmpty() {
+		for (int sectionIndex : selectionStateBySection.keySet()) {
+			SectionSelectionState state = selectionStateBySection.get(sectionIndex);
+
+			if (state.section) {
+				return false;
+			} else {
+				for (int i = 0, s = state.items.size(); i < s; i++) {
+					if (state.items.valueAt(i)) {
+						return false;
+					}
+				}
+				if (state.footer) {
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 	public int getSelectedItemCount() {
 		int count = 0;
-		// walk the selection state and update the items which were selected
 		for (int sectionIndex : selectionStateBySection.keySet()) {
 			SectionSelectionState state = selectionStateBySection.get(sectionIndex);
 
@@ -559,6 +614,10 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 
 		for (int sectionIndex : sectionIndices) {
 			SectionSelectionState state = selectionStateBySection.get(sectionIndex);
+			if (state == null) {
+				continue;
+			}
+
 			if (state.section) {
 				visitor.onVisitSelectedSection(sectionIndex);
 			} else {
@@ -1034,12 +1093,18 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 
 		for (int i = 0, n = itemState.size(); i < n; i++) {
 			int pos = itemState.keyAt(i);
+
+			if (delta < 0 && pos >= fromPosition && pos < fromPosition - delta ) { // erasure
+				continue;
+			}
+
+			int newPos = pos;
 			if (pos >= fromPosition) {
-				pos += delta;
+				newPos += delta;
 			}
 
 			if (itemState.get(pos)) {
-				sectionSelectionState.items.put(pos, true);
+				sectionSelectionState.items.put(newPos, true);
 			}
 		}
 	}
@@ -1052,6 +1117,11 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		collapsedSections.clear();
 
 		for (int i : collapseState.keySet()) {
+			// erasure
+			if (delta < 0 && i == sectionIndex) {
+				continue;
+			}
+
 			int j = i;
 			if (j >= sectionIndex) {
 				j += delta;
@@ -1065,6 +1135,11 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		selectionStateBySection.clear();
 
 		for (int i : selectionState.keySet()) {
+			// erasure
+			if (delta < 0 && i == sectionIndex) {
+				continue;
+			}
+
 			int j = i;
 			if (j >= sectionIndex) {
 				j += delta;
