@@ -94,8 +94,24 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	}
 
 	@Override
+	public void onAdapterChanged(RecyclerView.Adapter oldAdapter, RecyclerView.Adapter newAdapter) {
+		super.onAdapterChanged(oldAdapter, newAdapter);
+
+		try {
+			adapter = (SectioningAdapter) newAdapter;
+		} catch (ClassCastException e) {
+			throw new ClassCastException("StickyHeaderLayoutManager must be used with a RecyclerView where the adapter is a kind of SectioningAdapter");
+		}
+
+		removeAllViews();
+		headerViews.clear();
+		headerPositionsBySection.clear();
+	}
+
+	@Override
 	public void onAttachedToWindow(RecyclerView view) {
 		super.onAttachedToWindow(view);
+
 		try {
 			adapter = (SectioningAdapter) view.getAdapter();
 		} catch (ClassCastException e) {
@@ -104,19 +120,12 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	}
 
 	@Override
-	public void onAdapterChanged(RecyclerView.Adapter oldAdapter, RecyclerView.Adapter newAdapter) {
-		removeAllViews();
-		headerViews.clear();
-		headerPositionsBySection.clear();
-	}
-
-	@Override
 	public void onDetachedFromWindow(RecyclerView view, RecyclerView.Recycler recycler) {
 		super.onDetachedFromWindow(view, recycler);
 
 		// Update positions in case we need to save post-detach
 		updateFirstAdapterPosition();
-		adapter = null;
+		//adapter = null;
 	}
 
 	@Override
@@ -152,6 +161,10 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	@Override
 	public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
 
+		if (adapter == null) {
+			return;
+		}
+
 		if (scrollTargetAdapterPosition >= 0) {
 			firstViewAdapterPosition = scrollTargetAdapterPosition;
 			firstViewTop = 0;
@@ -178,8 +191,9 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		int totalVendedHeight = 0;
 
 		// If we emptied the view with a notify, we may overshoot and fail to draw
-		if (firstViewAdapterPosition > state.getItemCount())
+		if (firstViewAdapterPosition > state.getItemCount()) {
 			firstViewAdapterPosition = 0;
+		}
 
 		// walk through adapter starting at firstViewAdapterPosition stacking each vended item
 		for (int adapterPosition = firstViewAdapterPosition; adapterPosition < state.getItemCount(); adapterPosition++) {
