@@ -471,9 +471,9 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			int number = section.numberOfItems;
 
 			if (collapsed)
-				notifySectionItemRangeRemoved(sectionIndex, 0, number);
+				notifySectionItemRangeRemovedInternal(sectionIndex, 0, number);
 			else
-				notifySectionItemRangeInserted(sectionIndex, 0, number);
+				notifySectionItemRangeInsertedInternal(sectionIndex, 0, number);
 		}
 	}
 
@@ -806,6 +806,12 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * @param number       amount of items inserted
 	 */
 	public void notifySectionItemRangeInserted(int sectionIndex, int fromPosition, int number) {
+		notifySectionItemRangeInsertedInternal(sectionIndex, fromPosition, number);
+		// update selection state by inserting unselected spaces
+		updateSectionItemRangeSelectionState(sectionIndex, fromPosition, +number);
+	}
+
+	public void notifySectionItemRangeInsertedInternal(int sectionIndex, int fromPosition, int number) {
 		if (sections == null) {
 			buildSectionIndex();
 			notifyAllSectionsDataSetChanged();
@@ -825,9 +831,6 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 
 			notifyItemRangeInserted(section.adapterPosition + offset, number);
 		}
-
-		// update selection state by inserting unselected spaces
-		updateSectionItemRangeSelectionState(sectionIndex, fromPosition, +number);
 	}
 
 	/**
@@ -838,6 +841,12 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * @param number       amount of items removed
 	 */
 	public void notifySectionItemRangeRemoved(int sectionIndex, int fromPosition, int number) {
+		notifySectionItemRangeRemovedInternal(sectionIndex, fromPosition, number);
+		// update selection state by removing specified items
+		updateSectionItemRangeSelectionState(sectionIndex, fromPosition, -number);
+	}
+
+	private void notifySectionItemRangeRemovedInternal(final int sectionIndex, final int fromPosition, final int number) {
 		if (sections == null) {
 			buildSectionIndex();
 			notifyAllSectionsDataSetChanged();
@@ -862,12 +871,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 
 			notifyItemRangeRemoved(section.adapterPosition + offset, number);
 		}
-
-		// update selection state by removing specified items
-		updateSectionItemRangeSelectionState(sectionIndex, fromPosition, -number);
 	}
-
-
 
 	/**
 	 * Notify that a particular itemIndex in a section has been invalidated and must be reloaded
