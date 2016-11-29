@@ -1013,7 +1013,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			if (section.hasFooter) {
 				throw new IllegalArgumentException("notifySectionFooterRemoved: adapter implementation reports that section " + sectionIndex + " has a footer");
 			}
-			notifyItemRemoved(section.adapterPosition + section.length - 1);
+			notifyItemRemoved(section.adapterPosition + section.length);
 		}
 	}
 
