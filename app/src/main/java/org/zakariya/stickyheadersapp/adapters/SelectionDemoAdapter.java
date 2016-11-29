@@ -1,11 +1,14 @@
 package org.zakariya.stickyheadersapp.adapters;
 
 import android.annotation.SuppressLint;
+import android.support.annotation.DrawableRes;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import org.zakariya.stickyheaders.SectioningAdapter;
@@ -42,18 +45,37 @@ public class SelectionDemoAdapter extends SectioningAdapter {
 		}
 	}
 
-	public class HeaderViewHolder extends SectioningAdapter.HeaderViewHolder {
+	public class HeaderViewHolder extends SectioningAdapter.HeaderViewHolder implements View.OnClickListener {
 		TextView textView;
 		TextView adapterPositionTextView;
+		ImageButton collapseButton;
 
 		public HeaderViewHolder(View itemView, boolean showAdapterPosition) {
 			super(itemView);
 			textView = (TextView) itemView.findViewById(R.id.textView);
 			adapterPositionTextView = (TextView) itemView.findViewById(R.id.adapterPositionTextView);
+			collapseButton = (ImageButton) itemView.findViewById(R.id.collapseButton);
+			collapseButton.setOnClickListener(this);
 
 			if (showAdapterPosition) {
 				adapterPositionTextView.setVisibility(View.INVISIBLE);
 			}
+		}
+
+		void updateSectionCollapseToggle(boolean sectionIsCollapsed) {
+			@DrawableRes int id = sectionIsCollapsed
+					? R.drawable.ic_expand_more_black_24dp
+					: R.drawable.ic_expand_less_black_24dp;
+
+			collapseButton.setImageDrawable(ContextCompat.getDrawable(collapseButton.getContext(), id));
+		}
+
+		@Override
+		public void onClick(View v) {
+			int position = getAdapterPosition();
+			final int section = SelectionDemoAdapter.this.getSectionForAdapterPosition(position);
+			SelectionDemoAdapter.this.onToggleSectionCollapse(section);
+			updateSectionCollapseToggle(SelectionDemoAdapter.this.isSectionCollapsed(section));
 		}
 	}
 
@@ -72,8 +94,8 @@ public class SelectionDemoAdapter extends SectioningAdapter {
 		}
 	}
 
-	ArrayList<Section> sections = new ArrayList<>();
-	boolean showAdapterPositions;
+	private ArrayList<Section> sections = new ArrayList<>();
+	private boolean showAdapterPositions;
 
 
 	public SelectionDemoAdapter(int numSections, int numItemsPerSection, boolean showAdapterPositions) {
@@ -84,7 +106,7 @@ public class SelectionDemoAdapter extends SectioningAdapter {
 		}
 	}
 
-	void appendSection(int index, int itemCount) {
+	private void appendSection(int index, int itemCount) {
 		Section section = new Section();
 		section.index = index;
 		section.header = Integer.toString(index);
@@ -97,7 +119,7 @@ public class SelectionDemoAdapter extends SectioningAdapter {
 		sections.add(section);
 	}
 
-	void duplicateSection(int sectionIndex) {
+	private void duplicateSection(int sectionIndex) {
 		Section srcSection = sections.get(sectionIndex);
 		Section cloneSection = new Section();
 		cloneSection.index = srcSection.index;
@@ -109,7 +131,7 @@ public class SelectionDemoAdapter extends SectioningAdapter {
 		notifySectionInserted(sectionIndex + 1);
 	}
 
-	void duplicateItem(int sectionIndex, int itemIndex) {
+	private void duplicateItem(int sectionIndex, int itemIndex) {
 		Section section = sections.get(sectionIndex);
 		if (section != null) {
 			String src = section.items.get(itemIndex);
@@ -179,6 +201,11 @@ public class SelectionDemoAdapter extends SectioningAdapter {
 		clearSelection();
 	}
 
+	private void onToggleSectionCollapse(int sectionIndex) {
+		Log.d(TAG, "onToggleSectionCollapse() called with: " + "sectionIndex = [" + sectionIndex + "]");
+		setSectionIsCollapsed(sectionIndex, !isSectionCollapsed(sectionIndex));
+	}
+
 	@Override
 	public int getNumberOfSections() {
 		return sections.size();
@@ -242,7 +269,7 @@ public class SelectionDemoAdapter extends SectioningAdapter {
 		hvh.adapterPositionTextView.setText(Integer.toString(getAdapterPositionForSectionHeader(sectionIndex)));
 
 		hvh.itemView.setActivated(isSectionSelected(sectionIndex));
-
+		hvh.updateSectionCollapseToggle(isSectionCollapsed(sectionIndex));
 	}
 
 	@SuppressLint("SetTextI18n")

@@ -40,6 +40,16 @@
 		    android:textColor="@color/selectable_item_text_color"
 			/>
 
+		<ImageButton
+			android:id="@+id/collapseButton"
+			style="?android:attr/borderlessButtonStyle"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:layout_gravity="center_vertical"
+			android:contentDescription="@string/action_collapse"
+			android:src="@drawable/ic_expand_less_black_24dp"
+			android:tint="@color/actionButton"/>
+
 	</LinearLayout>
 
 	<View

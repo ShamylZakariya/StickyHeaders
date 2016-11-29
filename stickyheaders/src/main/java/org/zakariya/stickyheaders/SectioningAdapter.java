@@ -1,5 +1,7 @@
 package org.zakariya.stickyheaders;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
 import android.view.View;
@@ -25,7 +27,7 @@ import java.util.List;
  * and an optional footer. The ghost header is a special item used for layout mechanics. It can
  * be ignored by SectioningAdapter subclasses - but it is made externally accessible just in case.
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.ViewHolder> {
 
 	private static final String TAG = "SectioningAdapter";
@@ -56,8 +58,10 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	private HashMap<Integer, SectionSelectionState> selectionStateBySection = new HashMap<>();
 	private int[] sectionIndicesByAdapterPosition;
 	private int totalNumberOfItems;
+	private Handler mainThreadHandler;
 
 
+	@SuppressWarnings("WeakerAccess")
 	public static class ViewHolder extends RecyclerView.ViewHolder {
 		private int section;
 		private int numberOfItemsInSection;
@@ -131,6 +135,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		}
 	}
 
+	@SuppressWarnings("WeakerAccess")
 	public static class GhostHeaderViewHolder extends ViewHolder {
 		public GhostHeaderViewHolder(View itemView) {
 			super(itemView);
@@ -470,10 +475,11 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			Section section = sections.get(sectionIndex);
 			int number = section.numberOfItems;
 
-			if (collapsed)
-				notifySectionItemRangeRemoved(sectionIndex, 0, number);
-			else
-				notifySectionItemRangeInserted(sectionIndex, 0, number);
+			if (collapsed) {
+				notifySectionItemRangeRemoved(sectionIndex, 0, number, false);
+			} else {
+				notifySectionItemRangeInserted(sectionIndex, 0, number, false);
+			}
 		}
 	}
 
@@ -503,11 +509,12 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 
 	/**
 	 * Clear selection state
+	 *
 	 * @param notify if true, notifies data change for recyclerview, if false, silent
 	 */
 	public void clearSelection(boolean notify) {
 
-		HashMap<Integer,SectionSelectionState> selectionState = notify ? new HashMap<>(selectionStateBySection) : null;
+		HashMap<Integer, SectionSelectionState> selectionState = notify ? new HashMap<>(selectionStateBySection) : null;
 		selectionStateBySection = new HashMap<>();
 
 		if (notify) {
@@ -541,6 +548,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 
 	/**
 	 * Quick check if selection is empty
+	 *
 	 * @return true iff the selection state is empty
 	 */
 	public boolean isSelectionEmpty() {
@@ -597,13 +605,16 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 */
 	public interface SelectionVisitor {
 		void onVisitSelectedSection(int sectionIndex);
+
 		void onVisitSelectedSectionItem(int sectionIndex, int itemIndex);
+
 		void onVisitSelectedFooter(int sectionIndex);
 	}
 
 	/**
 	 * Walks the selection state of the adapter, in reverse order from end to front. This is to ensure that any additions or deletions
 	 * which are made based on selection are safe to perform.
+	 *
 	 * @param visitor visitor which is invoked to process selection state
 	 */
 	public void traverseSelection(SelectionVisitor visitor) {
@@ -632,8 +643,6 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 						visitor.onVisitSelectedSectionItem(sectionIndex, state.items.keyAt(i));
 					}
 				}
-
-
 			}
 		}
 
@@ -806,6 +815,10 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * @param number       amount of items inserted
 	 */
 	public void notifySectionItemRangeInserted(int sectionIndex, int fromPosition, int number) {
+		notifySectionItemRangeInserted(sectionIndex, fromPosition, number, true);
+	}
+
+	private void notifySectionItemRangeInserted(int sectionIndex, int fromPosition, int number, boolean updateSelectionState) {
 		if (sections == null) {
 			buildSectionIndex();
 			notifyAllSectionsDataSetChanged();
@@ -826,8 +839,10 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			notifyItemRangeInserted(section.adapterPosition + offset, number);
 		}
 
-		// update selection state by inserting unselected spaces
-		updateSectionItemRangeSelectionState(sectionIndex, fromPosition, +number);
+		if (updateSelectionState) {
+			// update selection state by inserting unselected spaces
+			updateSectionItemRangeSelectionState(sectionIndex, fromPosition, +number);
+		}
 	}
 
 	/**
@@ -838,6 +853,10 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * @param number       amount of items removed
 	 */
 	public void notifySectionItemRangeRemoved(int sectionIndex, int fromPosition, int number) {
+		notifySectionItemRangeRemoved(sectionIndex, fromPosition, number, true);
+	}
+
+	private void notifySectionItemRangeRemoved(int sectionIndex, int fromPosition, int number, boolean updateSelectionState) {
 		if (sections == null) {
 			buildSectionIndex();
 			notifyAllSectionsDataSetChanged();
@@ -863,10 +882,11 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			notifyItemRangeRemoved(section.adapterPosition + offset, number);
 		}
 
-		// update selection state by removing specified items
-		updateSectionItemRangeSelectionState(sectionIndex, fromPosition, -number);
+		if (updateSelectionState) {
+			// update selection state by removing specified items
+			updateSectionItemRangeSelectionState(sectionIndex, fromPosition, -number);
+		}
 	}
-
 
 
 	/**
@@ -1036,6 +1056,22 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		}
 	}
 
+	/**
+	 * Post an action to be run later.
+	 * RecyclerView doesn't like being mutated during a scroll. We can't detect when a
+	 * scroll is actually happening, unfortunately, so the best we can do is post actions
+	 * from notify* methods to be run at a later date.
+	 *
+	 * @param action action to run
+	 */
+	private void post(Runnable action) {
+		if (mainThreadHandler == null) {
+			mainThreadHandler = new Handler(Looper.getMainLooper());
+		}
+
+		mainThreadHandler.post(action);
+	}
+
 	private void buildSectionIndex() {
 		sections = new ArrayList<>();
 
@@ -1087,7 +1123,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		for (int i = 0, n = itemState.size(); i < n; i++) {
 			int pos = itemState.keyAt(i);
 
-			if (delta < 0 && pos >= fromPosition && pos < fromPosition - delta ) { // erasure
+			if (delta < 0 && pos >= fromPosition && pos < fromPosition - delta) { // erasure
 				continue;
 			}
 

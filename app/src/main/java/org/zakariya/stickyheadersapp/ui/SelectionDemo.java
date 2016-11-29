@@ -57,6 +57,7 @@ public class SelectionDemo extends DemoActivity implements ActionMode.Callback {
 			@Override
 			public boolean onSingleTapConfirmed(MotionEvent e) {
 				View view = recyclerView.findChildViewUnder(e.getX(), e.getY());
+				Log.i(TAG, "onSingleTapConfirmed: view: " + view);
 				int adapterPosition = recyclerView.getChildAdapterPosition(view);
 
 				if (actionMode != null) {
@@ -170,6 +171,9 @@ public class SelectionDemo extends DemoActivity implements ActionMode.Callback {
 
 		Log.d(TAG, "toggleSelection() called with: " + "adapterPosition = [" + adapterPosition + "]");
 
+		// note: We're not supporting selection of entire section because - while it can be useful
+		// in some circumstances, it's confusing here. We only allow toggling of items/footers
+
 		int sectionIndex = adapter.getSectionForAdapterPosition(adapterPosition);
 		int footerAdapterPosition = adapter.getAdapterPositionForSectionFooter(sectionIndex);
 
@@ -179,11 +183,8 @@ public class SelectionDemo extends DemoActivity implements ActionMode.Callback {
 		} else {
 			int itemIndex = adapter.getPositionOfItemInSection(sectionIndex, adapterPosition);
 			if (itemIndex >= 0) {
-				Log.d(TAG, "toggleSelection: toggling selection of item at section: " + sectionIndex + " itemIndex: " + itemIndex);
+				Log.d(TAG, "toggleSelection: toggling selection of item @ section: " + sectionIndex + " itemIndex: " + itemIndex);
 				adapter.toggleSectionItemSelected(sectionIndex, itemIndex);
-			} else {
-				Log.d(TAG, "toggleSelection: toggling selection of sectionIndex: " + sectionIndex);
-				adapter.toggleSectionSelected(sectionIndex);
 			}
 		}
 
