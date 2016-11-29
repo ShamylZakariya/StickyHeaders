@@ -593,6 +593,11 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		for (int i = 0; i < numChildren; i++) {
 			View view = getChildAt(i);
 
+			// skip views which have been recycled but are still in place because of animation
+			if (isViewRecycled(view)) {
+				continue;
+			}
+
 			if (getViewBaseType(view) != SectioningAdapter.TYPE_HEADER) {
 				if (getDecoratedBottom(view) < 0 || getDecoratedTop(view) > height) {
 					viewsToRecycle.add(view);
@@ -608,6 +613,12 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
 		for (int i = 0; i < numChildren; i++) {
 			View view = getChildAt(i);
+
+			// skip views which have been recycled but are still in place because of animation
+			if (isViewRecycled(view)) {
+				continue;
+			}
+
 			int sectionIndex = getViewSectionIndex(view);
 			if (getViewBaseType(view) == SectioningAdapter.TYPE_HEADER && !remainingSections.contains(sectionIndex)) {
 				float translationY = view.getTranslationY();
@@ -748,6 +759,12 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			View firstViewInNextSection = null;
 			for (int i = 0, n = getChildCount(); i < n; i++) {
 				View view = getChildAt(i);
+
+				// the view has been recycled
+				if (isViewRecycled(view)) {
+					continue;
+				}
+
 				int type = getViewBaseType(view);
 				if (type == SectioningAdapter.TYPE_HEADER) {
 					continue;
@@ -812,6 +829,10 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 				headerPositionChangedCallback.onHeaderPositionChanged(sectionIndex, headerView, HeaderPosition.NONE, newHeaderPosition);
 			}
 		}
+	}
+
+	boolean isViewRecycled(View view) {
+		return getViewAdapterPosition(view) == RecyclerView.NO_POSITION;
 	}
 
 	int getViewBaseType(View view) {
