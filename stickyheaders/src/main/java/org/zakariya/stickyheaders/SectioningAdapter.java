@@ -967,14 +967,6 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 	 * @param sectionIndex position of the removed section
 	 */
 	public void notifySectionRemoved(int sectionIndex) {
-
-		buildSectionIndex();
-		notifyAllSectionsDataSetChanged();
-		updateCollapseAndSelectionStateForSectionChange(sectionIndex, -1);
-
-		// TODO: The below implementation is in principle superior, but doesn't work!
-
-		/*
 		if (sections == null) {
 			buildSectionIndex();
 			notifyAllSectionsDataSetChanged();
@@ -983,7 +975,8 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			buildSectionIndex();
 			notifyItemRangeRemoved(section.adapterPosition, section.length);
 		}
-		*/
+
+		updateCollapseAndSelectionStateForSectionChange(sectionIndex, -1);
 	}
 
 	/**
