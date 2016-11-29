@@ -75,7 +75,7 @@
 
 	<string name="menu_cab_selection_demo_delete">Delete</string>
 	<string name="menu_cab_selection_demo_duplicate">Duplicate</string>
-	<string name="cab_selected_count">%1$s selected</string>
+	<string name="cab_selected_count">%1$d selected</string>
 	<string name="hint_demo_select_long_press">Long press an item to enter selection mode</string>
 
 </resources>
