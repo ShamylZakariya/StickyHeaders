@@ -24,10 +24,11 @@
 
 		<activity
 			android:name=".ui.AddressBookDemoActivity"
-			android:theme="@style/AppTheme.NoActionBar"
+			android:exported="true"
 			android:label="@string/title_address_book_demo"
 			android:launchMode="singleTop"
-			android:parentActivityName=".ui.MainActivity">
+			android:parentActivityName=".ui.MainActivity"
+			android:theme="@style/AppTheme.NoActionBar">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value=".ui.MainActivity"/>
@@ -35,30 +36,35 @@
 
 		<activity
 			android:name=".ui.HeaderCallbacksDemoActivity"
-			android:theme="@style/AppTheme.NoActionBar"
+			android:exported="true"
 			android:label="@string/title_simple_demo"
 			android:launchMode="singleTop"
-			android:parentActivityName=".ui.MainActivity">
+			android:parentActivityName=".ui.MainActivity"
+			android:theme="@style/AppTheme.NoActionBar">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value=".ui.MainActivity"/>
 		</activity>
 
-		<activity android:name=".ui.StressTestDemoActivity"
-		          android:theme="@style/AppTheme.NoActionBar"
-		          android:label="@string/title_stress_test_demo"
-		          android:launchMode="singleTop"
-		          android:parentActivityName=".ui.MainActivity">
+		<activity
+			android:name=".ui.StressTestDemoActivity"
+			android:exported="true"
+			android:label="@string/title_stress_test_demo"
+			android:launchMode="singleTop"
+			android:parentActivityName=".ui.MainActivity"
+			android:theme="@style/AppTheme.NoActionBar">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value=".ui.MainActivity"/>
 		</activity>
 
-		<activity android:name=".ui.CollapsingSectionsDemoActivity"
-		          android:theme="@style/AppTheme.NoActionBar"
-		          android:label="@string/title_collapsing_headers_demo"
-		          android:launchMode="singleTop"
-		          android:parentActivityName=".ui.MainActivity">
+		<activity
+			android:name=".ui.CollapsingSectionsDemoActivity"
+			android:exported="true"
+			android:label="@string/title_collapsing_headers_demo"
+			android:launchMode="singleTop"
+			android:parentActivityName=".ui.MainActivity"
+			android:theme="@style/AppTheme.NoActionBar">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value=".ui.MainActivity"/>
@@ -66,10 +72,11 @@
 
 		<activity
 			android:name=".ui.SectioningAdapterDemoActivity"
-			android:theme="@style/AppTheme.NoActionBar"
+			android:exported="true"
 			android:label="@string/title_sectioning_adapter_demo"
 			android:launchMode="singleTop"
-			android:parentActivityName=".ui.MainActivity">
+			android:parentActivityName=".ui.MainActivity"
+			android:theme="@style/AppTheme.NoActionBar">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value=".ui.MainActivity"/>
@@ -77,10 +84,11 @@
 
 		<activity
 			android:name=".ui.PagedScrollDemoActivity"
-			android:theme="@style/AppTheme.NoActionBar"
+			android:exported="true"
 			android:label="@string/title_paged_scroll_demo"
 			android:launchMode="singleTop"
-			android:parentActivityName=".ui.MainActivity">
+			android:parentActivityName=".ui.MainActivity"
+			android:theme="@style/AppTheme.NoActionBar">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value=".ui.MainActivity"/>
@@ -88,10 +96,11 @@
 
 		<activity
 			android:name=".ui.MultiTypeItemDemoActivity"
-			android:theme="@style/AppTheme.NoActionBar"
+			android:exported="true"
 			android:label="@string/title_multi_type_demo"
 			android:launchMode="singleTop"
-			android:parentActivityName=".ui.MainActivity">
+			android:parentActivityName=".ui.MainActivity"
+			android:theme="@style/AppTheme.NoActionBar">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value=".ui.MainActivity"/>
@@ -99,10 +108,11 @@
 
 		<activity
 			android:name=".ui.SelectionDemo"
-			android:theme="@style/AppTheme.NoActionBar"
+			android:exported="true"
 			android:label="@string/title_selection_demo"
 			android:launchMode="singleTop"
-			android:parentActivityName=".ui.MainActivity">
+			android:parentActivityName=".ui.MainActivity"
+			android:theme="@style/AppTheme.NoActionBar">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value=".ui.MainActivity"/>
