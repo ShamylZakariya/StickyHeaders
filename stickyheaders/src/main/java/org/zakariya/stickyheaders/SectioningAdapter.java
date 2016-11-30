@@ -469,8 +469,9 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		collapsedSections.put(sectionIndex, collapsed);
 
 		if (notify) {
-			if (sections == null)
+			if (sections == null) {
 				buildSectionIndex();
+			}
 
 			Section section = sections.get(sectionIndex);
 			int number = section.numberOfItems;
