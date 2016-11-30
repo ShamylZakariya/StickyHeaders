@@ -54,26 +54,26 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
 	private static final String TAG = StickyHeaderLayoutManager.class.getSimpleName();
 
-	SectioningAdapter adapter;
+	private SectioningAdapter adapter;
 
 	// holds all the visible section headers
-	HashSet<View> headerViews = new HashSet<>();
+	private HashSet<View> headerViews = new HashSet<>();
 
 	// holds the HeaderPosition for each header
-	HashMap<Integer, HeaderPosition> headerPositionsBySection = new HashMap<>();
+	private HashMap<Integer, HeaderPosition> headerPositionsBySection = new HashMap<>();
 
-	HeaderPositionChangedCallback headerPositionChangedCallback;
+	private HeaderPositionChangedCallback headerPositionChangedCallback;
 
 	// adapter position of first (lowest-y-value) visible item.
-	int firstViewAdapterPosition;
+	private int firstViewAdapterPosition;
 
 	// top of first (lowest-y-value) visible item.
-	int firstViewTop;
+	private int firstViewTop;
 
 	// adapter position (iff >= 0) of the item selected in scrollToPosition
-	int scrollTargetAdapterPosition = -1;
+	private int scrollTargetAdapterPosition = -1;
 
-	SavedState pendingSavedState;
+	private SavedState pendingSavedState;
 
 
 	public StickyHeaderLayoutManager() {
@@ -260,7 +260,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	 * @param sectionIndex the index of the section for in question
 	 * @return the header, or null if the adapter specifies no header for the section
 	 */
-	View createSectionHeaderIfNeeded(RecyclerView.Recycler recycler, int sectionIndex) {
+	private View createSectionHeaderIfNeeded(RecyclerView.Recycler recycler, int sectionIndex) {
 
 		if (adapter.doesSectionHaveHeader(sectionIndex)) {
 
@@ -484,7 +484,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	}
 
 	@Nullable
-	SectioningAdapter.ViewHolder getFirstVisibleViewHolderOfType(int baseType, boolean fullyVisibleOnly) {
+	private SectioningAdapter.ViewHolder getFirstVisibleViewHolderOfType(int baseType, boolean fullyVisibleOnly) {
 		if (getChildCount() == 0) {
 			return null;
 		}
@@ -563,7 +563,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		startSmoothScroll(scroller);
 	}
 
-	int getEstimatedItemHeightForSmoothScroll(RecyclerView recyclerView) {
+	private int getEstimatedItemHeightForSmoothScroll(RecyclerView recyclerView) {
 		int height = 0;
 		for (int i = 0, n = recyclerView.getChildCount(); i < n; i++) {
 			height = Math.max(getDecoratedMeasuredHeight(recyclerView.getChildAt(i)), height);
@@ -571,7 +571,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		return height;
 	}
 
-	int computeScrollVectorForPosition(int targetPosition) {
+	private int computeScrollVectorForPosition(int targetPosition) {
 		updateFirstAdapterPosition();
 		if (targetPosition > firstViewAdapterPosition) {
 			return 1;
@@ -581,7 +581,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		return 0;
 	}
 
-	void recycleViewsOutOfBounds(RecyclerView.Recycler recycler) {
+	private void recycleViewsOutOfBounds(RecyclerView.Recycler recycler) {
 
 		int height = getHeight();
 		int numChildren = getChildCount();
@@ -639,7 +639,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		updateFirstAdapterPosition();
 	}
 
-	View getTopmostChildView() {
+	private View getTopmostChildView() {
 		if (getChildCount() == 0) {
 			return null;
 		}
@@ -709,7 +709,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	 *
 	 * @return the y value of the topmost view in the layout, or paddingTop if empty
 	 */
-	int updateFirstAdapterPosition() {
+	private int updateFirstAdapterPosition() {
 
 		// we're empty
 		if (getChildCount() == 0) {
@@ -733,7 +733,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		return firstViewTop;
 	}
 
-	void updateHeaderPositions(RecyclerView.Recycler recycler) {
+	private void updateHeaderPositions(RecyclerView.Recycler recycler) {
 
 		// first, for each section represented by the current list of items,
 		// ensure that the header for that section is extant
@@ -813,7 +813,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		}
 	}
 
-	void recordHeaderPositionAndNotify(int sectionIndex, View headerView, HeaderPosition newHeaderPosition) {
+	private void recordHeaderPositionAndNotify(int sectionIndex, View headerView, HeaderPosition newHeaderPosition) {
 		if (headerPositionsBySection.containsKey(sectionIndex)) {
 			HeaderPosition currentHeaderPosition = headerPositionsBySection.get(sectionIndex);
 			if (currentHeaderPosition != newHeaderPosition) {
@@ -831,21 +831,21 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		}
 	}
 
-	boolean isViewRecycled(View view) {
+	private boolean isViewRecycled(View view) {
 		return getViewAdapterPosition(view) == RecyclerView.NO_POSITION;
 	}
 
-	int getViewBaseType(View view) {
+	private int getViewBaseType(View view) {
 		int adapterPosition = getViewAdapterPosition(view);
 		return adapter.getItemViewBaseType(adapterPosition);
 	}
 
-	int getViewSectionIndex(View view) {
+	private int getViewSectionIndex(View view) {
 		int adapterPosition = getViewAdapterPosition(view);
 		return adapter.getSectionForAdapterPosition(adapterPosition);
 	}
 
-	SectioningAdapter.ViewHolder getViewViewHolder(View view) {
+	private SectioningAdapter.ViewHolder getViewViewHolder(View view) {
 		return (SectioningAdapter.ViewHolder) view.getTag(R.id.sectioning_adapter_tag_key_view_viewholder);
 	}
 
@@ -854,13 +854,13 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	}
 
 	// https://blog.stylingandroid.com/scrolling-recyclerview-part-3/
-	class SmoothScroller extends LinearSmoothScroller {
+	private class SmoothScroller extends LinearSmoothScroller {
 		private static final int TARGET_SEEK_SCROLL_DISTANCE_PX = 10000;
 		private static final float DEFAULT_DURATION = 1000;
 		private final float distanceInPixels;
 		private final float duration;
 
-		public SmoothScroller(Context context, int distanceInPixels) {
+		SmoothScroller(Context context, int distanceInPixels) {
 			super(context);
 			this.distanceInPixels = distanceInPixels;
 			float millisecondsPerPx = calculateSpeedPerPixel(context.getResources().getDisplayMetrics());
@@ -880,12 +880,12 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		}
 	}
 
-	static class SavedState implements Parcelable {
+	private static class SavedState implements Parcelable {
 
 		int firstViewAdapterPosition = RecyclerView.NO_POSITION;
 		int firstViewTop = 0;
 
-		public SavedState() {
+		SavedState() {
 		}
 
 		SavedState(Parcel in) {
