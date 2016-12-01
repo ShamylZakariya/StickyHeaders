@@ -743,7 +743,9 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			View view = getChildAt(i);
 			int sectionIndex = getViewSectionIndex(view);
 			if (visitedSections.add(sectionIndex)) {
-				createSectionHeaderIfNeeded(recycler, sectionIndex);
+				if (adapter.doesSectionHaveHeader(sectionIndex)) {
+					createSectionHeaderIfNeeded(recycler, sectionIndex);
+				}
 			}
 		}
 
