@@ -6,7 +6,7 @@ Adapter and LayoutManager for Android RecyclerView which enables sticky header p
 ## Download
 minSdkVersion: 11
 ```
-compile 'org.zakariya.stickyheaders:stickyheaders:0.7.5'
+compile 'org.zakariya.stickyheaders:stickyheaders:0.7.6'
 ```
 
 ---
