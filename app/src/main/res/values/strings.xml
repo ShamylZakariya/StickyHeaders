@@ -11,12 +11,22 @@
 
 	<string name="menu_item_reload">Reload</string>
 	<string name="menu_item_scroll_to_bottom">Scroll to bottom</string>
+	<string name="menu_item_inspect">Inspect</string>
 
 	<string name="title_address_book_demo">Address Book</string>
 	<string name="title_simple_demo">Sticky Header Callbacks</string>
 	<string name="title_sectioning_adapter_demo">Sections</string>
 	<string name="title_stress_test_demo">Stress Test</string>
 	<string name="title_collapsing_headers_demo">Collapsing Headers</string>
+	<string name="title_paged_scroll_demo">Paged Scrolling</string>
+	<string name="title_multi_type_demo">Multiple Item Types</string>
+	<string name="title_selection_demo">Multiple Selection</string>
+
+	<string name="inspect_title">Inspection</string>
+	<string name="inspect_empty">No visible items</string>
+	<string name="inspect_header_adapter_position">First visible header adapter position: %1$d</string>
+	<string name="inspect_item_adapter_position">First visible item adapter position: %1$d</string>
+	<string name="inspect_footer_adapter_position">First visible footer adapter position: %1$d</string>
 
 	<string name="about_title">About</string>
 	<string name="about_adapter_title">SectioningAdapter</string>
@@ -26,20 +36,29 @@
 	<string name="about_layout_text">The StickyHeaderLayoutManager is a simple RecyclerView.LayoutManager designed for use with the SectioningAdapter. It works like an iOS UITableView where section titles are fixed to the top of the scrollview when content is scrolled up. Its very useful for scenarios like address books.</string>
 
 	<string name="main_demo_list_title">Demos</string>
-	<string name="demo_list_item_addressbook_title">Address Book</string>
+	<string name="demo_list_item_addressbook_title">@string/title_address_book_demo</string>
 	<string name="demo_list_item_addressbook_description">A simple address book demo using sections to organize people by first letter of last name</string>
 
-	<string name="demo_list_item_callbacks_title">Sticky Header Callbacks</string>
+	<string name="demo_list_item_callbacks_title">@string/title_simple_demo</string>
 	<string name="demo_list_item_callbacks_description">Demonstrates use of callbacks on header positioning, allowing for elevation effects, etc</string>
 
-	<string name="demo_list_item_stress_test_title">Stress Test</string>
+	<string name="demo_list_item_stress_test_title">@string/title_stress_test_demo</string>
 	<string name="demo_list_item_stress_test_description">Simple stress test of hundreds of sections, thousands of items</string>
 
-	<string name="demo_list_item_sections_title">SectioningAdapter</string>
+	<string name="demo_list_item_sections_title">@string/title_sectioning_adapter_demo</string>
 	<string name="demo_list_item_sections_description">Demonstrates that SectioningAdapter can be used with a vanilla RecyclerView.LinearLayoutManager</string>
 
-	<string name="demo_list_item_collapsing_headers_title">Collapsing Headers</string>
+	<string name="demo_list_item_collapsing_headers_title">@string/title_collapsing_headers_demo</string>
 	<string name="demo_list_item_collapsing_headers_description">Demonstrates collapsing headers, where sections can be opened and closed</string>
+
+	<string name="demo_list_item_paged_scroll_title">@string/title_paged_scroll_demo</string>
+	<string name="demo_list_item_paged_scroll_description">Demonstrates "endless" scrolling, where data can be paged in from a remote source as user scrolls</string>
+
+	<string name="demo_list_item_multi_type_title">@string/title_multi_type_demo</string>
+	<string name="demo_list_item_multi_type_description">Demonstrates support for multiple types of item, header, &amp; footer</string>
+
+	<string name="demo_list_item_selection_title">@string/title_selection_demo</string>
+	<string name="demo_list_item_selection_description">Demonstrates selection through a contextual action bar</string>
 
 
 	<string name="demo_addressbook_load_error_action">Info</string>
@@ -51,5 +70,12 @@
 	<string name="alert_dialog_scroll_end">End</string>
 	<string name="alert_dialog_button_title_jump">Jump</string>
 	<string name="alert_dialog_button_title_smooth">Smooth</string>
+
+	<string name="paged_load_exhausted">No more items</string>
+
+	<string name="menu_cab_selection_demo_delete">Delete</string>
+	<string name="menu_cab_selection_demo_duplicate">Duplicate</string>
+	<string name="cab_selected_count">%1$d selected</string>
+	<string name="hint_demo_select_long_press">Long press an item to enter selection mode</string>
 
 </resources>

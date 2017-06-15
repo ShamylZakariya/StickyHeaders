@@ -1,5 +1,13 @@
-#StickyHeaders
+# StickyHeaders
 Adapter and LayoutManager for Android RecyclerView which enables sticky header positioning.
+
+---
+
+## Download
+minSdkVersion: 11
+```
+compile 'org.zakariya.stickyheaders:stickyheaders:0.7.6'
+```
 
 ---
 
@@ -15,7 +23,7 @@ StickyHeaders also supports a callback (`org.zakariya.stickyheaders.StickyHeader
 
 ![CallbacksSample](readme-assets/video-callbacks.gif)
 
-##Usage
+## Usage
 
 To use StickyHeaders, you need to do two things.
 
@@ -23,12 +31,6 @@ To use StickyHeaders, you need to do two things.
 2. Assign a `org.zakariya.stickyheaders.StickyHeaderLayoutManager` to your recyclerview.
 3. When handling modifications to your dataset, *never* call the `RecyclerView.Adapter::notify*` methods, instead, call the corresponding methods in `org.zakariya.stickyheaders.SectioningAdapter::notifySection*`. The reason for this is `SectioningAdapter` maintains internal state, and the `notifySection*` methods are tailored for adding and removing sections, adding and removing items from sections, etc.
 
-##Also
+## Also
 
 You can use sectioning adapter with a normal `android.support.v7.widget.LinearLayoutManager`. it works fine, and could be a good way to implement a list like at the root of Android's Settings app.
-
-## Download
-
-```
-compile 'org.zakariya.stickyheaders:stickyheaders:0.6.1'
-```

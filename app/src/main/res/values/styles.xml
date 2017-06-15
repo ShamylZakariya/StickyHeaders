@@ -12,6 +12,7 @@
 	<style name="AppTheme.NoActionBar">
 		<item name="windowActionBar">false</item>
 		<item name="windowNoTitle">true</item>
+		<item name="windowActionModeOverlay">true</item>
 	</style>
 
 	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
@@ -20,6 +21,5 @@
 	<style name="ToolBarWithNavigationBack">
 		<item name="navigationIcon">@drawable/ic_arrow_back_white_24dp</item>
 	</style>
-
 
 </resources>

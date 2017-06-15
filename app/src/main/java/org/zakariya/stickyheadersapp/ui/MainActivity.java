@@ -2,6 +2,7 @@ package org.zakariya.stickyheadersapp.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -12,6 +13,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -143,7 +145,19 @@ public class MainActivity extends AppCompatActivity {
 
 					new DemoModel(getString(R.string.demo_list_item_sections_title),
 							getString(R.string.demo_list_item_sections_description),
-							SectioningAdapterDemoActivity.class)
+							SectioningAdapterDemoActivity.class),
+
+					new DemoModel(getString(R.string.demo_list_item_multi_type_title),
+							getString(R.string.demo_list_item_multi_type_description),
+							MultiTypeItemDemoActivity.class),
+
+					new DemoModel(getString(R.string.demo_list_item_paged_scroll_title),
+							getString(R.string.demo_list_item_paged_scroll_description),
+							PagedScrollDemoActivity.class),
+
+					new DemoModel(getString(R.string.demo_list_item_selection_title),
+							getString(R.string.demo_list_item_selection_description),
+							SelectionDemo.class)
 			};
 
 			recyclerView.setAdapter(new DemoAdapter(getContext(), demos, new ItemClickListener() {
@@ -152,7 +166,21 @@ public class MainActivity extends AppCompatActivity {
 					startActivity(new Intent(getActivity(), demoModel.activityClass));
 				}
 			}));
-			recyclerView.setLayoutManager(new StickyHeaderLayoutManager());
+
+			StickyHeaderLayoutManager layoutManager = new StickyHeaderLayoutManager();
+
+			// set a header position callback to set elevation on sticky headers, because why not
+			layoutManager.setHeaderPositionChangedCallback(new StickyHeaderLayoutManager.HeaderPositionChangedCallback() {
+				@Override
+				public void onHeaderPositionChanged(int sectionIndex, View header, StickyHeaderLayoutManager.HeaderPosition oldPosition, StickyHeaderLayoutManager.HeaderPosition newPosition) {
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+						boolean elevated = newPosition == StickyHeaderLayoutManager.HeaderPosition.STICKY;
+						header.setElevation(elevated ? 8 : 0);
+					}
+				}
+			});
+
+			recyclerView.setLayoutManager(layoutManager);
 		}
 
 		private static class DemoModel {
@@ -219,27 +247,27 @@ public class MainActivity extends AppCompatActivity {
 			}
 
 			@Override
-			public SectioningAdapter.HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
+			public SectioningAdapter.HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent, int headerType) {
 				LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 				View v = inflater.inflate(R.layout.list_item_demo_header, parent, false);
 				return new HeaderViewHolder(v);
 			}
 
 			@Override
-			public SectioningAdapter.ItemViewHolder onCreateItemViewHolder(ViewGroup parent) {
+			public SectioningAdapter.ItemViewHolder onCreateItemViewHolder(ViewGroup parent, int itemType) {
 				LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 				View v = inflater.inflate(R.layout.list_item_demo_item, parent, false);
 				return new ItemViewHolder(v);
 			}
 
 			@Override
-			public void onBindHeaderViewHolder(SectioningAdapter.HeaderViewHolder viewHolder, int sectionIndex) {
+			public void onBindHeaderViewHolder(SectioningAdapter.HeaderViewHolder viewHolder, int sectionIndex, int headerType) {
 				HeaderViewHolder hvh = (HeaderViewHolder) viewHolder;
 				hvh.titleTextView.setText(context.getString(R.string.main_demo_list_title));
 			}
 
 			@Override
-			public void onBindItemViewHolder(SectioningAdapter.ItemViewHolder viewHolder, int sectionIndex, int itemIndex) {
+			public void onBindItemViewHolder(SectioningAdapter.ItemViewHolder viewHolder, int sectionIndex, int itemIndex, int itemType) {
 				ItemViewHolder ivh = (ItemViewHolder) viewHolder;
 
 				final DemoModel dm = demos[itemIndex];

@@ -3,15 +3,15 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'org.zakariya.stickyheaders'
-version = '0.6.1'
+version = '0.7.6'
 
 android {
-	compileSdkVersion 23
-	buildToolsVersion "23.0.2"
+	compileSdkVersion 25
+	buildToolsVersion "25.0.1"
 
 	defaultConfig {
 		minSdkVersion 11
-		targetSdkVersion 23
+		targetSdkVersion 25
 		versionCode 1
 		versionName version
 	}
@@ -26,7 +26,7 @@ android {
 dependencies {
 	compile fileTree(dir: 'libs', include: ['*.jar'])
 	testCompile 'junit:junit:4.12'
-	compile 'com.android.support:recyclerview-v7:23.4.0'
+	compile 'com.android.support:recyclerview-v7:25.0.1'
 }
 
 task generateSourcesJar(type: Jar) {
@@ -79,6 +79,5 @@ bintray {
 				//Optional. The passphrase for GPG signing'
 			}
 		}
-
 	}
 }
