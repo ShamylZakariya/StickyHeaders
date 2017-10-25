@@ -303,6 +303,10 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			// content moving downwards, so we're panning to top of list
 
 			View topView = getTopmostChildView();
+			if (topView == null) {
+				return 0;
+			}
+
 			while (scrolled > dy) {
 
 				// get the topmost view
@@ -366,6 +370,9 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
 			int parentHeight = getHeight();
 			View bottomView = getBottommostChildView();
+			if (bottomView == null) {
+				return 0;
+			}
 
 			while (scrolled < dy) {
 				int hangingBottom = Math.max(getDecoratedBottom(bottomView) - parentHeight, 0);
