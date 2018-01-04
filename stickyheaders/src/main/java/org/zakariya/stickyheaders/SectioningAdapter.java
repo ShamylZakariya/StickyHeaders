@@ -774,6 +774,29 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 		return state.section || state.footer;
 	}
 
+	@Override
+	public long getItemId(int position) {
+		int sectionIndex = getSectionForAdapterPosition(position);
+		int itemIndex = getPositionOfItemInSection(sectionIndex, position);
+
+		return getSectionItemId(sectionIndex, itemIndex);
+	}
+
+	/**
+	 * Return the id of the item
+	 *
+	 * @param sectionIndex index of section that contains the item
+	 * @param itemIndex index of item in section
+	 * @return id of item
+	 *
+	 * NOTE: if the section has header, they ids will be requested.
+	 * The itemIndex of header will be -1 and -2 (ghost header)
+	 * They must also have stable ids if setStableIds(true) are called
+	 */
+	public long getSectionItemId(int sectionIndex, int itemIndex){
+		return 0;
+	}
+
 	/**
 	 * Notify that all data in the list is invalid and the entire list should be reloaded.
 	 * NOTE: This will clear selection state, and collapsed section state.
