@@ -3,7 +3,7 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'io.sportner.stickyheaders'
-version = '0.7.6'
+version = '0.7.7'
 
 android {
 	compileSdkVersion 28
@@ -53,16 +53,16 @@ artifacts {
 def libraryDescription = 'Simple sticky headers implementation for RecyclerView'
 
 Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
+properties.load(project.rootProject.file('bintray.properties').newDataInputStream())
 
 bintray {
-	user = properties.getProperty("bintray.user")
-	key = properties.getProperty("bintray.apikey")
+	user = properties.getProperty("user")
+	key = properties.getProperty("key")
 	configurations = ['archives']
 	pkg {
-		repo = 'maven'
-		name = 'sticky-headers'
-
+		repo = 'Android'
+		name = 'StickyHeaders'
+		userOrg = 'sportner'
 		desc = libraryDescription
 		websiteUrl = 'https://github.com/Sportner/StickyHeaders'
 		vcsUrl = 'https://github.com/Sportner/StickyHeaders.git'
@@ -73,11 +73,7 @@ bintray {
 		version {
 			desc = libraryDescription
 			released  = new Date()
-			gpg {
-				sign = true //Determines whether to GPG sign the files. The default is false
-				passphrase = properties.getProperty("bintray.gpg.password")
-				//Optional. The passphrase for GPG signing'
-			}
+
 		}
 	}
 }
