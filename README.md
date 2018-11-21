@@ -1,12 +1,14 @@
 # StickyHeaders
 Adapter and LayoutManager for Android RecyclerView which enables sticky header positioning.
 
+This repository is a fork of [ShamylZakariya/StickyHeaders](https://github.com/ShamylZakariya/StickyHeaders) with some updates: AndroidX + few bugs fixes. His work really helped our team so we'll try to maintain his work as longer as possible.
+
 ---
 
 ## Download
 minSdkVersion: 11
 ```
-compile 'io.sportner.stickyheaders:stickyheaders:0.7.6'
+compile 'io.sportner.stickyheaders:stickyheaders:0.7.8'
 ```
 
 ---
