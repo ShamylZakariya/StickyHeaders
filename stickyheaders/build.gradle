@@ -6,12 +6,12 @@ group = 'org.zakariya.stickyheaders'
 version = '0.7.6'
 
 android {
-	compileSdkVersion 25
-	buildToolsVersion "25.0.1"
+	compileSdkVersion 28
+	buildToolsVersion "28.0.3"
 
 	defaultConfig {
 		minSdkVersion 11
-		targetSdkVersion 25
+		targetSdkVersion 28
 		versionCode 1
 		versionName version
 	}
@@ -24,9 +24,9 @@ android {
 }
 
 dependencies {
-	compile fileTree(dir: 'libs', include: ['*.jar'])
-	testCompile 'junit:junit:4.12'
-	compile 'com.android.support:recyclerview-v7:25.0.1'
+	implementation fileTree(dir: 'libs', include: ['*.jar'])
+	testImplementation 'junit:junit:4.12'
+	implementation 'androidx.recyclerview:recyclerview:1.0.0'
 }
 
 task generateSourcesJar(type: Jar) {

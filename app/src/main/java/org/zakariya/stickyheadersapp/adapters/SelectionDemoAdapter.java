@@ -1,8 +1,8 @@
 package org.zakariya.stickyheadersapp.adapters;
 
 import android.annotation.SuppressLint;
-import android.support.annotation.DrawableRes;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.DrawableRes;
+import androidx.core.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;

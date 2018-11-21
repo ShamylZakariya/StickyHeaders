@@ -1,7 +1,7 @@
 package org.zakariya.stickyheadersapp.ui;
 
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import org.zakariya.stickyheadersapp.adapters.SimpleDemoAdapter;
 
