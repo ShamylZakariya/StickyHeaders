@@ -35,4 +35,4 @@ To use StickyHeaders, you need to do two things.
 
 ## Also
 
-You can use sectioning adapter with a normal `android.support.v7.widget.LinearLayoutManager`. it works fine, and could be a good way to implement a list like at the root of Android's Settings app.
+You can use sectioning adapter with a normal `androidx.recyclerview.widget.LinearLayoutManager`. it works fine, and could be a good way to implement a list like at the root of Android's Settings app.
