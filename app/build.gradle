@@ -5,7 +5,7 @@ android {
 	buildToolsVersion '28.0.3'
 
 	defaultConfig {
-		applicationId "org.zakariya.stickyheadersapp"
+		applicationId "io.sportner.stickyheadersapp"
 		minSdkVersion 19
 		targetSdkVersion 28
 		versionCode 1
