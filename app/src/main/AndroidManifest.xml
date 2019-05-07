@@ -1,123 +1,121 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest package="org.zakariya.stickyheadersapp"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.zakariya.stickyheadersapp">
 
-	<uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
-	<application
-		android:name=".StickyHeadersDemoApp"
-		android:allowBackup="true"
-		android:icon="@mipmap/ic_launcher"
-		android:label="@string/app_name"
-		android:launchMode="singleTop"
-		android:supportsRtl="true"
-		android:theme="@style/AppTheme">
+    <application
+        android:name=".StickyHeadersDemoApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:launchMode="singleTop"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
 
-		<activity
-			android:name=".ui.MainActivity"
-			android:theme="@style/AppTheme.NoActionBar">
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN"/>
-				<category android:name="android.intent.category.LAUNCHER"/>
-			</intent-filter>
-		</activity>
+        <activity
+            android:name=".ui.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
-		<activity
-			android:name=".ui.AddressBookDemoActivity"
-			android:exported="true"
-			android:label="@string/title_address_book_demo"
-			android:launchMode="singleTop"
-			android:parentActivityName=".ui.MainActivity"
-			android:theme="@style/AppTheme.NoActionBar">
-			<meta-data
-				android:name="android.support.PARENT_ACTIVITY"
-				android:value=".ui.MainActivity"/>
-		</activity>
+        <activity
+            android:name=".ui.AddressBookDemoActivity"
+            android:exported="true"
+            android:label="@string/title_address_book_demo"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
 
-		<activity
-			android:name=".ui.HeaderCallbacksDemoActivity"
-			android:exported="true"
-			android:label="@string/title_simple_demo"
-			android:launchMode="singleTop"
-			android:parentActivityName=".ui.MainActivity"
-			android:theme="@style/AppTheme.NoActionBar">
-			<meta-data
-				android:name="android.support.PARENT_ACTIVITY"
-				android:value=".ui.MainActivity"/>
-		</activity>
+        <activity
+            android:name=".ui.HeaderCallbacksDemoActivity"
+            android:exported="true"
+            android:label="@string/title_simple_demo"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
 
-		<activity
-			android:name=".ui.StressTestDemoActivity"
-			android:exported="true"
-			android:label="@string/title_stress_test_demo"
-			android:launchMode="singleTop"
-			android:parentActivityName=".ui.MainActivity"
-			android:theme="@style/AppTheme.NoActionBar">
-			<meta-data
-				android:name="android.support.PARENT_ACTIVITY"
-				android:value=".ui.MainActivity"/>
-		</activity>
+        <activity
+            android:name=".ui.StressTestDemoActivity"
+            android:exported="true"
+            android:label="@string/title_stress_test_demo"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
 
-		<activity
-			android:name=".ui.CollapsingSectionsDemoActivity"
-			android:exported="true"
-			android:label="@string/title_collapsing_headers_demo"
-			android:launchMode="singleTop"
-			android:parentActivityName=".ui.MainActivity"
-			android:theme="@style/AppTheme.NoActionBar">
-			<meta-data
-				android:name="android.support.PARENT_ACTIVITY"
-				android:value=".ui.MainActivity"/>
-		</activity>
+        <activity
+            android:name=".ui.CollapsingSectionsDemoActivity"
+            android:exported="true"
+            android:label="@string/title_collapsing_headers_demo"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
 
-		<activity
-			android:name=".ui.SectioningAdapterDemoActivity"
-			android:exported="true"
-			android:label="@string/title_sectioning_adapter_demo"
-			android:launchMode="singleTop"
-			android:parentActivityName=".ui.MainActivity"
-			android:theme="@style/AppTheme.NoActionBar">
-			<meta-data
-				android:name="android.support.PARENT_ACTIVITY"
-				android:value=".ui.MainActivity"/>
-		</activity>
+        <activity
+            android:name=".ui.SectioningAdapterDemoActivity"
+            android:exported="true"
+            android:label="@string/title_sectioning_adapter_demo"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
 
-		<activity
-			android:name=".ui.PagedScrollDemoActivity"
-			android:exported="true"
-			android:label="@string/title_paged_scroll_demo"
-			android:launchMode="singleTop"
-			android:parentActivityName=".ui.MainActivity"
-			android:theme="@style/AppTheme.NoActionBar">
-			<meta-data
-				android:name="android.support.PARENT_ACTIVITY"
-				android:value=".ui.MainActivity"/>
-		</activity>
+        <activity
+            android:name=".ui.PagedScrollDemoActivity"
+            android:exported="true"
+            android:label="@string/title_paged_scroll_demo"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
 
-		<activity
-			android:name=".ui.MultiTypeItemDemoActivity"
-			android:exported="true"
-			android:label="@string/title_multi_type_demo"
-			android:launchMode="singleTop"
-			android:parentActivityName=".ui.MainActivity"
-			android:theme="@style/AppTheme.NoActionBar">
-			<meta-data
-				android:name="android.support.PARENT_ACTIVITY"
-				android:value=".ui.MainActivity"/>
-		</activity>
+        <activity
+            android:name=".ui.MultiTypeItemDemoActivity"
+            android:exported="true"
+            android:label="@string/title_multi_type_demo"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
 
-		<activity
-			android:name=".ui.SelectionDemo"
-			android:exported="true"
-			android:label="@string/title_selection_demo"
-			android:launchMode="singleTop"
-			android:parentActivityName=".ui.MainActivity"
-			android:theme="@style/AppTheme.NoActionBar">
-			<meta-data
-				android:name="android.support.PARENT_ACTIVITY"
-				android:value=".ui.MainActivity"/>
-		</activity>
+        <activity
+            android:name=".ui.SelectionDemo"
+            android:exported="true"
+            android:label="@string/title_selection_demo"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
 
-	</application>
-
+    </application>
 </manifest>

@@ -3,6 +3,7 @@ package org.zakariya.stickyheadersapp.model;
 /**
  * Simplified take on the model vended by http://api.randomuser.me/
  */
+@SuppressWarnings("unused")
 public class Person {
 
 	public static class Name {

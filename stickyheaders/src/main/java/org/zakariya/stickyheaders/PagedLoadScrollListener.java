@@ -1,11 +1,13 @@
 package org.zakariya.stickyheaders;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Adapted from https://gist.github.com/nesquena/d09dc68ff07e845cc622
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class PagedLoadScrollListener extends RecyclerView.OnScrollListener {
 
 	private static final String TAG = PagedLoadScrollListener.class.getSimpleName();
@@ -28,10 +30,9 @@ public abstract class PagedLoadScrollListener extends RecyclerView.OnScrollListe
 	private int previousTotalItemCount = 0;
 	private boolean loading = false;
 	private boolean loadExhausted = false;
-	StickyHeaderLayoutManager layoutManager;
+	private StickyHeaderLayoutManager layoutManager;
 
-
-	LoadCompleteNotifier loadCompleteNotifier = new LoadCompleteNotifier() {
+	private LoadCompleteNotifier loadCompleteNotifier = new LoadCompleteNotifier() {
 		@Override
 		public void notifyLoadComplete() {
 			loading = false;
@@ -75,7 +76,13 @@ public abstract class PagedLoadScrollListener extends RecyclerView.OnScrollListe
 			if ((lastVisibleItemAdapterPosition + visibleThreshold) > totalItemCount) {
 				currentPage++;
 				loading = true;
-				onLoadMore(currentPage, loadCompleteNotifier);
+
+				view.post(new Runnable() {
+					@Override
+					public void run() {
+						onLoadMore(currentPage, loadCompleteNotifier);
+					}
+				});
 			}
 		}
 	}

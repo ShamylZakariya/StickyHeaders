@@ -1,10 +1,12 @@
 package org.zakariya.stickyheadersapp.ui;
 
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
+
+import androidx.appcompat.app.AlertDialog;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import org.zakariya.stickyheaders.StickyHeaderLayoutManager;
 import org.zakariya.stickyheadersapp.R;
@@ -44,7 +46,9 @@ public class AddressBookDemoActivity extends DemoActivity implements RandomUserL
 	public void onRandomUsersDidLoad(List<Person> randomUsers) {
 		progressBar.setVisibility(View.GONE);
 		recyclerView.setVisibility(View.VISIBLE);
-		adapter.setPeople(randomUsers);
+
+		// TODO: On first run, after randomUsers is loaded, assigning to adapter has no visible result. Workaround is to run on next tick()
+		recyclerView.post(() -> adapter.setPeople(randomUsers));
 	}
 
 	@Override
@@ -55,12 +59,7 @@ public class AddressBookDemoActivity extends DemoActivity implements RandomUserL
 		recyclerView.setVisibility(View.GONE);
 
 		Snackbar snackbar = Snackbar.make(recyclerView, "Unable to load addressbook", Snackbar.LENGTH_LONG);
-		snackbar.setAction(R.string.demo_addressbook_load_error_action, new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				showRandomUserLoadError(t.getLocalizedMessage());
-			}
-		});
+		snackbar.setAction(R.string.demo_addressbook_load_error_action, v -> showRandomUserLoadError(t.getLocalizedMessage()));
 		snackbar.show();
 	}
 

@@ -20,8 +20,8 @@ import java.util.Locale;
  */
 public class AddressBookDemoAdapter extends SectioningAdapter {
 
-	Locale locale = Locale.getDefault();
-	static final boolean USE_DEBUG_APPEARANCE = false;
+	private Locale locale = Locale.getDefault();
+	private static final boolean USE_DEBUG_APPEARANCE = false;
 
 	private class Section {
 		String alpha;
@@ -31,28 +31,29 @@ public class AddressBookDemoAdapter extends SectioningAdapter {
 	public class ItemViewHolder extends SectioningAdapter.ItemViewHolder {
 		TextView personNameTextView;
 
-		public ItemViewHolder(View itemView) {
+		ItemViewHolder(View itemView) {
 			super(itemView);
-			personNameTextView = (TextView) itemView.findViewById(R.id.personNameTextView);
+			personNameTextView = itemView.findViewById(R.id.personNameTextView);
 		}
 	}
 
 	public class HeaderViewHolder extends SectioningAdapter.HeaderViewHolder {
 		TextView titleTextView;
 
-		public HeaderViewHolder(View itemView) {
+		HeaderViewHolder(View itemView) {
 			super(itemView);
-			titleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
+			titleTextView = itemView.findViewById(R.id.titleTextView);
 		}
 	}
 
 
-	List<Person> people;
-	ArrayList<Section> sections = new ArrayList<>();
+	private List<Person> people;
+	private ArrayList<Section> sections = new ArrayList<>();
 
 	public AddressBookDemoAdapter() {
 	}
 
+	@SuppressWarnings("unused")
 	public List<Person> getPeople() {
 		return people;
 	}

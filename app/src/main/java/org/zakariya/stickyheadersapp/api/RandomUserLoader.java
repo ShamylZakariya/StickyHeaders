@@ -3,13 +3,14 @@ package org.zakariya.stickyheadersapp.api;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import org.zakariya.stickyheadersapp.model.Person;
 import org.zakariya.stickyheadersapp.model.RandomUserResults;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import retrofit2.Call;
@@ -24,99 +25,105 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class RandomUserLoader {
 
-	private static final String TAG = RandomUserLoader.class.getSimpleName();
+    private static final String TAG = RandomUserLoader.class.getSimpleName();
 
-	private RandomUsersService service;
-	private List<Person> randomUsers = new ArrayList<>();
-	private ArrayList<OnLoadCallback> onLoadCallbacks = new ArrayList<>();
-	private boolean loading;
+    private RandomUsersService service;
+    private List<Person> randomUsers = new ArrayList<>();
+    private ArrayList<OnLoadCallback> onLoadCallbacks = new ArrayList<>();
+    private boolean loading;
 
-	public interface OnLoadCallback {
-		void onRandomUsersDidLoad(List<Person> randomUsers);
-		void onRandomUserLoadFailure(Throwable t);
-	}
+    public interface OnLoadCallback {
+        void onRandomUsersDidLoad(List<Person> randomUsers);
 
-	public RandomUserLoader() {
-		Retrofit retrofit = new Retrofit.Builder()
-				.baseUrl("http://api.randomuser.me")
-				.addConverterFactory(GsonConverterFactory.create())
-				.build();
+        void onRandomUserLoadFailure(Throwable t);
+    }
 
-		service = retrofit.create(RandomUsersService.class);
-	}
+    public RandomUserLoader() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.randomuser.me")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
 
-	public void load(final OnLoadCallback onLoadCallback) {
-		if (!randomUsers.isEmpty()) {
-			onLoadCallback.onRandomUsersDidLoad(randomUsers);
-			return;
-		}
+        service = retrofit.create(RandomUsersService.class);
+    }
 
-		onLoadCallbacks.add(onLoadCallback);
-		if (loading) {
-			return;
-		}
+    public void load(final OnLoadCallback onLoadCallback) {
+        if (!randomUsers.isEmpty()) {
+            onLoadCallback.onRandomUsersDidLoad(randomUsers);
+            return;
+        }
 
-		loading = true;
-		int count = 50;
-		String nationalities = "us,dk,fr,gb"; // stick with "western" names to keep sorting simple
-		String seed = "qux";
-		Call<RandomUserResults> call = service.randomUsers(count, nationalities, seed);
-		call.enqueue(new Callback<RandomUserResults>() {
-			@Override
-			public void onResponse(Call<RandomUserResults> call, Response<RandomUserResults> response) {
-				RandomUserResults results = response.body();
+        onLoadCallbacks.add(onLoadCallback);
+        if (loading) {
+            return;
+        }
 
-				if (!TextUtils.isEmpty(results.error)) {
+        loading = true;
+        int count = 50;
+        String nationalities = "us,dk,fr,gb"; // stick with "western" names to keep sorting simple
+        String seed = "qux";
+        Call<RandomUserResults> call = service.randomUsers(count, nationalities, seed);
+        call.enqueue(new Callback<RandomUserResults>() {
+            @Override
+            public void onResponse(@NonNull Call<RandomUserResults> call, @NonNull Response<RandomUserResults> response) {
+                RandomUserResults results = response.body();
 
-					Log.e(TAG, "onResponse: error message: " + results.error);
-					for (OnLoadCallback c : onLoadCallbacks) {
-						c.onRandomUserLoadFailure(new Throwable(results.error));
-					}
+                if (results == null) {
 
-				} else if (results.results != null && results.results.length > 0) {
+                    Log.e(TAG, "onResponse: null response body.");
+                    for (OnLoadCallback c : onLoadCallbacks) {
+                        c.onRandomUserLoadFailure(new Throwable("Null response body from api."));
+                    }
 
-					randomUsers = sortUsers(Arrays.asList(results.results));
-					for (OnLoadCallback c : onLoadCallbacks) {
-						c.onRandomUsersDidLoad(randomUsers);
-					}
+                }
+                else if (!TextUtils.isEmpty(results.error)) {
 
-				} else {
+                    Log.e(TAG, "onResponse: error message: " + results.error);
+                    for (OnLoadCallback c : onLoadCallbacks) {
+                        c.onRandomUserLoadFailure(new Throwable(results.error));
+                    }
 
-					Log.e(TAG, "onResponse: got empty list, and no error message from API");
-					for (OnLoadCallback c : onLoadCallbacks) {
-						c.onRandomUserLoadFailure(new Throwable("No data received"));
-					}
+                } else if (results.results != null && results.results.length > 0) {
 
-				}
-				onLoadCallbacks.clear();
-				loading = false;
-			}
+                    randomUsers = sortUsers(Arrays.asList(results.results));
+                    for (OnLoadCallback c : onLoadCallbacks) {
+                        c.onRandomUsersDidLoad(randomUsers);
+                    }
 
-			@Override
-			public void onFailure(Call<RandomUserResults> call, Throwable t) {
-				Log.e(TAG, "onRandomUserLoadFailure: error: " + t.toString() );
-				for (OnLoadCallback c : onLoadCallbacks) {
-					c.onRandomUserLoadFailure(t);
-				}
-				onLoadCallbacks.clear();
-				loading = false;
-			}
-		});
+                } else {
 
-	}
+                    Log.e(TAG, "onResponse: got empty list, and no error message from API");
+                    for (OnLoadCallback c : onLoadCallbacks) {
+                        c.onRandomUserLoadFailure(new Throwable("No data received"));
+                    }
 
-	private List<Person> sortUsers(List<Person> users) {
-		Collections.sort(users, new Comparator<Person>() {
-			@Override
-			public int compare(Person lhs, Person rhs) {
-				if (lhs.name.last.equalsIgnoreCase(rhs.name.last)) {
-					return lhs.name.first.compareToIgnoreCase(rhs.name.first);
-				}
+                }
+                onLoadCallbacks.clear();
+                loading = false;
+            }
 
-				return lhs.name.last.compareToIgnoreCase(rhs.name.last);
-			}
-		});
+            @Override
+            public void onFailure(@NonNull Call<RandomUserResults> call, @NonNull Throwable t) {
+                Log.e(TAG, "onRandomUserLoadFailure: error: " + t.toString());
+                for (OnLoadCallback c : onLoadCallbacks) {
+                    c.onRandomUserLoadFailure(t);
+                }
+                onLoadCallbacks.clear();
+                loading = false;
+            }
+        });
 
-		return users;
-	}
+    }
+
+    private List<Person> sortUsers(List<Person> users) {
+        Collections.sort(users, (lhs, rhs) -> {
+            if (lhs.name.last.equalsIgnoreCase(rhs.name.last)) {
+                return lhs.name.first.compareToIgnoreCase(rhs.name.first);
+            }
+
+            return lhs.name.last.compareToIgnoreCase(rhs.name.last);
+        });
+
+        return users;
+    }
 }
