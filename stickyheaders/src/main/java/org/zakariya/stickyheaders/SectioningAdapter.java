@@ -861,7 +861,6 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			buildSectionIndex();
 			notifyAllSectionsDataSetChanged();
 		} else {
-			buildSectionIndex();
 			Section section = this.sections.get(sectionIndex);
 
 			// 0 is a valid position to remove from
@@ -880,6 +879,7 @@ public class SectioningAdapter extends RecyclerView.Adapter<SectioningAdapter.Vi
 			}
 
 			notifyItemRangeRemoved(section.adapterPosition + offset, number);
+			buildSectionIndex();
 		}
 
 		if (updateSelectionState) {
