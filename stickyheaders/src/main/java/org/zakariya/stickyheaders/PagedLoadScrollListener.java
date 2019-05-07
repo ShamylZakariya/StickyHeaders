@@ -86,6 +86,13 @@ public abstract class PagedLoadScrollListener extends RecyclerView.OnScrollListe
 			}
 		}
 	}
+	
+	public void resetPaging() {
+		currentPage = 0;
+		previousTotalItemCount = 0;
+		loading = false;
+		loadExhausted = false;
+	}
 
 	/**
 	 * Override this to handle loading of new data. Each time new data is pulled in, the page counter will increase by one.
