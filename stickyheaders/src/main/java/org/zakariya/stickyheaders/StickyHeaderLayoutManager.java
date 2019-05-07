@@ -4,12 +4,13 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearSmoothScroller;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -164,6 +165,8 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			return;
 		}
 
+		Log.i(TAG, "onLayoutChildren: getChildCount: " + getChildCount() + " adapter count: " + adapter.getItemCount());
+
 		if (scrollTargetAdapterPosition >= 0) {
 			firstViewAdapterPosition = scrollTargetAdapterPosition;
 			firstViewTop = 0;
@@ -280,14 +283,16 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			measureChildWithMargins(headerView, 0, 0);
 
 			return headerView;
+		} else {
+			throw new IllegalStateException("createSectionHeaderIfNeeded should not be called for a section which does not have a header");
 		}
-
-		return null;
 	}
 
 
 	@Override
 	public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
+
+		//Log.i(TAG, "scrollVerticallyBy: dy: " + dy + " getChildCount: " + getChildCount() + " adapter count: " + adapter.getItemCount());
 
 		if (getChildCount() == 0) {
 			return 0;
@@ -303,6 +308,10 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 			// content moving downwards, so we're panning to top of list
 
 			View topView = getTopmostChildView();
+			if (topView == null) {
+				return 0;
+			}
+
 			while (scrolled > dy) {
 
 				// get the topmost view

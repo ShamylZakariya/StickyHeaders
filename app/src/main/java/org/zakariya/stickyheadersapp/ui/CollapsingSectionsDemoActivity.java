@@ -16,7 +16,8 @@ public class CollapsingSectionsDemoActivity extends DemoActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		adapter = new SimpleDemoAdapter(100, 5, false, false, true, SHOW_ADAPTER_POSITIONS);
+		//adapter = new SimpleDemoAdapter(100, 5, false, false, true, SHOW_ADAPTER_POSITIONS);
+		adapter = new SimpleDemoAdapter(3, 10, false, false, true, SHOW_ADAPTER_POSITIONS);
 
 		recyclerView.setLayoutManager(new StickyHeaderLayoutManager());
 		recyclerView.setAdapter(adapter);
