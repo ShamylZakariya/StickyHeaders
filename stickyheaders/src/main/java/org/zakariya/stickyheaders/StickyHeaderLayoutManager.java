@@ -552,6 +552,81 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		return topmostView != null ? getViewViewHolder(topmostView) : null;
 	}
 
+	/**
+	 * @param fullyVisibleOnly if true, the search will be limited to the last item not hanging off bottom of screen
+	 * @return the viewholder for the last visible item (not header or footer)
+	 */
+	@Nullable
+	public SectioningAdapter.ItemViewHolder getLastVisibleItemViewHolder(boolean fullyVisibleOnly) {
+		return (SectioningAdapter.ItemViewHolder) getLastVisibleViewHolderOfType(SectioningAdapter.TYPE_ITEM, fullyVisibleOnly);
+	}
+
+	/**
+	 * @param fullyVisibleOnly if true, the search will be limited to the last header not hanging off bottom of screen
+	 * @return the viewholder for the last visible header (not item or footer)
+	 */
+	@Nullable
+	public SectioningAdapter.HeaderViewHolder getLastVisibleHeaderViewHolder(boolean fullyVisibleOnly) {
+		return (SectioningAdapter.HeaderViewHolder) getLastVisibleViewHolderOfType(SectioningAdapter.TYPE_HEADER, fullyVisibleOnly);
+	}
+
+	/**
+	 * @param fullyVisibleOnly if true, the search will be limited to the last footer not hanging off bottom of screen
+	 * @return the viewholder for the last visible footer (not header or item)
+	 */
+	@Nullable
+	public SectioningAdapter.FooterViewHolder getLastVisibleFooterViewHolder(boolean fullyVisibleOnly) {
+		return (SectioningAdapter.FooterViewHolder) getLastVisibleViewHolderOfType(SectioningAdapter.TYPE_FOOTER, fullyVisibleOnly);
+	}
+
+	@Nullable
+	private SectioningAdapter.ViewHolder getLastVisibleViewHolderOfType(int baseType, boolean fullyVisibleOnly) {
+		if (getChildCount() == 0) {
+			return null;
+		}
+
+		final int height = getHeight();
+
+		// note: We can't use child view order because we muck with moving things to front
+		View bottommostView = null;
+		int bottom = 0;
+
+		for (int i = 0, e = getChildCount(); i < e; i++) {
+			View v = getChildAt(i);
+
+			// ignore views which are being deleted
+			if (getViewAdapterPosition(v) == RecyclerView.NO_POSITION) {
+				continue;
+			}
+
+			// filter for desired type
+			if (getViewBaseType(v) != baseType) {
+				continue;
+			}
+
+			// filter out items which are partially or fully obscured
+			int t = getDecoratedTop(v);
+			int b = getDecoratedBottom(v);
+
+			if (fullyVisibleOnly) {
+				if (b < height) {
+					continue;
+				}
+			} else {
+				if (t >= height) {
+					continue;
+				}
+			}
+
+			if (b > bottom) {
+				bottom = b;
+				bottommostView = v;
+			}
+		}
+
+		return bottommostView != null ? getViewViewHolder(bottommostView) : null;
+	}
+
 	@Override
 	public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
 		if (position < 0 || position > getItemCount()) {
