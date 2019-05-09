@@ -13,8 +13,8 @@ buildscript {
         // in the individual module build.gradle files
 
         // bintray plugin
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7'
+        classpath "com.github.dcendents:android-maven-gradle-plugin:1.4.1"
     }
 }
 
