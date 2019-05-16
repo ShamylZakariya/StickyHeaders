@@ -161,12 +161,10 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	@Override
 	public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
 
-		if (adapter == null) {
+		if (adapter == null || adapter.getItemCount() == 0) {
 			return;
 		}
-
-		Log.i(TAG, "onLayoutChildren: getChildCount: " + getChildCount() + " adapter count: " + adapter.getItemCount());
-
+		
 		if (scrollTargetAdapterPosition >= 0) {
 			firstViewAdapterPosition = scrollTargetAdapterPosition;
 			firstViewTop = 0;
