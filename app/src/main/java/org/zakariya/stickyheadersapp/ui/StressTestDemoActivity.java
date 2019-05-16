@@ -23,8 +23,7 @@ public class StressTestDemoActivity extends DemoActivity {
 		handler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				recyclerView.setAdapter(new SimpleDemoAdapter(0, 0, true, true, false, SHOW_ADAPTER_POSITIONS));
-//				recyclerView.setAdapter(new SimpleDemoAdapter(1000, 5, true, true, false, SHOW_ADAPTER_POSITIONS));
+				recyclerView.setAdapter(new SimpleDemoAdapter(1000, 5, true, true, false, SHOW_ADAPTER_POSITIONS));
 			}
 		}, 500);
 	}
