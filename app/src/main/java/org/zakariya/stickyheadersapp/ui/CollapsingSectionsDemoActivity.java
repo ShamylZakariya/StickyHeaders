@@ -10,16 +10,16 @@ import org.zakariya.stickyheadersapp.adapters.SimpleDemoAdapter;
  */
 public class CollapsingSectionsDemoActivity extends DemoActivity {
 
-	SimpleDemoAdapter adapter;
+    SimpleDemoAdapter adapter;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		//adapter = new SimpleDemoAdapter(100, 5, false, false, true, SHOW_ADAPTER_POSITIONS);
-		adapter = new SimpleDemoAdapter(3, 10, false, false, true, SHOW_ADAPTER_POSITIONS);
+        //adapter = new SimpleDemoAdapter(100, 5, false, false, true, SHOW_ADAPTER_POSITIONS);
+        adapter = new SimpleDemoAdapter(3, 10, false, false, true, SHOW_ADAPTER_POSITIONS);
 
-		recyclerView.setLayoutManager(new StickyHeaderLayoutManager());
-		recyclerView.setAdapter(adapter);
-	}
+        recyclerView.setLayoutManager(new StickyHeaderLayoutManager());
+        recyclerView.setAdapter(adapter);
+    }
 }

@@ -10,12 +10,12 @@ import org.zakariya.stickyheadersapp.adapters.MultiTypeDemoAdapter;
  */
 public class MultiTypeItemDemoActivity extends DemoActivity {
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		recyclerView.setLayoutManager(new StickyHeaderLayoutManager());
-		recyclerView.setAdapter(new MultiTypeDemoAdapter(20,20));
-	}
+        recyclerView.setLayoutManager(new StickyHeaderLayoutManager());
+        recyclerView.setAdapter(new MultiTypeDemoAdapter(20, 20));
+    }
 
 }

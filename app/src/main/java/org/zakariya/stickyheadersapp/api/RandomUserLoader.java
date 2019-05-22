@@ -75,8 +75,7 @@ public class RandomUserLoader {
                         c.onRandomUserLoadFailure(new Throwable("Null response body from api."));
                     }
 
-                }
-                else if (!TextUtils.isEmpty(results.error)) {
+                } else if (!TextUtils.isEmpty(results.error)) {
 
                     Log.e(TAG, "onResponse: error message: " + results.error);
                     for (OnLoadCallback c : onLoadCallbacks) {

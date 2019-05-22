@@ -164,7 +164,7 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		if (adapter == null || adapter.getItemCount() == 0) {
 			return;
 		}
-		
+
 		if (scrollTargetAdapterPosition >= 0) {
 			firstViewAdapterPosition = scrollTargetAdapterPosition;
 			firstViewTop = 0;

@@ -23,55 +23,55 @@ import java.util.List;
  */
 public class AddressBookDemoActivity extends DemoActivity implements RandomUserLoader.OnLoadCallback {
 
-	private static final String TAG = AddressBookDemoActivity.class.getSimpleName();
-	AddressBookDemoAdapter adapter = new AddressBookDemoAdapter();
+    private static final String TAG = AddressBookDemoActivity.class.getSimpleName();
+    AddressBookDemoAdapter adapter = new AddressBookDemoAdapter();
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		recyclerView.setLayoutManager(new StickyHeaderLayoutManager());
-		recyclerView.setAdapter(adapter);
-	}
+        recyclerView.setLayoutManager(new StickyHeaderLayoutManager());
+        recyclerView.setAdapter(adapter);
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		progressBar.setVisibility(View.VISIBLE);
-		recyclerView.setVisibility(View.GONE);
-		getRandomUserLoader().load(this);
-	}
+    @Override
+    protected void onResume() {
+        super.onResume();
+        progressBar.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+        getRandomUserLoader().load(this);
+    }
 
-	@Override
-	public void onRandomUsersDidLoad(List<Person> randomUsers) {
-		progressBar.setVisibility(View.GONE);
-		recyclerView.setVisibility(View.VISIBLE);
+    @Override
+    public void onRandomUsersDidLoad(List<Person> randomUsers) {
+        progressBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
 
-		// TODO: On first run, after randomUsers is loaded, assigning to adapter has no visible result. Workaround is to run on next tick()
-		recyclerView.post(() -> adapter.setPeople(randomUsers));
-	}
+        // TODO: On first run, after randomUsers is loaded, assigning to adapter has no visible result. Workaround is to run on next tick()
+        recyclerView.post(() -> adapter.setPeople(randomUsers));
+    }
 
-	@Override
-	public void onRandomUserLoadFailure(final Throwable t) {
-		Log.e(TAG, "onRandomUserLoadFailure: Unable to load people, e:" + t.getLocalizedMessage() );
+    @Override
+    public void onRandomUserLoadFailure(final Throwable t) {
+        Log.e(TAG, "onRandomUserLoadFailure: Unable to load people, e:" + t.getLocalizedMessage());
 
-		progressBar.setVisibility(View.GONE);
-		recyclerView.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
 
-		Snackbar snackbar = Snackbar.make(recyclerView, "Unable to load addressbook", Snackbar.LENGTH_LONG);
-		snackbar.setAction(R.string.demo_addressbook_load_error_action, v -> showRandomUserLoadError(t.getLocalizedMessage()));
-		snackbar.show();
-	}
+        Snackbar snackbar = Snackbar.make(recyclerView, "Unable to load addressbook", Snackbar.LENGTH_LONG);
+        snackbar.setAction(R.string.demo_addressbook_load_error_action, v -> showRandomUserLoadError(t.getLocalizedMessage()));
+        snackbar.show();
+    }
 
-	private void showRandomUserLoadError(String message) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(R.string.demo_addressbook_load_error_dialog_title)
-				.setMessage(message)
-				.setPositiveButton(android.R.string.ok, null)
-				.show();
-	}
+    private void showRandomUserLoadError(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.demo_addressbook_load_error_dialog_title)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
+    }
 
-	private RandomUserLoader getRandomUserLoader() {
-		return ((StickyHeadersDemoApp) getApplicationContext()).getRandomUserLoader();
-	}
+    private RandomUserLoader getRandomUserLoader() {
+        return ((StickyHeadersDemoApp) getApplicationContext()).getRandomUserLoader();
+    }
 }

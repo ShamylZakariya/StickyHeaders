@@ -9,15 +9,15 @@ import org.zakariya.stickyheadersapp.api.RandomUserLoader;
  */
 public class StickyHeadersDemoApp extends Application {
 
-	RandomUserLoader randomUserLoader;
+    RandomUserLoader randomUserLoader;
 
-	@Override
-	public void onCreate() {
-		super.onCreate();
-		randomUserLoader = new RandomUserLoader();
-	}
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        randomUserLoader = new RandomUserLoader();
+    }
 
-	public RandomUserLoader getRandomUserLoader() {
-		return randomUserLoader;
-	}
+    public RandomUserLoader getRandomUserLoader() {
+        return randomUserLoader;
+    }
 }

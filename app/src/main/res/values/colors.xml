@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<color name="colorPrimary">#3F51B5</color>
-	<color name="colorPrimaryDark">#303F9F</color>
-	<color name="colorAccent">#FF4081</color>
-	<color name="actionButton">#bbbbbb</color>
-	<color name="windowBackground">#fafafa</color>
-	<color name="textLight">#dddddd</color>
-	<color name="textMedium">#999999</color>
-	<color name="textColor">#444444</color>
-	<color name="divider">#dddddd</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="actionButton">#bbbbbb</color>
+    <color name="windowBackground">#fafafa</color>
+    <color name="textLight">#dddddd</color>
+    <color name="textMedium">#999999</color>
+    <color name="textColor">#444444</color>
+    <color name="divider">#dddddd</color>
 
-	<color name="tabTextDefault">#afff</color>
-	<color name="tabTextSelected">#fff</color>
+    <color name="tabTextDefault">#afff</color>
+    <color name="tabTextSelected">#fff</color>
 
-	<color name="headerBackground">#eeeeee</color>
+    <color name="headerBackground">#eeeeee</color>
 
-	<color name="selectedItemBackground">#aaaaaa</color>
+    <color name="selectedItemBackground">#aaaaaa</color>
 
 </resources>

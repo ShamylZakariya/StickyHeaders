@@ -3,7 +3,7 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'org.zakariya.stickyheaders'
-version = '0.7.10'
+version = '0.7.11'
 
 android {
     compileSdkVersion 28

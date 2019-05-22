@@ -113,8 +113,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (savedInstanceState != null) {
                 RecyclerView.LayoutManager lm = recyclerView.getLayoutManager();
-                if (lm != null)
-                {
+                if (lm != null) {
                     lm.onRestoreInstanceState(savedInstanceState.getParcelable(SCROLL_STATE));
                 }
             }

@@ -11,7 +11,7 @@ import retrofit2.http.Query;
  */
 public interface RandomUsersService {
 
-	@GET("/")
-	Call<RandomUserResults> randomUsers(@Query("results") int results, @Query("nat") String nat, @Query("seed") String seed);
+    @GET("/")
+    Call<RandomUserResults> randomUsers(@Query("results") int results, @Query("nat") String nat, @Query("seed") String seed);
 
 }

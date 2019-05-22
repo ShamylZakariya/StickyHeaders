@@ -5,14 +5,14 @@ package org.zakariya.stickyheadersapp.model;
  */
 public class RandomUserResults {
 
-	public static class Info {
-		String seed;
-		int results;
-		int page;
-		String version;
-	}
+    public static class Info {
+        String seed;
+        int results;
+        int page;
+        String version;
+    }
 
-	public Person[] results;
-	public Info info;
-	public String error;
+    public Person[] results;
+    public Info info;
+    public String error;
 }
