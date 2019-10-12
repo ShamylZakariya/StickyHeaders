@@ -161,7 +161,12 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 	@Override
 	public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
 
-		if (adapter == null || adapter.getItemCount() == 0) {
+		if (adapter == null) {
+			return;
+		}
+
+		if (adapter.getItemCount() == 0) {
+			removeAndRecycleAllViews(recycler);
 			return;
 		}
 
